@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>INMOL · Panel Interactivo</title>
+  <link rel="icon" href="assets/inmol-logo.png">
+  <link rel="stylesheet" href="css/fuentes.css">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     1. MODO ATRACCIÓN — lo que se ve al encender la pantalla y cuando nadie
+        la está usando. Rota solo entre los proyectos.
+     ══════════════════════════════════════════════════════════════════════ -->
+<section id="atraccion" class="pantalla activa">
+  <div class="atr-fondo" id="atrFondo"></div>
+  <div class="atr-velo"></div>
+  <div class="atr-grano"></div>
+
+  <header class="atr-top">
+    <img src="assets/inmol-logo.png" alt="INMOL" class="marca">
+    <span class="atr-lema">Desarrollos Inmobiliarios con respaldo y confianza</span>
+  </header>
+
+  <div class="atr-centro">
+    <p class="atr-kicker" id="atrKicker"></p>
+    <h1 class="atr-titulo" id="atrTitulo"></h1>
+    <p class="atr-claim" id="atrClaim"></p>
+    <div class="atr-datos" id="atrDatos"></div>
+  </div>
+
+  <footer class="atr-pie">
+    <div class="atr-toque">
+      <span class="pulso"></span>
+      Toque la pantalla para explorar
+    </div>
+    <div class="atr-puntos" id="atrPuntos"></div>
+  </footer>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     2. MENÚ — los tres proyectos
+     ══════════════════════════════════════════════════════════════════════ -->
+<section id="menu" class="pantalla">
+  <header class="barra">
+    <img src="assets/inmol-logo.png" alt="INMOL" class="marca">
+    <span class="barra-lema">Desarrollos Inmobiliarios con respaldo y confianza</span>
+  </header>
+
+  <div class="menu-intro">
+    <h1>Nuestros proyectos</h1>
+    <p>Toque el proyecto que desea conocer</p>
+  </div>
+
+  <div class="tarjetas" id="tarjetas"></div>
+
+  <footer class="pie">
+    <span id="pieWeb"></span>
+    <span class="pie-sep"></span>
+    <span id="pieTel"></span>
+  </footer>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     3. PROYECTO
+     ══════════════════════════════════════════════════════════════════════ -->
+<section id="proyecto" class="pantalla">
+  <header class="barra barra-proy">
+    <button class="btn-volver" id="btnVolver">
+      <svg viewBox="0 0 24 24" width="26" height="26"><path d="M15 5 L8 12 L15 19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Proyectos
+    </button>
+    <div class="proy-id">
+      <h2 id="proyNombre"></h2>
+      <span id="proySub"></span>
+    </div>
+    <img src="assets/inmol-logo.png" alt="INMOL" class="marca marca-mini">
+  </header>
+
+  <nav class="tabs" id="tabs"></nav>
+
+  <div class="contenido" id="contenido">
+
+    <!-- ── RESUMEN ────────────────────────────────────────────────────── -->
+    <div class="pane activa" data-pane="resumen">
+      <div class="resumen-grid">
+        <div class="resumen-texto">
+          <p class="claim" id="resClaim"></p>
+          <p class="descripcion" id="resDesc"></p>
+          <h3 class="titulo-bloque">Servicios</h3>
+          <ul class="servicios" id="resServicios"></ul>
+        </div>
+        <div class="resumen-galeria" id="resGaleria"></div>
+      </div>
+      <div class="destacados" id="resDestacados"></div>
+    </div>
+
+    <!-- ── UBICACIÓN (vista satelital offline) ────────────────────────── -->
+    <div class="pane" data-pane="ubicacion">
+      <div class="sat-wrap">
+        <div class="sat-escenario" id="satEscenario">
+          <div class="sat-marcador" id="satMarcador">
+            <div class="sat-caja"></div>
+            <div class="sat-pin">
+              <svg viewBox="0 0 24 32" width="34" height="45">
+                <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 20 12 20s12-11 12-20C24 5.4 18.6 0 12 0z" fill="#E3333E"/>
+                <circle cx="12" cy="12" r="4.6" fill="#fff"/>
+              </svg>
+            </div>
+          </div>
+          <div class="sat-hud">
+            <div class="sat-nivel-nombre" id="satNivelNombre"></div>
+            <div class="sat-nivel-det" id="satNivelDet"></div>
+          </div>
+          <div class="sat-coord" id="satCoord"></div>
+          <div class="sat-atrib">Vista satelital · imagen precargada · sin conexión</div>
+        </div>
+
+        <aside class="sat-lateral">
+          <h3 class="titulo-bloque">Altura de vista</h3>
+          <div class="sat-niveles" id="satNiveles"></div>
+          <button class="btn-accion" id="btnSobrevuelo">
+            <svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 3v14M12 21v.01M6 9l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Sobrevuelo automático
+          </button>
+          <div class="sat-dir">
+            <h3 class="titulo-bloque">Dirección</h3>
+            <p id="satDireccion"></p>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ── REFERENCIAS ────────────────────────────────────────────────── -->
+    <div class="pane" data-pane="referencias">
+      <div class="refs-wrap">
+        <div class="refs-mapa" id="refsMapa"></div>
+        <aside class="refs-lista">
+          <h3 class="titulo-bloque">Puntos de referencia</h3>
+          <ul id="refsLista"></ul>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ── LOTES ──────────────────────────────────────────────────────── -->
+    <div class="pane" data-pane="lotes">
+      <div class="lotes-wrap">
+        <div class="lotes-mapa">
+          <div class="lotes-barra">
+            <div class="leyenda">
+              <span class="lg lg-disponible"><i></i> Disponible <b id="cntDisp">0</b></span>
+              <span class="lg lg-reservado"><i></i> Reservado <b id="cntRes">0</b></span>
+              <span class="lg lg-vendido"><i></i> Vendido <b id="cntVen">0</b></span>
+            </div>
+            <div class="filtros" id="filtros"></div>
+          </div>
+          <div class="plano-cont" id="planoCont"></div>
+        </div>
+        <aside class="lote-ficha" id="loteFicha">
+          <div class="ficha-vacia" id="fichaVacia">
+            <svg viewBox="0 0 48 48" width="52" height="52"><rect x="6" y="6" width="36" height="36" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 20h36M20 6v36" stroke="currentColor" stroke-width="2"/></svg>
+            <p>Toque una unidad<br>en el plano</p>
+          </div>
+          <div class="ficha-datos" id="fichaDatos" hidden>
+            <span class="ficha-estado" id="fEstado"></span>
+            <h3 class="ficha-codigo" id="fCodigo"></h3>
+            <div class="ficha-fila"><span>Manzana</span><b id="fManzana"></b></div>
+            <div class="ficha-fila"><span>Superficie</span><b id="fSuperficie"></b></div>
+            <div class="ficha-fila"><span>Categoría</span><b id="fCategoria"></b></div>
+            <div class="ficha-nota">
+              El precio y el plan de pago se elaboran de forma personalizada.
+              Consulte con su asesor INMOL.
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ── AVANCE DE OBRA ─────────────────────────────────────────────── -->
+    <div class="pane" data-pane="avance">
+      <div class="avance-wrap">
+        <div class="avance-total">
+          <div class="anillo-cont">
+            <svg viewBox="0 0 200 200" class="anillo">
+              <circle cx="100" cy="100" r="86" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="14"/>
+              <circle cx="100" cy="100" r="86" fill="none" stroke="#E3333E" stroke-width="14"
+                      stroke-linecap="round" id="anilloProg"
+                      transform="rotate(-90 100 100)"/>
+            </svg>
+            <div class="avance-num"><span id="avanceNum">0</span><i>%</i></div>
+          </div>
+          <p class="avance-cap">Avance general de obra</p>
+        </div>
+        <div class="avance-detalle">
+          <h3 class="titulo-bloque">Detalle por etapa</h3>
+          <div class="avance-etapas" id="avanceEtapas"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     4. ASISTENTE TÁCTIL CON VOZ
+     ══════════════════════════════════════════════════════════════════════ -->
+<button id="btnAsistente" class="btn-asistente" aria-label="Asistente">
+  <span class="ondas"><i></i><i></i><i></i></span>
+  <svg viewBox="0 0 24 24" width="28" height="28">
+    <path d="M12 3a3.5 3.5 0 0 1 3.5 3.5v5a3.5 3.5 0 0 1-7 0v-5A3.5 3.5 0 0 1 12 3z" fill="currentColor"/>
+    <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  <span class="btn-asistente-txt">Asistente</span>
+</button>
+
+<aside id="asistente" class="asistente">
+  <div class="asis-cabecera">
+    <div class="asis-avatar" id="asisAvatar">
+      <span class="eq"><i></i><i></i><i></i><i></i><i></i></span>
+    </div>
+    <div>
+      <h3>Asistente INMOL</h3>
+      <span class="asis-estado" id="asisEstado">Toque una pregunta</span>
+    </div>
+    <button class="asis-cerrar" id="asisCerrar" aria-label="Cerrar">
+      <svg viewBox="0 0 24 24" width="24" height="24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+
+  <div class="asis-burbuja" id="asisBurbuja"></div>
+
+  <div class="asis-opciones" id="asisOpciones"></div>
+
+  <div class="asis-pie">
+    <button class="asis-silencio" id="asisSilencio">Detener voz</button>
+    <span class="asis-nota">Funciona sin conexión a internet</span>
+  </div>
+</aside>
+
+
+<!-- Panel técnico (tecla D) -->
+<div id="diag" class="diag" hidden></div>
+
+<script src="js/datos.js"></script>
+<script src="js/mapas.js"></script>
+<script src="js/voz.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

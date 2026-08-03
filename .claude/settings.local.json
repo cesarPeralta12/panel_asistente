@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.inmol.com.bo)",
+      "WebFetch(domain:maps.app.goo.gl)"
+    ]
+  }
+}
