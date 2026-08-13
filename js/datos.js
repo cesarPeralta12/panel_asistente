@@ -24,10 +24,13 @@ const PANEL = {
     segundosInactividad: 90,
     // Segundos que dura cada slide del modo atracción.
     segundosPorSlide: 9,
-    // Idioma preferido para la voz del asistente.
-    idiomaVoz: 'es-BO',
     // Mostrar precios en pantalla. Definido en NO por decisión comercial.
-    mostrarPrecios: false
+    mostrarPrecios: false,
+
+    // Muestra un aviso discreto de "Datos de ejemplo" en la esquina.
+    // Sirve para que nadie confunda el contenido de demostración con el real.
+    // PONER EN false CUANDO YA ESTÉ CARGADO EL CONTENIDO DEFINITIVO DE INMOL.
+    datosDeEjemplo: true
   },
 
   /* --- PROYECTOS ---------------------------------------------------------- */
@@ -196,70 +199,4 @@ const PANEL = {
       }
     }
   ],
-
-  /* --- ASISTENTE TÁCTIL CON VOZ ------------------------------------------
-     Cada opción es un botón que el visitante toca. El asistente responde
-     con voz (motor de voz local de Windows, funciona sin internet) y a la
-     vez lleva la pantalla a la sección correspondiente.
-     ---------------------------------------------------------------------- */
-  asistente: {
-    saludo: 'Bienvenido a INMOL. ¿Cuál de nuestros proyectos desea conocer?',
-
-    // Preguntas disponibles dentro de un proyecto.
-    preguntas: [
-      {
-        id: 'ubicacion',
-        texto: '¿Dónde está ubicado?',
-        seccion: 'ubicacion',
-        respuesta: p => `${p.nombre} se encuentra en ${p.direccion}. ` +
-                        `En pantalla puede ver la vista satelital, desde la ` +
-                        `ciudad hasta el terreno.`
-      },
-      {
-        id: 'referencias',
-        texto: '¿Qué hay cerca?',
-        seccion: 'referencias',
-        respuesta: p => {
-          const tres = p.referencias.slice(0, 3)
-            .map(r => `${r.nombre} a ${r.distancia}`).join(', ');
-          return `Cerca del proyecto encontrará ${tres}.`;
-        }
-      },
-      {
-        id: 'lotes',
-        texto: 'Ver disponibilidad',
-        seccion: 'lotes',
-        respuesta: p => `Le muestro el plano. En verde están las unidades ` +
-                        `disponibles, en ámbar las reservadas y en gris las ` +
-                        `vendidas. Puede tocar cualquiera para ver su código, ` +
-                        `superficie y categoría.`
-      },
-      {
-        id: 'avance',
-        texto: '¿Cómo va la obra?',
-        seccion: 'avance',
-        respuesta: p => {
-          const prom = Math.round(
-            p.avance.reduce((a, e) => a + e.porcentaje, 0) / p.avance.length);
-          return `El avance general de ${p.nombre} es de aproximadamente ` +
-                 `${prom} por ciento. En pantalla puede ver el detalle por etapa.`;
-        }
-      },
-      {
-        id: 'servicios',
-        texto: '¿Qué servicios tiene?',
-        seccion: 'resumen',
-        respuesta: p => `El proyecto cuenta con ${p.servicios.slice(0, 4).join(', ')}, ` +
-                        `entre otros servicios.`
-      },
-      {
-        id: 'precio',
-        texto: '¿Cuál es el precio?',
-        seccion: null,
-        respuesta: () => `Los precios y planes de pago se elaboran de forma ` +
-                         `personalizada. Un asesor de INMOL le preparará una ` +
-                         `cotización a su medida en este mismo momento.`
-      }
-    ]
-  }
 };

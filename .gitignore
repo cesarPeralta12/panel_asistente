@@ -1,0 +1,14 @@
+# Asistente con voz: se retiró del panel a pedido del cliente.
+# Queda en disco por si vuelve, pero no va al repositorio ni al despliegue.
+_retirado/
+
+# Dependencias de desarrollo (el panel no usa ninguna en producción)
+node_modules/
+package-lock.json
+package.json
+
+# Artefactos de Windows / OneDrive
+Thumbs.db
+desktop.ini
+*.tmp
+~$*

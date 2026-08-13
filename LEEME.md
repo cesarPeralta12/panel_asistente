@@ -30,7 +30,49 @@ corre en la misma laptop.
 > JavaScript puro. La carpeta se copia a un pendrive y funciona en cualquier Windows
 > con Chrome.
 
+### Si cambiaste algo y no ves el cambio
+
+El navegador guarda en caché los estilos y los datos. Recargá **forzando la caché**:
+
+`Ctrl + Shift + R`   (o `Ctrl + F5`)
+
+Con una recarga normal (`F5`) puede seguir mostrando la versión anterior.
+
 ---
+
+## Orientación de la pantalla
+
+El panel se adapta solo a **tótem vertical (9:16)** y a **pantalla horizontal (16:9)**.
+No hay que configurar nada: detecta la proporción y reacomoda todo, incluido el
+plano de lotes, que en vertical apila las manzanas para que salgan más grandes.
+
+Verificado con clics reales en 1920×1080 y en 1080×1920:
+
+```
+node herramientas/probar-clics.js "" 1080 1920
+```
+
+## Regenerar la propuesta comercial
+
+```
+.\herramientas\capturar.ps1
+npm install pptxgenjs
+node herramientas/generar-presentacion.js
+```
+
+Deja el PowerPoint actualizado en `presentacion/`.
+
+## Recomendaciones de hardware para el tótem
+
+| Punto | Recomendación |
+|---|---|
+| **Sistema operativo** | **Mini PC con Windows**, no Android. El arranque en kiosco es un `.bat`, y actualizar la disponibilidad de lotes durante la feria es meter un pendrive y reemplazar un archivo. En un tótem Android eso no es directo: vienen con un launcher de cartelería cerrado. |
+| **Tamaño** | 43" es el mínimo razonable; **55" es notablemente mejor** para el plano de lotes. En vertical, un 43" da 53 cm de ancho útil; un 55" da 68 cm. |
+| **Resolución** | Full HD alcanza y sobra. El panel escala solo si es 4K, pero no vale pagar la diferencia. |
+| **Táctil** | **PCAP (capacitiva)**, no infrarroja. La infrarroja usa un marco de LEDs que se dispara con polvo, mangas e insectos: en diez días de feria da toques fantasma. |
+| **Brillo** | 450–500 cd/m² sirve con luz controlada. Si hay opción de **700 cd/m² o vidrio antirreflejo**, vale la pena: los pabellones suelen tener techo translúcido. |
+| **Ranura 4G** | No hace falta. El panel funciona sin conexión. |
+| **Acceso trasero** | Pedir **puerta trasera con llave** y acceso al USB del Mini PC sin desarmar el tótem. |
 
 ## Cómo funciona en el stand
 
@@ -50,6 +92,19 @@ Cuando alguien toca la pantalla, entra al menú de proyectos. Si pasan
 | `Esc` | Cerrar el asistente y volver al menú |
 
 ---
+
+## Aviso «Datos de ejemplo»
+
+Mientras el panel muestre contenido de demostración, aparece un cartelito
+discreto abajo a la derecha. Es a propósito: evita que alguien confunda los
+192 lotes de ejemplo con disponibilidad real.
+
+**Cuando esté cargado el contenido definitivo de INMOL**, apagarlo en
+`js/datos.js`:
+
+```js
+datosDeEjemplo: false
+```
 
 ## Cargar el contenido real
 
@@ -109,23 +164,15 @@ se pueda demostrar. **Para la feria hay que reemplazarlos por capturas reales.**
 
 ---
 
-## El asistente con voz
+## El asistente con voz (retirado)
 
-El asistente es **táctil**: el visitante toca una opción y el panel responde
-hablando, además de llevar la pantalla a la sección correspondiente.
+El asistente táctil con voz se quitó del panel por decisión del cliente.
 
-La voz sale del **motor de voz de Windows** instalado en el equipo. Es local:
-no hace ninguna petición a internet.
+Todo su código y los 22 audios grabados con voz neuronal boliviana quedaron
+guardados en **`_retirado/asistente/`**. Si más adelante lo quieren de vuelta,
+está completo y probado: no hay que rehacerlo.
 
-### Verificar la voz antes de la feria
-
-1. Abrir el panel y presionar la tecla `D`.
-2. En la línea **Voz** debe aparecer el nombre de una voz en español.
-3. Si dice *"Sin voz en español"*, instalarla en:
-   `Configuración → Hora e idioma → Voz → Administrar voces → Agregar voces → Español`
-
-En el equipo donde se desarrolló esto ya está disponible
-`Microsoft Raul - Spanish (Mexico)`.
+Esa carpeta no la carga el panel. Se puede borrar sin ningún efecto.
 
 ---
 
@@ -166,8 +213,11 @@ panel interactivo/
 │   ├── inmol-logo.png       Logotipo oficial (isotipo rojo + texto blanco)
 │   ├── fonts/               Tipografía de marca
 │   └── proyectos/           ← Aquí van las capturas satelitales reales
-├── herramientas/
-│   └── capturar.ps1         Genera capturas del panel en 1920×1080
+├── _retirado/               Asistente con voz — quitado, guardado por si vuelve
+├── herramientas/            (sólo desarrollo — el kiosco no las necesita)
+│   ├── capturar.ps1         Capturas del panel, horizontal y vertical
+│   ├── generar-presentacion.js  Arma la propuesta comercial en PowerPoint
+│   └── probar-clics.js      Verifica con clics reales que toda la pantalla responda
 └── presentacion/
     └── capturas/            Capturas para la propuesta comercial
 ```

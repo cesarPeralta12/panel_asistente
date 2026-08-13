@@ -484,7 +484,7 @@ const COLOR_ESTADO = {
   vendido:    { relleno: '#3A3A42', borde: '#55555F', texto: 'Vendido'    }
 };
 
-function construirPlanoSVG(proyecto, lotes) {
+function construirPlanoSVG(proyecto, lotes, proporcionObjetivo) {
   const cfg = proyecto.plano;
   const NS = 'http://www.w3.org/2000/svg';
   const porFila = Math.ceil(cfg.lotesPorManzana / 2);
@@ -494,8 +494,12 @@ function construirPlanoSVG(proyecto, lotes) {
   const altoMz = altoLote * 2;
 
   /* Se elige la distribución de manzanas cuya proporción se acerque más a la
-     del contenedor (aprox. 2:1), para que los lotes salgan lo más grandes
-     posible y sean cómodos de tocar en la pantalla. */
+     del contenedor real, para que los lotes salgan lo más grandes posible y
+     sean cómodos de tocar. En una pantalla horizontal las manzanas quedan en
+     fila; en un tótem vertical se apilan solas. */
+  const objetivo = proporcionObjetivo && isFinite(proporcionObjetivo) && proporcionObjetivo > 0.15
+    ? proporcionObjetivo : 2.05;
+
   const dims = c => ({
     cols: c,
     filas: Math.ceil(cfg.manzanas / c),
@@ -503,10 +507,13 @@ function construirPlanoSVG(proyecto, lotes) {
     H: margen * 2 + Math.ceil(cfg.manzanas / c) * altoMz +
        (Math.ceil(cfg.manzanas / c) - 1) * calle + 52
   });
+  // Se compara en escala logarítmica: así una proporción del doble y una de la
+  // mitad se penalizan igual, y no gana siempre la distribución más ancha.
+  const error = d => Math.abs(Math.log((d.W / d.H) / objetivo));
   let mejor = dims(1);
   for (let c = 2; c <= cfg.manzanas; c++) {
     const d = dims(c);
-    if (Math.abs(d.W / d.H - 2.05) < Math.abs(mejor.W / mejor.H - 2.05)) mejor = d;
+    if (error(d) < error(mejor)) mejor = d;
   }
   const { cols, filas, W, H } = mejor;
 

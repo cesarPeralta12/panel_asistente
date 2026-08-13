@@ -1,6 +1,6 @@
 /* ============================================================================
    INMOL · PANEL INTERACTIVO
-   app.js — Navegación, modo atracción, secciones y asistente
+   app.js — Navegación, modo atracción y secciones
    ============================================================================ */
 
 const $  = s => document.querySelector(s);
@@ -66,10 +66,6 @@ function svgIcono(d, tam = 22) {
 function irA(pantalla) {
   $$('.pantalla').forEach(p => p.classList.toggle('activa', p.id === pantalla));
   Estado.pantalla = pantalla;
-
-  const btn = $('#btnAsistente');
-  btn.classList.toggle('visible', pantalla !== 'atraccion');
-  if (pantalla === 'atraccion') cerrarAsistente();
 
   if (pantalla === 'atraccion') iniciarAtraccion();
   else detenerAtraccion();
@@ -202,7 +198,6 @@ function abrirProyecto(id, seccion = 'resumen') {
 
   irA('proyecto');
   mostrarSeccion(seccion);
-  construirOpcionesAsistente();
 }
 
 function construirTabs() {
@@ -374,7 +369,10 @@ function llenarReferencias(p) {
 function llenarLotes(p) {
   const cont = $('#planoCont');
   cont.innerHTML = '';
-  const svg = construirPlanoSVG(p, Estado.lotes);
+  /* El plano se arma según la forma real del hueco disponible: en horizontal
+     las manzanas quedan en fila, en un tótem vertical se apilan. */
+  const proporcion = cont.clientHeight > 0 ? cont.clientWidth / cont.clientHeight : 0;
+  const svg = construirPlanoSVG(p, Estado.lotes, proporcion);
   cont.appendChild(svg);
 
   svg.querySelectorAll('.lote').forEach(g => {
@@ -476,80 +474,6 @@ function animarAvance() {
 }
 
 /* ============================================================================
-   4. ASISTENTE TÁCTIL CON VOZ
-   ============================================================================ */
-function abrirAsistente() {
-  $('#asistente').classList.add('abierto');
-  construirOpcionesAsistente();
-  const saludo = Estado.proyecto
-    ? `Estamos viendo ${Estado.proyecto.nombre}. ¿Qué desea saber?`
-    : PANEL.asistente.saludo;
-  decir(saludo);
-  reiniciarInactividad();
-}
-
-function cerrarAsistente() {
-  $('#asistente').classList.remove('abierto');
-  Voz.callar();
-  $('#asisAvatar').classList.remove('hablando');
-}
-
-function decir(texto) {
-  $('#asisBurbuja').textContent = texto;
-  $('#asisEstado').textContent = Voz.disponible ? 'Hablando…' : 'Voz no disponible en este equipo';
-  $('#asisAvatar').classList.add('hablando');
-  Voz.hablar(texto, () => {
-    $('#asisAvatar').classList.remove('hablando');
-    $('#asisEstado').textContent = 'Toque una pregunta';
-  });
-}
-
-function construirOpcionesAsistente() {
-  const cont = $('#asisOpciones');
-  cont.innerHTML = '';
-  const flecha = svgIcono('M9 6l6 6-6 6', 18);
-
-  /* Elegir proyecto */
-  const g1 = document.createElement('div');
-  g1.className = 'asis-grupo';
-  g1.textContent = Estado.proyecto ? 'Cambiar de proyecto' : 'Elija un proyecto';
-  cont.appendChild(g1);
-
-  PANEL.proyectos.forEach(p => {
-    const b = document.createElement('button');
-    b.className = 'asis-opcion' + (Estado.proyecto && Estado.proyecto.id === p.id ? ' activa' : '');
-    b.innerHTML = `<span>${p.nombre}</span>${flecha}`;
-    b.addEventListener('click', () => {
-      abrirProyecto(p.id);
-      decir(`${p.nombre}. ${p.claim} ${p.descripcion}`);
-    });
-    cont.appendChild(b);
-  });
-
-  /* Preguntas sobre el proyecto abierto */
-  if (Estado.proyecto) {
-    const g2 = document.createElement('div');
-    g2.className = 'asis-grupo';
-    g2.textContent = 'Preguntas frecuentes';
-    cont.appendChild(g2);
-
-    PANEL.asistente.preguntas.forEach(q => {
-      const b = document.createElement('button');
-      b.className = 'asis-opcion';
-      b.innerHTML = `<span>${q.texto}</span>${flecha}`;
-      b.addEventListener('click', () => {
-        if (q.seccion) mostrarSeccion(q.seccion);
-        if (q.seccion === 'ubicacion') setTimeout(sobrevuelo, 400);
-        decir(q.respuesta(Estado.proyecto));
-        $$('.asis-opcion').forEach(o => o.classList.remove('activa'));
-        b.classList.add('activa');
-      });
-      cont.appendChild(b);
-    });
-  }
-}
-
-/* ============================================================================
    5. INACTIVIDAD — vuelve solo al modo atracción
    ============================================================================ */
 /* Modo "quieto": ?quieto=1 congela la rotación y el retorno automático.
@@ -560,7 +484,6 @@ function reiniciarInactividad() {
   clearTimeout(Estado.temporizadorInactividad);
   if (QUIETO || Estado.pantalla === 'atraccion') return;
   Estado.temporizadorInactividad = setTimeout(() => {
-    cerrarAsistente();
     Estado.proyecto = null;
     irA('atraccion');
   }, PANEL.config.segundosInactividad * 1000);
@@ -580,7 +503,6 @@ function alternarDiagnostico() {
       <div>Resolución: ${window.innerWidth} × ${window.innerHeight}</div>
       <div>Pantalla actual: ${Estado.pantalla}</div>
       <div>Proyecto: ${Estado.proyecto ? Estado.proyecto.nombre : '—'}</div>
-      <div>Voz: ${Voz.estado()}</div>
       <div>Conexión: ${navigator.onLine ? 'con internet' : 'sin internet (correcto)'}</div>
       <div>Renders en caché: ${_cacheSat.size}</div>
       <div style="margin-top:.5rem;color:#5A5A66">A: atracción · M: menú · D: cerrar</div>`;
@@ -594,7 +516,7 @@ function alternarDiagnostico() {
    ============================================================================ */
 function iniciar() {
   if (QUIETO) document.body.classList.add('sin-animacion');
-  Voz.iniciar();
+  $('#aviso').hidden = !PANEL.config.datosDeEjemplo;
   construirMenu();
 
   /* Modo atracción: cualquier toque abre el menú */
@@ -603,20 +525,23 @@ function iniciar() {
   $('#btnVolver').addEventListener('click', () => { Estado.proyecto = null; irA('menu'); });
   $('#btnSobrevuelo').addEventListener('click', sobrevuelo);
 
-  $('#btnAsistente').addEventListener('click', abrirAsistente);
-  $('#asisCerrar').addEventListener('click', cerrarAsistente);
-  $('#asisSilencio').addEventListener('click', () => {
-    Voz.callar();
-    $('#asisAvatar').classList.remove('hablando');
-    $('#asisEstado').textContent = 'Toque una pregunta';
-  });
-
   /* Cualquier interacción reinicia el contador de inactividad */
   ['pointerdown', 'keydown', 'wheel'].forEach(ev =>
     document.addEventListener(ev, reiniciarInactividad, { passive: true }));
 
+  /* Si cambia el tamaño o la orientación de la pantalla, se rehace el plano
+     para que las manzanas se reacomoden a la nueva forma. */
+  let temporizadorMedida;
   window.addEventListener('resize', () => {
-    if (Estado.seccion === 'ubicacion') ajustarMarcadorSat();
+    clearTimeout(temporizadorMedida);
+    temporizadorMedida = setTimeout(() => {
+      if (Estado.seccion === 'ubicacion') ajustarMarcadorSat();
+      if (Estado.proyecto) {
+        const sel = Estado.loteSel;
+        llenarLotes(Estado.proyecto);
+        if (sel) seleccionarLote(Estado.lotes.findIndex(l => l.codigo === sel.codigo));
+      }
+    }, 220);
   });
 
   /* Atajos para el operador durante el montaje */
@@ -625,7 +550,7 @@ function iniciar() {
     if (k === 'd') alternarDiagnostico();
     if (k === 'a') irA('atraccion');
     if (k === 'm') irA('menu');
-    if (k === 'escape') { cerrarAsistente(); irA('menu'); }
+    if (k === 'escape') irA('menu');
   });
 
   /* Arranca siempre en modo atracción: al encender la pantalla,
@@ -647,7 +572,6 @@ function aplicarRuta() {
 
   if (destino === 'proyecto' && proyId) {
     abrirProyecto(proyId, seccion || 'resumen');
-    if (extra === 'asistente') setTimeout(abrirAsistente, 250);
     if (extra && extra.startsWith('lote-')) {
       setTimeout(() => seleccionarLote(parseInt(extra.slice(5), 10) || 0), 250);
     }
