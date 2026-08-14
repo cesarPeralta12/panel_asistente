@@ -53,7 +53,8 @@ const PANEL = {
                    'rígido, en una zona de fuerte crecimiento con clima agradable ' +
                    'y entorno natural atractivo.',
 
-      coordenadas: { lat: -17.9053, lng: -63.2958 },
+      // Ubicación exacta. Código Plus 57JR3PV3+WP2, del enlace de Maps de INMOL.
+      coordenadas: { lat: -17.90523, lng: -63.29574 },
       direccion: 'Av. Doble Vía La Guardia Km 16, Santa Cruz',
       enlaceMapa: 'https://maps.app.goo.gl/i7Aw7BNJCNMzEWzn6',
       recorrido360: 'https://elencanto.inmol.com.bo/',
@@ -99,16 +100,21 @@ const PANEL = {
         'Pavimento rígido', 'Urbanización abierta', 'Entorno natural'
       ],
 
-      avance: [ // DEMO — los porcentajes reales los define INMOL
-        { etapa: 'Movimiento de tierras', porcentaje: 100 },
-        { etapa: 'Apertura de calles',    porcentaje: 100 },
-        { etapa: 'Redes de agua',         porcentaje: 85  },
-        { etapa: 'Red eléctrica',         porcentaje: 70  },
-        { etapa: 'Pavimento rígido',      porcentaje: 45  },
-        { etapa: 'Áreas verdes',          porcentaje: 20  }
+      // Ficha técnica: los datos que el vendedor necesita a mano.
+      fichaTecnica: [
+        { campo: 'Tipología',            valor: 'Urbanización abierta' },
+        { campo: 'Ubicación',            valor: 'La Guardia, Santa Cruz' },
+        { campo: 'Dirección',            valor: 'Av. Doble Vía La Guardia Km 16' },
+        { campo: 'Superficie de lotes',  valor: '300 m² a más de 800 m²' },
+        { campo: 'Cantidad de lotes',    valor: 'Más de 1.000' },
+        { campo: 'Pavimento',            valor: '1.500 m de pavimento rígido' },
+        { campo: 'Servicios básicos',    valor: 'Agua potable y energía eléctrica' },
+        { campo: 'Áreas verdes',         valor: 'Sí, con espacios recreativos' },
+        { campo: 'Estado comercial',     valor: 'En comercialización' }
       ],
 
       plano: {
+        etiqueta: 'Disponibilidad',
         manzanas: 8, lotesPorManzana: 24, prefijo: 'EC',
         categorias: ['Estándar', 'Preferencial', 'Comercial', 'Esquina'],
         superficieBase: 300, superficieRango: 500,
@@ -129,7 +135,8 @@ const PANEL = {
                    'de colegios, mercados y áreas urbanizadas, lo que garantiza un ' +
                    'flujo constante de visitantes.',
 
-      coordenadas: { lat: -17.8879, lng: -63.1740 },
+      // Ubicación exacta. Código Plus 57JR4R6G+VC, del enlace de Maps de INMOL.
+      coordenadas: { lat: -17.88781, lng: -63.17394 },
       direccion: '8vo anillo y Av. Santos Dumont, Santa Cruz de la Sierra',
       enlaceMapa: 'https://maps.app.goo.gl/56LVGHSEHuBsimVt6',
       recorrido360: 'https://centrocomerciallibertad.inmol.com.bo/',
@@ -164,15 +171,21 @@ const PANEL = {
         'Rodeado de colegios', 'Cerca de mercados', 'Zona consolidada'
       ],
 
-      avance: [ // DEMO
-        { etapa: 'Obra gruesa',     porcentaje: 100 },
-        { etapa: 'Instalaciones',   porcentaje: 90  },
-        { etapa: 'Acabados',        porcentaje: 75  },
-        { etapa: 'Fachada',         porcentaje: 60  },
-        { etapa: 'Estacionamiento', porcentaje: 40  }
+      fichaTecnica: [
+        { campo: 'Tipología',          valor: 'Centro comercial' },
+        { campo: 'Ubicación',          valor: 'Zona Sudeste, Santa Cruz de la Sierra' },
+        { campo: 'Dirección',          valor: '8vo anillo y Av. Santos Dumont' },
+        { campo: 'Superficie total',   valor: '8.531,93 m²' },
+        { campo: 'Cantidad de locales', valor: 'Más de 300' },
+        { campo: 'Entorno',            valor: 'Colegios, mercados y áreas urbanizadas' },
+        { campo: 'Flujo de visitantes', valor: 'Constante, zona consolidada' },
+        { campo: 'Estado comercial',   valor: 'En comercialización' }
       ],
 
       plano: {
+        // En el centro comercial la sección se llama distinto: no se vende
+        // disponibilidad de lotes sino distribución de locales.
+        etiqueta: 'Planos y distribución',
         manzanas: 6, lotesPorManzana: 16, prefijo: 'LB',
         categorias: ['Planta baja', 'Primer piso', 'Área de comidas', 'Esquina'],
         superficieBase: 18, superficieRango: 26,
@@ -221,14 +234,19 @@ const PANEL = {
         'Vías pavimentadas', 'Espacios recreativos', 'Entorno natural'
       ],
 
-      avance: [
-        { etapa: 'Urbanización',    porcentaje: 100 },
-        { etapa: 'Servicios',       porcentaje: 100 },
-        { etapa: 'Vías',            porcentaje: 100 },
-        { etapa: 'Comercialización', porcentaje: 100 }
+      fichaTecnica: [
+        { campo: 'Tipología',           valor: 'Urbanización abierta residencial' },
+        { campo: 'Ubicación',           valor: 'La Guardia, Santa Cruz' },
+        { campo: 'Dirección',           valor: 'Av. Doble Vía La Guardia Km 9' },
+        { campo: 'Cantidad de terrenos', valor: '71' },
+        { campo: 'Servicios básicos',   valor: 'Agua potable y energía eléctrica' },
+        { campo: 'Accesos',             valor: 'Vías pavimentadas' },
+        { campo: 'Áreas verdes',        valor: 'Entorno natural con espacios recreativos' },
+        { campo: 'Estado comercial',    valor: '100% vendido' }
       ],
 
       plano: {
+        etiqueta: 'Disponibilidad',
         manzanas: 4, lotesPorManzana: 18, prefijo: 'VL',
         categorias: ['Estándar', 'Preferencial', 'Esquina'],
         superficieBase: 275, superficieRango: 225,

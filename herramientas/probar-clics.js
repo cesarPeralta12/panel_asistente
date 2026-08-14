@@ -104,7 +104,7 @@ const ALTO  = parseInt(process.argv[4], 10) || 1080;
     return true;
   };
 
-  const esperadas = ['resumen', 'ubicacion', 'lotes', 'avance'];
+  const esperadas = ['resumen', 'ubicacion', 'lotes', 'ficha'];
   for (let i = 0; i < esperadas.length; i++) {
     await clicSel('.tab', i); await esperar(280);
     const e = await estado();

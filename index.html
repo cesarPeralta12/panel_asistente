@@ -184,25 +184,19 @@
       </div>
     </div>
 
-    <!-- ── AVANCE DE OBRA ─────────────────────────────────────────────── -->
-    <div class="pane" data-pane="avance">
-      <div class="avance-wrap">
-        <div class="avance-total">
-          <div class="anillo-cont">
-            <svg viewBox="0 0 200 200" class="anillo">
-              <circle cx="100" cy="100" r="86" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="14"/>
-              <circle cx="100" cy="100" r="86" fill="none" stroke="#E3333E" stroke-width="14"
-                      stroke-linecap="round" id="anilloProg"
-                      transform="rotate(-90 100 100)"/>
-            </svg>
-            <div class="avance-num"><span id="avanceNum">0</span><i>%</i></div>
-          </div>
-          <p class="avance-cap">Avance general de obra</p>
-        </div>
-        <div class="avance-detalle">
-          <h3 class="titulo-bloque">Detalle por etapa</h3>
-          <div class="avance-etapas" id="avanceEtapas"></div>
-        </div>
+    <!-- ── FICHA TÉCNICA ──────────────────────────────────────────────── -->
+    <div class="pane" data-pane="ficha">
+      <div class="ficha-wrap">
+        <table class="ficha-tabla">
+          <tbody id="fichaTabla"></tbody>
+        </table>
+        <aside class="ficha-lado">
+          <div class="ficha-destacado" id="fichaDestacado"></div>
+          <p class="ficha-pie">
+            Los precios y planes de pago se elaboran de forma personalizada.
+            Consulte con su asesor INMOL.
+          </p>
+        </aside>
       </div>
     </div>
 

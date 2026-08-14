@@ -60,7 +60,7 @@ const ICONO_TAB = {
   ubicacion:   'M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z M12 9.5a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2z',
   referencias: 'M12 3v18M3 12h18M12 3a9 9 0 0 1 0 18 9 9 0 0 1 0-18z',
   lotes:       'M4 5h6v6H4zM14 5h6v6h-6zM4 15h6v4H4zM14 15h6v4h-6z',
-  avance:      'M4 19h16M6 19V11M11 19V6M16 19v-9'
+  ficha:       'M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z M9 8h6M9 12h6M9 16h4'
 };
 
 /* «Qué hay cerca» se fusionó dentro de «Ubicación»: los puntos de referencia
@@ -68,8 +68,8 @@ const ICONO_TAB = {
 const SECCIONES = [
   { id: 'resumen',   etiqueta: 'Resumen' },
   { id: 'ubicacion', etiqueta: 'Ubicación' },
-  { id: 'lotes',     etiqueta: 'Disponibilidad' },
-  { id: 'avance',    etiqueta: 'Avance de obra' }
+  { id: 'lotes',     etiqueta: 'Disponibilidad' },   // el proyecto puede renombrarla
+  { id: 'ficha',     etiqueta: 'Ficha técnica' }
 ];
 
 function svgIcono(d, tam = 22) {
@@ -213,7 +213,7 @@ function abrirProyecto(id, seccion = 'resumen') {
   prepararUbicacion(p);
   llenarReferencias(p);
   llenarLotes(p);
-  llenarAvance(p);
+  llenarFicha(p);
 
   irA('proyecto');
   mostrarSeccion(seccion);
@@ -226,7 +226,12 @@ function construirTabs() {
     const b = document.createElement('button');
     b.className = 'tab';
     b.dataset.sec = s.id;
-    b.innerHTML = svgIcono(ICONO_TAB[s.id], 20) + `<span>${s.etiqueta}</span>`;
+    /* El nombre de la sección de plano depende del proyecto: en una
+       urbanización es «Disponibilidad», en el centro comercial es
+       «Planos y distribución». */
+    const etiqueta = (s.id === 'lotes' && Estado.proyecto && Estado.proyecto.plano.etiqueta)
+      ? Estado.proyecto.plano.etiqueta : s.etiqueta;
+    b.innerHTML = svgIcono(ICONO_TAB[s.id], 20) + `<span>${etiqueta}</span>`;
     b.addEventListener('click', () => mostrarSeccion(s.id));
     nav.appendChild(b);
   });
@@ -240,7 +245,6 @@ function mostrarSeccion(id) {
   if (id === 'ubicacion') {
     setTimeout(() => { ajustarMarcadorSat(); MapaReal.redimensionar(); }, 60);
   }
-  if (id === 'avance')    { setTimeout(() => animarAvance(), 120); }
   reiniciarInactividad();
 }
 
@@ -516,42 +520,17 @@ function seleccionarLote(idx) {
   reiniciarInactividad();
 }
 
-/* --- 3.5 Avance ---------------------------------------------------------- */
-function llenarAvance(p) {
-  $('#avanceEtapas').innerHTML = p.avance.map(e => `
-    <div class="etapa-fila ${e.porcentaje >= 100 ? 'completa' : ''}">
-      <div class="etapa-nom">${e.etapa}</div>
-      <div class="etapa-barra"><div class="etapa-relleno" data-pct="${e.porcentaje}"></div></div>
-      <div class="etapa-pct">${e.porcentaje}%</div>
-    </div>`).join('');
-}
+/* --- 3.5 Ficha técnica --------------------------------------------------- */
+function llenarFicha(p) {
+  $('#fichaTabla').innerHTML = (p.fichaTecnica || []).map(f => `
+    <tr>
+      <th>${f.campo}</th>
+      <td>${f.valor}</td>
+    </tr>`).join('');
 
-function animarAvance() {
-  const p = Estado.proyecto;
-  const prom = Math.round(p.avance.reduce((a, e) => a + e.porcentaje, 0) / p.avance.length);
-
-  const circ = 2 * Math.PI * 86;
-  const anillo = $('#anilloProg');
-  anillo.style.strokeDasharray = `0 ${circ}`;
-  requestAnimationFrame(() => {
-    anillo.style.strokeDasharray = `${circ * prom / 100} ${circ}`;
-  });
-
-  /* Conteo animado del porcentaje */
-  const salida = $('#avanceNum');
-  let n = 0;
-  clearInterval(salida._t);
-  salida.textContent = '0';
-  salida._t = setInterval(() => {
-    n += Math.max(1, Math.round(prom / 28));
-    if (n >= prom) { n = prom; clearInterval(salida._t); }
-    salida.textContent = n;
-  }, 42);
-
-  $$('.etapa-relleno').forEach((el, i) => {
-    el.style.transform = 'scaleX(0)';
-    setTimeout(() => { el.style.transform = `scaleX(${el.dataset.pct / 100})`; }, 90 + i * 110);
-  });
+  /* Al costado, las cifras que más se repiten en la conversación comercial */
+  $('#fichaDestacado').innerHTML = p.destacados
+    .map(d => `<div class="fd"><b>${d.valor}</b><span>${d.etiqueta}</span></div>`).join('');
 }
 
 /* ============================================================================

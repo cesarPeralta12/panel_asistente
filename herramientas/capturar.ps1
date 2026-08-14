@@ -30,10 +30,11 @@ $vistas = @(
   @{ n = "04-satelital-ciudad"; r = "#/proyecto/el-encanto/ubicacion/nivel-1" },
   @{ n = "05-satelital-predio"; r = "#/proyecto/el-encanto/ubicacion/nivel-3" },
   @{ n = "07-lotes";            r = "#/proyecto/el-encanto/lotes/lote-5" },
-  @{ n = "08-avance";           r = "#/proyecto/el-encanto/avance" },
+  @{ n = "08-ficha-tecnica";    r = "#/proyecto/el-encanto/ficha" },
   @{ n = "10-libertad";         r = "#/proyecto/libertad/resumen" },
   @{ n = "11-libertad-locales"; r = "#/proyecto/libertad/lotes/lote-3" },
-  @{ n = "12-tercer-proyecto";  r = "#/proyecto/proyecto-3/resumen" }
+  @{ n = "09-ficha-libertad";   r = "#/proyecto/libertad/ficha" },
+  @{ n = "12-tercer-proyecto";  r = "#/proyecto/vista-linda/resumen" }
 )
 
 # Vistas del tótem vertical, para la propuesta
