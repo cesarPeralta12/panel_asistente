@@ -7,24 +7,36 @@
    Se puede arrastrar, hacer zoom con dos dedos y tocar cada pin. No depende
    de internet: todas las imágenes ya están en el disco del panel.
 
-   Zoom disponible: 12 (contexto de ciudad) a 19 (detalle del predio). Fuera
-   de ese rango, o si faltara alguna tesela puntual, Leaflet deja el cuadro
-   en blanco — por eso el rango se limita con minZoom/maxZoom.
+   Zoom disponible: 10 (toda la ciudad) a 19 (detalle del predio). Dos capas
+   de teselas se combinan según el zoom:
+     - assets/tiles/ciudad/       → 10-13, Santa Cruz completa, siempre activa.
+     - assets/tiles/<proyecto>/   → 14-19, detalle de cada predio, se cambia
+                                    al abrir cada proyecto.
+   Así se puede alejar hasta ver la ciudad entera (con los tres proyectos
+   marcados) y acercarse de nuevo a cualquiera de ellos. Fuera de ese rango,
+   o si faltara alguna tesela puntual, Leaflet deja el cuadro en blanco.
    ============================================================================ */
 
 const MapaReal = {
   mapa: null,
+  capaCiudad: null,
   capaBase: null,
   proyectoTeselas: null,   // id del proyecto cuyas teselas están cargadas
   marcadores: [],
+  marcadoresOtros: [],     // pines discretos de los demás proyectos
   disponible: false,
   proyectoActual: null,
+  limiteProyecto: null,    // límite de arrastre cuando se está en zoom de detalle
 
-  ZOOM_MIN: 12,
+  ZOOM_MIN_CIUDAD: 10,
+  ZOOM_MIN_PROYECTO: 14,
   ZOOM_MAX: 19,
-  // Radio real cubierto por la descarga de teselas (ver herramientas de
-  // descarga): un poco menor al radio descargado, de margen.
+  // Radio real cubierto por la descarga de teselas de cada proyecto (ver
+  // herramientas de descarga): un poco menor al radio descargado, de margen.
   RADIO_DESCARGADO_M: 7000,
+  // Límite de arrastre cuando se está alejado viendo la ciudad: la zona real
+  // cubierta por la descarga de assets/tiles/ciudad/, con margen de seguridad.
+  LIMITE_CIUDAD: [[-18.38, -64.18], [-17.32, -62.22]],
 
   /* Leaflet está cargado y el panel tiene el mapa real habilitado */
   sePuedeUsar() {
@@ -40,6 +52,17 @@ const MapaReal = {
             '<path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 20 12 20s12-11 12-20C24 5.4 18.6 0 12 0z" fill="#E3333E"/>' +
             '<circle cx="12" cy="12" r="4.6" fill="#fff"/></svg>',
       iconSize: [42, 56], iconAnchor: [21, 56]
+    });
+  },
+
+  /* Pin discreto de los otros proyectos: visible al alejarse, con el nombre
+     como etiqueta. Tocarlo abre ese proyecto directamente. */
+  iconoProyectoOtro(proyecto) {
+    return L.divIcon({
+      className: 'pin-otro',
+      html: '<span class="pin-otro-circulo"><i></i></span>' +
+            `<span class="pin-otro-txt">${proyecto.nombre}</span>`,
+      iconSize: [32, 32], iconAnchor: [16, 16]
     });
   },
 
@@ -76,7 +99,7 @@ const MapaReal = {
       this.mapa = L.map(contenedor, {
         zoomControl: false,
         attributionControl: true,
-        minZoom: this.ZOOM_MIN,
+        minZoom: this.ZOOM_MIN_CIUDAD,
         maxZoom: this.ZOOM_MAX,
         // En una pantalla táctil de feria: se arrastra y se pellizca, pero no
         // se hace zoom sin querer con la rueda ni doble toque accidental.
@@ -84,16 +107,34 @@ const MapaReal = {
         doubleClickZoom: false,
         touchZoom: true,
         dragging: true,
-        // No se puede arrastrar más allá del área con teselas descargadas
-        // (se define por proyecto en limitarArrastre). Viscosidad 1 = tope
-        // firme, no "elástico".
+        // No se puede arrastrar más allá del área con teselas descargadas.
+        // Viscosidad 1 = tope firme, no "elástico".
         maxBoundsViscosity: 1.0
       });
       L.control.zoom({ position: 'bottomright' }).addTo(this.mapa);
+
+      // Capa de ciudad: siempre presente, cubre todo Santa Cruz en baja
+      // resolución (zoom 10-13). La capa de cada proyecto (14-19) se agrega
+      // encima cuando corresponde — así se puede alejar hasta ver la ciudad
+      // entera y volver a acercarse a cualquiera de los tres proyectos.
+      this.capaCiudad = L.tileLayer(
+        'assets/tiles/ciudad/{z}/{x}/{y}.jpg',
+        {
+          minZoom: this.ZOOM_MIN_CIUDAD,
+          maxZoom: this.ZOOM_MIN_PROYECTO - 1,
+          attribution: '© Esri — Imágenes satelitales precargadas'
+        }
+      ).addTo(this.mapa);
+
+      // El límite de arrastre depende del zoom: alejado, toda la ciudad;
+      // acercado, sólo el área con detalle descargada del proyecto abierto.
+      this.mapa.on('zoomend', () => this.actualizarLimites());
+      this.actualizarLimites();
     }
 
     this.cargarTeselas(proyecto);
     this.dibujar(proyecto);
+    this.dibujarOtrosProyectos(proyecto);
     this.disponible = true;
     return true;
   },
@@ -108,27 +149,55 @@ const MapaReal = {
     this.capaBase = L.tileLayer(
       `assets/tiles/${proyecto.id}/{z}/{x}/{y}.jpg`,
       {
-        minZoom: this.ZOOM_MIN,
+        minZoom: this.ZOOM_MIN_PROYECTO,
         maxZoom: this.ZOOM_MAX,
         attribution: '© Esri — Imágenes satelitales precargadas'
       }
     ).addTo(this.mapa);
     this.proyectoTeselas = proyecto.id;
-    this.limitarArrastre(proyecto);
+    this.calcularLimiteProyecto(proyecto);
+    this.actualizarLimites();
   },
 
   /* No dejar que el arrastre saque al usuario del área con teselas
      descargadas: más allá de eso no hay imagen (offline no hay de dónde
      traerla), así que directamente no se puede llegar ahí. */
-  limitarArrastre(proyecto) {
+  calcularLimiteProyecto(proyecto) {
     const { lat, lng } = proyecto.coordenadas;
     const r = this.RADIO_DESCARGADO_M;
     const dLat = r / 111320;
     const dLng = r / (111320 * Math.cos(lat * Math.PI / 180));
-    this.mapa.setMaxBounds([
+    this.limiteProyecto = [
       [lat - dLat, lng - dLng],
       [lat + dLat, lng + dLng]
-    ]);
+    ];
+  },
+
+  /* En zoom de detalle (14+) el límite es el área descargada del proyecto
+     abierto; alejado, el límite es la ciudad completa. */
+  actualizarLimites() {
+    if (!this.mapa) return;
+    const detalle = this.mapa.getZoom() >= this.ZOOM_MIN_PROYECTO && this.limiteProyecto;
+    this.mapa.setMaxBounds(detalle ? this.limiteProyecto : this.LIMITE_CIUDAD);
+  },
+
+  /* Pines discretos de los proyectos que no son el que está abierto, para
+     poder verlos al alejarse. Tocar uno abre ese proyecto. */
+  dibujarOtrosProyectos(proyectoActual) {
+    this.marcadoresOtros.forEach(m => this.mapa.removeLayer(m));
+    this.marcadoresOtros = [];
+
+    (typeof PANEL !== 'undefined' ? PANEL.proyectos : [])
+      .filter(p => p.id !== proyectoActual.id)
+      .forEach(p => {
+        const m = L.marker([p.coordenadas.lat, p.coordenadas.lng], {
+          icon: this.iconoProyectoOtro(p)
+        }).addTo(this.mapa);
+        m.on('click', () => {
+          if (typeof abrirProyecto === 'function') abrirProyecto(p.id, 'ubicacion');
+        });
+        this.marcadoresOtros.push(m);
+      });
   },
 
   dibujar(proyecto) {
