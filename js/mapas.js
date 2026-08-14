@@ -479,9 +479,10 @@ function generarLotes(proyecto) {
 }
 
 const COLOR_ESTADO = {
-  disponible: { relleno: '#2F9E5E', borde: '#48D488', texto: 'Disponible' },
-  reservado:  { relleno: '#B8862B', borde: '#E8B44A', texto: 'Reservado'  },
-  vendido:    { relleno: '#3A3A42', borde: '#55555F', texto: 'Vendido'    }
+  /* Colores calibrados para leerse sobre el plano blanco */
+  disponible: { relleno: '#1E9E5A', borde: '#177C46', texto: 'Disponible' },
+  reservado:  { relleno: '#D79626', borde: '#B87D18', texto: 'Reservado'  },
+  vendido:    { relleno: '#CBD3DE', borde: '#AEB8C6', texto: 'Vendido'    }
 };
 
 function construirPlanoSVG(proyecto, lotes, proporcionObjetivo) {
@@ -529,7 +530,7 @@ function construirPlanoSVG(proyecto, lotes, proporcionObjetivo) {
   };
 
   /* Fondo: terreno + calles */
-  svg.appendChild(crear('rect', { x: 0, y: 0, width: W, height: H, fill: '#15161A', rx: 10 }));
+  svg.appendChild(crear('rect', { x: 0, y: 0, width: W, height: H, fill: '#FFFFFF', rx: 10 }));
 
   lotes.forEach((lote, idx) => {
     const m = lote.manzana - 1;
@@ -606,7 +607,7 @@ function construirMapaReferencias(proyecto) {
     const r = i * 88;
     svg.appendChild(crear('circle', {
       cx, cy, r, fill: 'none',
-      stroke: 'rgba(255,255,255,0.09)', 'stroke-width': 1,
+      stroke: 'rgba(0,0,0,0.10)', 'stroke-width': 1,
       'stroke-dasharray': '4 8'
     }));
     svg.appendChild(crear('text', {
@@ -629,7 +630,7 @@ function construirMapaReferencias(proyecto) {
     }));
 
     const g = crear('g', { transform: `translate(${x},${y})`, class: 'ref-pin' });
-    g.appendChild(crear('circle', { cx: 0, cy: 0, r: 27, fill: '#16171C', stroke: 'rgba(255,255,255,0.22)', 'stroke-width': 1.5 }));
+    g.appendChild(crear('circle', { cx: 0, cy: 0, r: 27, fill: '#FFFFFF', stroke: 'rgba(0,0,0,0.14)', 'stroke-width': 1.5 }));
     const icono = crear('path', {
       d: ICONOS[r.icono] || ICONOS.plaza,
       transform: 'translate(-14,-14)', fill: 'none',

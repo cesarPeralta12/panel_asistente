@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>INMOL · Panel Interactivo</title>
   <link rel="icon" href="assets/inmol-logo.png">
+  <link rel="stylesheet" href="assets/leaflet/leaflet.css">
   <link rel="stylesheet" href="css/fuentes.css">
   <link rel="stylesheet" href="css/estilos.css">
 </head>
@@ -46,7 +47,7 @@
      ══════════════════════════════════════════════════════════════════════ -->
 <section id="menu" class="pantalla">
   <header class="barra">
-    <img src="assets/inmol-logo.png" alt="INMOL" class="marca">
+    <img src="assets/inmol-logo-claro.png" alt="INMOL" class="marca">
     <span class="barra-lema">Desarrollos Inmobiliarios con respaldo y confianza</span>
   </header>
 
@@ -78,7 +79,7 @@
       <h2 id="proyNombre"></h2>
       <span id="proySub"></span>
     </div>
-    <img src="assets/inmol-logo.png" alt="INMOL" class="marca marca-mini">
+    <img src="assets/inmol-logo-claro.png" alt="INMOL" class="marca marca-mini">
   </header>
 
   <nav class="tabs" id="tabs"></nav>
@@ -104,6 +105,10 @@
          robarle ancho a la imagen. ──────────────────────────────────────── -->
     <div class="pane pane-mapa" data-pane="ubicacion">
       <div class="sat-escenario" id="satEscenario">
+        <!-- Mapa navegable real. Si no hay internet queda oculto y se ve la
+             vista satelital generada, que sí funciona sin conexión. -->
+        <div class="mapa-real" id="mapaReal" hidden></div>
+
         <div class="sat-marcador" id="satMarcador">
           <div class="sat-caja"></div>
           <div class="sat-pin">
@@ -128,6 +133,15 @@
           <button class="btn-accion" id="btnSobrevuelo">
             <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 3v14M12 21v.01M6 9l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Sobrevuelo
+          </button>
+
+          <!-- Controles del mapa real (reemplazan a los niveles cuando hay red) -->
+          <button class="sat-nivel" id="btnVerTodo" hidden>
+            <i>◎</i><div><b>Ver todo</b></div>
+          </button>
+          <button class="btn-accion" id="btnAcercar" hidden>
+            <svg viewBox="0 0 24 24" width="20" height="20"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4M11 8v6M8 11h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Acercar al proyecto
           </button>
         </div>
       </div>
@@ -210,8 +224,10 @@
 <!-- Panel técnico (tecla D) -->
 <div id="diag" class="diag" hidden></div>
 
+<script src="assets/leaflet/leaflet.js"></script>
 <script src="js/datos.js"></script>
 <script src="js/mapas.js"></script>
+<script src="js/mapa-real.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

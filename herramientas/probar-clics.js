@@ -120,13 +120,36 @@ const ALTO  = parseInt(process.argv[4], 10) || 1080;
   e = await estado();
   ok(`Filtro «sólo disponibles» → ${e.filtro}`, e.filtro === 'disponible');
 
-  await clicSel('.tab', 1); await esperar(320);
-  await clicSel('.sat-nivel', 3); await esperar(320);
-  e = await estado();
-  ok(`Nivel satelital «Predio» → nivel ${e.nivel}`, e.nivel === 3);
+  /* Ubicación: con internet se usa el mapa real; sin internet, la vista
+     satelital generada. Se comprueba el que esté activo. */
+  await clicSel('.tab', 1); await esperar(900);
+  const conMapaReal = await pagina.evaluate(() => !!Estado.usaMapaReal);
 
-  await clicSel('#btnSobrevuelo', 0); await esperar(400);
-  ok('Botón «Sobrevuelo automático» responde', await pagina.evaluate(() => Estado.sobrevolando));
+  if (conMapaReal) {
+    const mapa = await pagina.evaluate(() => ({
+      pines: document.querySelectorAll('.pin-ref').length,
+      proyecto: document.querySelectorAll('.pin-proyecto').length,
+      teselas: document.querySelectorAll('.leaflet-tile-loaded').length
+    }));
+    ok(`Mapa real activo · ${mapa.teselas} teselas cargadas`, mapa.teselas > 0);
+    ok(`Pin del proyecto y ${mapa.pines} pines de referencia`,
+       mapa.proyecto === 1 && mapa.pines >= 3);
+
+    await clicSel('#btnAcercar', 0); await esperar(2600);
+    const z1 = await pagina.evaluate(() => MapaReal.mapa.getZoom());
+    ok(`«Acercar al proyecto» → zoom ${z1}`, z1 >= 16);
+
+    await clicSel('#btnVerTodo', 0); await esperar(1200);
+    const z2 = await pagina.evaluate(() => MapaReal.mapa.getZoom());
+    ok(`«Ver todo» encuadra las referencias → zoom ${z2}`, z2 < z1);
+  } else {
+    await clicSel('.sat-nivel', 3); await esperar(320);
+    e = await estado();
+    ok(`Sin internet · nivel satelital «Predio» → nivel ${e.nivel}`, e.nivel === 3);
+    await clicSel('#btnSobrevuelo', 0); await esperar(400);
+    ok('Sin internet · «Sobrevuelo automático» responde',
+       await pagina.evaluate(() => Estado.sobrevolando));
+  }
 
   /* 4. El contenido usa todo el ancho: no debe quedar franja muerta */
   await esperar(6000);

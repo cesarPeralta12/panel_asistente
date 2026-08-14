@@ -35,6 +35,23 @@ function canvasSatelital(proyecto, nivel, ancho, alto) {
   return copia;
 }
 
+/* Fotografía real del proyecto; si falta, la vista satelital generada.
+   `variante` permite que cada pasada del modo atracción muestre otra foto. */
+function medioDeFondo(proyecto, variante, ancho, alto) {
+  const fotos = proyecto.fotos || [];
+  if (!fotos.length) return canvasSatelital(proyecto, 2, ancho, alto);
+  const img = document.createElement('img');
+  img.src = fotos[Math.abs(variante || 0) % fotos.length];
+  img.alt = '';
+  // Si la foto no carga, no se deja un hueco: se dibuja el satelital.
+  img.addEventListener('error', () => {
+    const cv = canvasSatelital(proyecto, 2, ancho, alto);
+    cv.className = img.className;
+    img.replaceWith(cv);
+  }, { once: true });
+  return img;
+}
+
 /* ============================================================================
    ICONOS DE PESTAÑA
    ============================================================================ */
@@ -98,12 +115,13 @@ function mostrarSlideAtraccion(i) {
   const fondo = $('#atrFondo');
   const segundos = PANEL.config.segundosPorSlide;
 
-  /* Fondo satelital con efecto Ken Burns */
-  const cv = canvasSatelital(p, 2, 1400, 800);
+  /* Fondo: fotografía real del proyecto con efecto Ken Burns.
+     Si el proyecto todavía no tiene fotos, cae a la vista satelital generada. */
+  const cv = medioDeFondo(p, i, 1400, 800);
   fondo.appendChild(cv);
   requestAnimationFrame(() => {
     cv.classList.add('visible');
-    const previos = Array.from(fondo.querySelectorAll('canvas')).slice(0, -1);
+    const previos = Array.from(fondo.children).slice(0, -1);
     previos.forEach(c => {
       c.classList.remove('visible');
       setTimeout(() => c.remove(), 1700);
@@ -163,7 +181,7 @@ function construirMenu() {
       </div>
       <div class="tj-flecha">${svgIcono('M5 12h13M13 6l6 6-6 6', 20)}</div>`;
 
-    t.prepend(canvasSatelital(p, 2, 760, 900));
+    t.prepend(medioDeFondo(p, 0, 760, 900));
 
     t.addEventListener('pointerdown', () => t.classList.add('pulsada'));
     ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev =>
@@ -218,7 +236,9 @@ function mostrarSeccion(id) {
   $$('.tab').forEach(t => t.classList.toggle('activa', t.dataset.sec === id));
   $$('.pane').forEach(p => p.classList.toggle('activa', p.dataset.pane === id));
 
-  if (id === 'ubicacion') { setTimeout(() => ajustarMarcadorSat(), 60); }
+  if (id === 'ubicacion') {
+    setTimeout(() => { ajustarMarcadorSat(); MapaReal.redimensionar(); }, 60);
+  }
   if (id === 'avance')    { setTimeout(() => animarAvance(), 120); }
   reiniciarInactividad();
 }
@@ -240,18 +260,37 @@ function llenarResumen(p) {
   $('#resDestacados').innerHTML = dest
     .map(d => `<div class="dest"><b>${d.valor}</b><span>${d.etiqueta}</span></div>`).join('');
 
-  /* Galería: marcos preparados para las fotografías reales de INMOL */
-  const etiquetas = ['Vista general del proyecto', 'Acceso principal', 'Áreas comunes'];
+  /* Galería: el video del proyecto arriba y sus fotografías reales debajo */
   const gal = $('#resGaleria');
   gal.innerHTML = '';
-  etiquetas.forEach((etq, i) => {
+
+  if (p.video) {
+    const marco = document.createElement('div');
+    marco.className = 'foto foto-video';
+    const v = document.createElement('video');
+    v.src = p.video;
+    v.muted = true;          // en feria el audio molesta y no se escucha
+    v.loop = true;
+    v.playsInline = true;
+    v.autoplay = true;
+    v.preload = 'auto';
+    v.addEventListener('error', () => marco.remove(), { once: true });
+    marco.appendChild(v);
+    const etq = document.createElement('span');
+    etq.className = 'foto-etq';
+    etq.textContent = 'Video del proyecto';
+    marco.appendChild(etq);
+    gal.appendChild(marco);
+  }
+
+  (p.fotos || []).slice(0, p.video ? 4 : 5).forEach(ruta => {
     const d = document.createElement('div');
     d.className = 'foto';
-    d.appendChild(canvasSatelital(p, i === 0 ? 3 : 2, 720, 400));
-    const s = document.createElement('span');
-    s.className = 'foto-etq';
-    s.textContent = etq;
-    d.appendChild(s);
+    const img = document.createElement('img');
+    img.src = ruta;
+    img.alt = '';
+    img.addEventListener('error', () => d.remove(), { once: true });
+    d.appendChild(img);
     gal.appendChild(d);
   });
 }
@@ -261,6 +300,17 @@ function prepararUbicacion(p) {
   const esc = $('#satEscenario');
   esc.querySelectorAll('canvas').forEach(c => c.remove());
   Estado.nivelSat = 0;
+
+  /* Se intenta el mapa real; si no hay internet, sigue la vista generada. */
+  Estado.usaMapaReal = MapaReal.crear($('#mapaReal'), p);
+  MapaReal.alFallar = () => {                       // las teselas no cargaron
+    if (!Estado.usaMapaReal) return;
+    Estado.usaMapaReal = false;
+    aplicarModoMapa(p);
+    pintarNivelSat(Estado.nivelSat, null);
+  };
+  aplicarModoMapa(p);
+  if (Estado.usaMapaReal) { setTimeout(() => MapaReal.redimensionar(), 60); }
 
   const lista = $('#satNiveles');
   lista.innerHTML = '';
@@ -278,7 +328,27 @@ function prepararUbicacion(p) {
   $('#satCoord').textContent =
     `${Math.abs(c.lat).toFixed(4)}° ${c.lat < 0 ? 'S' : 'N'}   ·   ${Math.abs(c.lng).toFixed(4)}° ${c.lng < 0 ? 'O' : 'E'}`;
 
-  pintarNivelSat(0, null);
+  if (!Estado.usaMapaReal) pintarNivelSat(0, null);
+}
+
+/* Muestra el mapa real o la vista satelital generada, y los controles que
+   correspondan a cada uno. */
+function aplicarModoMapa(p) {
+  const real = Estado.usaMapaReal;
+  $('#mapaReal').hidden = !real;
+  $('#satMarcador').hidden = real;      // el mapa real trae su propio pin
+  $('#satNiveles').hidden = real;
+  $('#btnSobrevuelo').hidden = real;
+  $('#btnVerTodo').hidden = !real;
+  $('#btnAcercar').hidden = !real;
+
+  $('#satNivelNombre').textContent = real ? 'Ubicación' : NIVELES[0].nombre;
+  $('#satNivelDet').textContent = real
+    ? `${(p.referencias || []).length} puntos de referencia`
+    : NIVELES[0].detalle;
+  $('.sat-atrib').textContent = real
+    ? 'OpenStreetMap · mapa navegable'
+    : 'Vista satelital · imagen precargada · sin conexión';
 }
 
 function pintarNivelSat(nivel, direccion) {
@@ -329,6 +399,8 @@ function ajustarMarcadorSat() {
 }
 
 function cambiarNivelSat(nivel) {
+  // Con el mapa real activo no existen los niveles de la vista generada.
+  if (Estado.usaMapaReal) return;
   if (nivel === Estado.nivelSat) return;
   const dir = nivel > Estado.nivelSat ? 'adentro' : 'afuera';
   pintarNivelSat(nivel, dir);
@@ -524,6 +596,8 @@ function iniciar() {
 
   $('#btnVolver').addEventListener('click', () => { Estado.proyecto = null; irA('menu'); });
   $('#btnSobrevuelo').addEventListener('click', sobrevuelo);
+  $('#btnVerTodo').addEventListener('click', () => MapaReal.centrar());
+  $('#btnAcercar').addEventListener('click', () => MapaReal.acercar());
 
   /* Cualquier interacción reinicia el contador de inactividad */
   ['pointerdown', 'keydown', 'wheel'].forEach(ev =>
@@ -535,7 +609,7 @@ function iniciar() {
   window.addEventListener('resize', () => {
     clearTimeout(temporizadorMedida);
     temporizadorMedida = setTimeout(() => {
-      if (Estado.seccion === 'ubicacion') ajustarMarcadorSat();
+      if (Estado.seccion === 'ubicacion') { ajustarMarcadorSat(); MapaReal.redimensionar(); }
       if (Estado.proyecto) {
         const sel = Estado.loteSel;
         llenarLotes(Estado.proyecto);
