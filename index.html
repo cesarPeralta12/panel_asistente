@@ -104,24 +104,12 @@
       <div class="destacados" id="resDestacados"></div>
     </div>
 
-    <!-- ── UBICACIÓN (vista satelital offline) ────────────────────────────
+    <!-- ── UBICACIÓN (mapa satelital real, offline) ───────────────────────
          El mapa ocupa toda la sección. Los controles flotan encima, para no
          robarle ancho a la imagen. ──────────────────────────────────────── -->
     <div class="pane pane-mapa" data-pane="ubicacion">
       <div class="sat-escenario" id="satEscenario">
-        <!-- Mapa navegable real. Si no hay internet queda oculto y se ve la
-             vista satelital generada, que sí funciona sin conexión. -->
-        <div class="mapa-real" id="mapaReal" hidden></div>
-
-        <div class="sat-marcador" id="satMarcador">
-          <div class="sat-caja"></div>
-          <div class="sat-pin">
-            <svg viewBox="0 0 24 32" width="34" height="45">
-              <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 20 12 20s12-11 12-20C24 5.4 18.6 0 12 0z" fill="#E3333E"/>
-              <circle cx="12" cy="12" r="4.6" fill="#fff"/>
-            </svg>
-          </div>
-        </div>
+        <div class="mapa-real" id="mapaReal"></div>
 
         <!-- Ficha de ubicación: dirección y puntos de referencia. Antes esto
              era una sección aparte («Qué hay cerca»); ahora vive sobre el mapa. -->
@@ -133,20 +121,13 @@
         </div>
 
         <div class="sat-coord" id="satCoord"></div>
-        <div class="sat-atrib">Vista satelital · imagen precargada · sin conexión</div>
+        <div class="sat-atrib">Vista satelital · mapa navegable · sin conexión</div>
 
         <div class="sat-controles">
-          <div class="sat-niveles" id="satNiveles"></div>
-          <button class="btn-accion" id="btnSobrevuelo">
-            <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 3v14M12 21v.01M6 9l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Sobrevuelo
-          </button>
-
-          <!-- Controles del mapa real (reemplazan a los niveles cuando hay red) -->
-          <button class="sat-nivel" id="btnVerTodo" hidden>
+          <button class="sat-nivel" id="btnVerTodo">
             <i>◎</i><div><b>Ver todo</b></div>
           </button>
-          <button class="btn-accion" id="btnAcercar" hidden>
+          <button class="btn-accion" id="btnAcercar">
             <svg viewBox="0 0 24 24" width="20" height="20"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4M11 8v6M8 11h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Acercar al proyecto
           </button>

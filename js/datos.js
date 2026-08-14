@@ -34,8 +34,7 @@ const PANEL = {
     mostrarPrecios: false,
     // Aviso discreto de contenido de demostración. Apagar al cargar lo definitivo.
     datosDeEjemplo: false,
-    // Mapa satelital real con teselas precargadas (100% offline). Si a un
-    // proyecto le faltara alguna tesela, cae solo a la vista generada.
+    // Mapa satelital real con teselas precargadas (100% offline).
     mapaReal: true
   },
 

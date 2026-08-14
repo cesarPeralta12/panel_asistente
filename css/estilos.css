@@ -568,46 +568,6 @@ body.sin-animacion .atr-fondo > .visible {
   position: relative; border-radius: var(--r); overflow: hidden;
   background: var(--superficie); border: 1px solid var(--linea);
 }
-.sat-escenario canvas {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transform: scale(1);
-  transition: opacity 1150ms ease, transform 1150ms cubic-bezier(.30,.86,.36,1);
-  will-change: transform, opacity;
-}
-.sat-escenario canvas.visible { opacity: 1; }
-.sat-escenario canvas.saliendo-adentro { opacity: 0; transform: scale(2.9); }
-.sat-escenario canvas.entrando-adentro { transform: scale(.42); }
-.sat-escenario canvas.saliendo-afuera  { opacity: 0; transform: scale(.42); }
-.sat-escenario canvas.entrando-afuera  { transform: scale(2.9); }
-
-.sat-marcador {
-  position: absolute; left: 50%; top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 4; pointer-events: none;
-  display: grid; place-items: center;
-}
-.sat-caja {
-  position: absolute; left: 50%; top: 50%;
-  transform: translate(-50%, -50%);
-  border: 2px solid var(--rojo);
-  border-radius: 4px;
-  box-shadow: 0 0 0 9999px rgba(8,8,10,.28);
-  transition: width 1100ms cubic-bezier(.30,.86,.36,1), height 1100ms cubic-bezier(.30,.86,.36,1), opacity 600ms;
-  width: 20px; height: 14px;
-}
-.sat-pin {
-  position: relative;
-  transform: translateY(-1.4rem);
-  filter: drop-shadow(0 6px 14px rgba(0,0,0,.65));
-  animation: flotar 3.4s ease-in-out infinite;
-}
-@keyframes flotar {
-  0%,100% { transform: translateY(-1.4rem); }
-  50%     { transform: translateY(-2.1rem); }
-}
-
 .sat-hud {
   position: absolute; z-index: 5; left: 1.8rem; top: 1.7rem;
   padding: 1rem 1.5rem;
@@ -647,7 +607,6 @@ body.sin-animacion .atr-fondo > .visible {
   box-shadow: var(--sombra-lg);
   max-width: calc(100% - 3.4rem);
 }
-.sat-niveles { display: flex; gap: .35rem; }
 .sat-nivel {
   display: flex; align-items: center; gap: .7rem;
   padding: .75rem 1.25rem;
@@ -981,7 +940,6 @@ body.sin-animacion .pulso::after { display: none; }
   /* En el tótem la barra de controles no entra en una sola fila */
   .pane-mapa { padding: 1.2rem 1.2rem 1.4rem; }
   .sat-controles { flex-wrap: wrap; justify-content: center; border-radius: 24px; gap: .4rem; }
-  .sat-niveles { flex-wrap: wrap; justify-content: center; }
   .sat-nivel { padding: .7rem 1rem; }
   .sat-nivel i { width: 1.7rem; height: 1.7rem; }
 

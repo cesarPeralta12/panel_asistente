@@ -12,9 +12,7 @@ const Estado = {
   lotes: [],
   loteSel: null,
   filtro: 'todos',
-  nivelSat: 0,
   seccion: 'resumen',
-  sobrevolando: false,
   temporizadorAtraccion: null,
   temporizadorInactividad: null,
   indiceAtraccion: 0
@@ -243,7 +241,7 @@ function mostrarSeccion(id) {
   $$('.pane').forEach(p => p.classList.toggle('activa', p.dataset.pane === id));
 
   if (id === 'ubicacion') {
-    setTimeout(() => { ajustarMarcadorSat(); MapaReal.redimensionar(); }, 60);
+    setTimeout(() => MapaReal.redimensionar(), 60);
   }
   reiniciarInactividad();
 }
@@ -321,137 +319,19 @@ function cerrarTour360() {
   reiniciarInactividad();
 }
 
-/* --- 3.2 Ubicación: vista satelital por niveles --------------------------- */
+/* --- 3.2 Ubicación: mapa satelital real, sin vista generada de respaldo --- */
 function prepararUbicacion(p) {
-  const esc = $('#satEscenario');
-  esc.querySelectorAll('canvas').forEach(c => c.remove());
-  Estado.nivelSat = 0;
-
-  /* Mapa satelital real con teselas precargadas; si a algún proyecto le
-     faltara alguna, cae a la vista generada por software como respaldo. */
-  Estado.usaMapaReal = MapaReal.crear($('#mapaReal'), p);
-  MapaReal.alFallar = () => {                       // faltan teselas descargadas
-    if (!Estado.usaMapaReal) return;
-    Estado.usaMapaReal = false;
-    aplicarModoMapa(p);
-    pintarNivelSat(Estado.nivelSat, null);
-  };
-  aplicarModoMapa(p);
-  if (Estado.usaMapaReal) { setTimeout(() => MapaReal.redimensionar(), 60); }
-
-  const lista = $('#satNiveles');
-  lista.innerHTML = '';
-  NIVELES.forEach(n => {
-    const b = document.createElement('button');
-    b.className = 'sat-nivel';
-    b.dataset.nivel = n.id;
-    b.innerHTML = `<i>${n.id + 1}</i><div><b>${n.nombre}</b><span>${n.detalle}</span></div>`;
-    b.addEventListener('click', () => cambiarNivelSat(n.id));
-    lista.appendChild(b);
-  });
+  MapaReal.crear($('#mapaReal'), p);
+  setTimeout(() => MapaReal.redimensionar(), 60);
 
   $('#satDireccion').textContent = p.direccion;
   const c = p.coordenadas;
   $('#satCoord').textContent =
     `${Math.abs(c.lat).toFixed(4)}° ${c.lat < 0 ? 'S' : 'N'}   ·   ${Math.abs(c.lng).toFixed(4)}° ${c.lng < 0 ? 'O' : 'E'}`;
 
-  if (!Estado.usaMapaReal) pintarNivelSat(0, null);
-}
-
-/* Muestra el mapa real o la vista satelital generada, y los controles que
-   correspondan a cada uno. */
-function aplicarModoMapa(p) {
-  const real = Estado.usaMapaReal;
-  $('#mapaReal').hidden = !real;
-  $('#satMarcador').hidden = real;      // el mapa real trae su propio pin
-  $('#satNiveles').hidden = real;
-  $('#btnSobrevuelo').hidden = real;
-  $('#btnVerTodo').hidden = !real;
-  $('#btnAcercar').hidden = !real;
-
-  $('#satNivelNombre').textContent = real ? 'Ubicación' : NIVELES[0].nombre;
-  $('#satNivelDet').textContent = real
-    ? `${(p.referencias || []).length} puntos de referencia`
-    : NIVELES[0].detalle;
-  $('.sat-atrib').textContent = real
-    ? 'Vista satelital · mapa navegable · sin conexión'
-    : 'Vista satelital · imagen precargada · sin conexión';
-}
-
-function pintarNivelSat(nivel, direccion) {
-  const p = Estado.proyecto;
-  const esc = $('#satEscenario');
-  const anterior = esc.querySelector('canvas.visible');
-
-  const cv = canvasSatelital(p, nivel, 1500, 860);
-  if (direccion === 'adentro') cv.classList.add('entrando-adentro');
-  if (direccion === 'afuera')  cv.classList.add('entrando-afuera');
-  esc.insertBefore(cv, esc.firstChild);
-
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    cv.classList.remove('entrando-adentro', 'entrando-afuera');
-    cv.classList.add('visible');
-    if (anterior) {
-      anterior.classList.remove('visible');
-      anterior.classList.add(direccion === 'afuera' ? 'saliendo-afuera' : 'saliendo-adentro');
-      setTimeout(() => anterior.remove(), 1300);
-    }
-  }));
-
-  const info = NIVELES[nivel];
-  $('#satNivelNombre').textContent = info.nombre;
-  $('#satNivelDet').textContent = info.detalle;
-  $$('.sat-nivel').forEach(b => b.classList.toggle('activo', +b.dataset.nivel === nivel));
-
-  Estado.nivelSat = nivel;
-  ajustarMarcadorSat();
-}
-
-function ajustarMarcadorSat() {
-  const esc = $('#satEscenario');
-  const caja = $('.sat-caja');
-  if (!esc || !caja || !Estado.proyecto) return;
-
-  const g = geometriaPredio(Estado.proyecto, Estado.nivelSat);
-
-  /* El canvas se muestra con object-fit:cover; se replica ese cálculo para
-     que el recuadro caiga justo sobre el terreno dibujado. */
-  const escala = Math.max(esc.clientWidth / SAT_ANCHO, esc.clientHeight / SAT_ALTO);
-  const pxPorMetro = escala * (SAT_ANCHO / g.metros);
-
-  caja.style.width  = Math.max(10, g.anchoM * pxPorMetro) + 'px';
-  caja.style.height = Math.max(8,  g.altoM  * pxPorMetro) + 'px';
-  caja.style.transform = `translate(-50%, -50%) rotate(${g.giro}rad)`;
-  caja.style.opacity = Estado.nivelSat === 0 ? '0.6' : '1';
-}
-
-function cambiarNivelSat(nivel) {
-  // Con el mapa real activo no existen los niveles de la vista generada.
-  if (Estado.usaMapaReal) return;
-  if (nivel === Estado.nivelSat) return;
-  const dir = nivel > Estado.nivelSat ? 'adentro' : 'afuera';
-  pintarNivelSat(nivel, dir);
-  reiniciarInactividad();
-}
-
-function sobrevuelo() {
-  if (Estado.sobrevolando) return;
-  Estado.sobrevolando = true;
-  $('#btnSobrevuelo').disabled = true;
-
-  pintarNivelSat(0, 'afuera');
-  let n = 0;
-  const paso = () => {
-    n++;
-    if (n > 3) {
-      Estado.sobrevolando = false;
-      $('#btnSobrevuelo').disabled = false;
-      return;
-    }
-    pintarNivelSat(n, 'adentro');
-    setTimeout(paso, 1700);
-  };
-  setTimeout(paso, 1100);
+  $('#satNivelNombre').textContent = 'Ubicación';
+  $('#satNivelDet').textContent = `${(p.referencias || []).length} puntos de referencia`;
+  $('.sat-atrib').textContent = 'Vista satelital · mapa navegable · sin conexión';
 }
 
 /* --- 3.3 Referencias ----------------------------------------------------- */
@@ -617,7 +497,6 @@ function iniciar() {
   $('#atraccion').addEventListener('click', () => irA('menu'));
 
   $('#btnVolver').addEventListener('click', () => { Estado.proyecto = null; irA('menu'); });
-  $('#btnSobrevuelo').addEventListener('click', sobrevuelo);
   $('#btnVerTodo').addEventListener('click', () => MapaReal.centrar());
   $('#btnAcercar').addEventListener('click', () => MapaReal.acercar());
   $('#btnCerrarTour').addEventListener('click', cerrarTour360);
@@ -632,7 +511,7 @@ function iniciar() {
   window.addEventListener('resize', () => {
     clearTimeout(temporizadorMedida);
     temporizadorMedida = setTimeout(() => {
-      if (Estado.seccion === 'ubicacion') { ajustarMarcadorSat(); MapaReal.redimensionar(); }
+      if (Estado.seccion === 'ubicacion') MapaReal.redimensionar();
       if (Estado.proyecto) {
         const sel = Estado.loteSel;
         llenarLotes(Estado.proyecto);
@@ -674,9 +553,6 @@ function aplicarRuta() {
     abrirProyecto(proyId, seccion || 'resumen');
     if (extra && extra.startsWith('lote-')) {
       setTimeout(() => seleccionarLote(parseInt(extra.slice(5), 10) || 0), 250);
-    }
-    if (seccion === 'ubicacion' && extra && extra.startsWith('nivel-')) {
-      setTimeout(() => cambiarNivelSat(parseInt(extra.slice(6), 10) || 0), 250);
     }
   }
 }

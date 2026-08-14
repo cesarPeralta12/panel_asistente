@@ -115,16 +115,6 @@ const MapaReal = {
     ).addTo(this.mapa);
     this.proyectoTeselas = proyecto.id;
     this.limitarArrastre(proyecto);
-
-    // Si a un proyecto le faltara alguna tesela descargada, se avisa una vez.
-    // El umbral es alto a propósito: Leaflet precarga teselas fuera del
-    // encuadre visible (para que el arrastre se sienta fluido) y algunas
-    // pueden caer justo en el borde de lo descargado sin que se note en
-    // pantalla — eso no debería tirar todo el mapa a la vista de respaldo.
-    let fallos = 0;
-    this.capaBase.on('tileerror', () => {
-      if (++fallos === 15 && this.alFallar) this.alFallar();
-    });
   },
 
   /* No dejar que el arrastre saque al usuario del área con teselas
