@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Cento Comercial Libertad</title>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui" />
+  <style>
+    @-ms-viewport {
+      width: device-width;
+    }
+  </style>
+  <link rel="stylesheet" href="vendor/reset.min.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="normalize.css">
+  <link rel="stylesheet" href="main.css">
+</head>
+
+<body class="multiple-scenes ">
+
+  <div id="pano"></div>
+
+  <div class="header">
+    <div class="sidebar">
+      <div class="menuToggle">
+        <span> <img class="icon-hotspot" src="img/hotspot.webp" alt="">
+          <p>Hotspots</p>
+        </span>
+        <img class="icon" src="img/menus.png" alt="">
+      </div>
+
+    </div>
+    <div class="logo"><img src="img/logo.webp" alt=""></div>
+    <div class="buttons">
+      <button id="enterVr" class="vr_mode" type="button"><img src="img/vr_icon.webp" alt=""></button>
+    </div>
+  </div>
+
+<div id="sceneList">
+  <ul class="scenes">
+    
+      <a href="javascript:void(0)" class="scene" data-id="0-1-acera-oeste">
+        <li class="text">1 Acera Oeste</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="1-2-acera-oeste-noche">
+        <li class="text">2 Acera Oeste Noche</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="2-3-ingreso-principal">
+        <li class="text">3 Ingreso Principal</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="3-3-ingreso-principal-noche">
+        <li class="text">3 Ingreso Principal Noche</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="4-4-acera-norte">
+        <li class="text">4 Acera Norte</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="5-5-acera-norte-noche">
+        <li class="text">5 Acera Norte Noche</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="6-6-acera-norte">
+        <li class="text">6 Acera Norte</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="7-7-acera-este">
+        <li class="text">7 Acera Este</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="8-7-acera-este-noche">
+        <li class="text">7 Acera Este Noche</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="9-8-acera-este">
+        <li class="text">8 Acera Este</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="10-9-acera-este-noche">
+        <li class="text">9 Acera Este Noche</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="11-10-acera-este">
+        <li class="text">10 Acera Este</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="12-10-acera-este-noche">
+        <li class="text">10 Acera Este Noche</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="13-11-acera-sur">
+        <li class="text">11 Acera Sur</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="14-12-acera-sur-noche">
+        <li class="text">12 Acera Sur Noche</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="15-13-acera-sur">
+        <li class="text">13 Acera Sur</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="16-14-ingreso-peatonal">
+        <li class="text">14 Ingreso Peatonal</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="17-14-ingreso-peatonal-noche">
+        <li class="text">14 Ingreso Peatonal Noche</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="18-15-ingreso-frontal">
+        <li class="text">15 Ingreso Frontal</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="19-16-pasillo-1">
+        <li class="text">16 Pasillo 1</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="20-17-pasillo-2">
+        <li class="text">17 Pasillo 2</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="21-18-pasillo-4">
+        <li class="text">18 Pasillo 4</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="22-19-pasillo-5">
+        <li class="text">19 Pasillo 5</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="23-20-pasillo-8">
+        <li class="text">20 Pasillo 8</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="24-21-pasillo-9">
+        <li class="text">21 Pasillo 9</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="25-22-pasillo-11">
+        <li class="text">22 Pasillo 11</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="26-23-pasillo-5">
+        <li class="text">23 Pasillo 5</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="27-24-pasillo-6">
+        <li class="text">24 Pasillo 6</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="28-25-pasillo-10">
+        <li class="text">25 Pasillo 10</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="29-26-pasillo-9">
+        <li class="text">26 Pasillo 9</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="30-27-pasillo-8">
+        <li class="text">27 Pasillo 8</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="31-28-pasillo-5">
+        <li class="text">28 Pasillo 5</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="32-29-pasillo-4">
+        <li class="text">29 Pasillo 4</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="33-30-pasillo-2">
+        <li class="text">30 Pasillo 2</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="34-31-pasillo-1">
+        <li class="text">31 Pasillo 1</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="35-32-ingreso-frontal">
+        <li class="text">32 Ingreso Frontal</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="36-33-pasillo-3">
+        <li class="text">33 Pasillo 3</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="37-34-pasillo-7-8">
+        <li class="text">34 Pasillo 7-8</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="38-35-interior-ambiente">
+        <li class="text">35 Interior Ambiente</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="39-36-salida-area-descarga">
+        <li class="text">36 Salida Area Descarga</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="40-37-interior-almacen">
+        <li class="text">37 Interior Almacen</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="41-38-pasillo-1">
+        <li class="text">38 Pasillo 1</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="42-39-pasillo-4">
+        <li class="text">39 Pasillo 4</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="43-40-pasillo-5">
+        <li class="text">40 Pasillo 5</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="44-41-pasillo-10">
+        <li class="text">41 Pasillo 10</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="45-42-pasillo-7">
+        <li class="text">42 Pasillo 7</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="46-43-pasillo-7">
+        <li class="text">43 Pasillo 7</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="47-44-pasillo-9">
+        <li class="text">44 Pasillo 9</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="48-46-pasillo-1">
+        <li class="text">46 Pasillo 1</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="49-47-pasillo-6">
+        <li class="text">47 Pasillo 6</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="50-48-pasillo-8">
+        <li class="text">48 Pasillo 8</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="51-49-pasillo-2">
+        <li class="text">49 Pasillo 2</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="52-50-pasillo-2">
+        <li class="text">50 Pasillo 2</li>
+      </a>
+    
+  </ul>
+</div>
+
+  <div id="titleBar">
+    <h1 class="sceneName"></h1>
+  </div>
+
+  <a href="javascript:void(0)" id="autorotateToggle">
+    <img class="icon off" src="img/play.png">
+    <img class="icon on" src="img/pause.png">
+  </a>
+
+  <a href="javascript:void(0)" id="fullscreenToggle">
+    <img class="icon off" src="img/fullscreen.png">
+    <img class="icon on" src="img/windowed.png">
+  </a>
+
+  <a href="javascript:void(0)" id="sceneListToggle">
+    <img class="icon off" src="img/expand.png">
+    <img class="icon on" src="img/collapse.png">
+  </a>
+
+  <a href="javascript:void(0)" id="viewUp" class="viewControlButton viewControlButton-1">
+    <img class="icon" src="img/up.png">
+  </a>
+  <a href="javascript:void(0)" id="viewDown" class="viewControlButton viewControlButton-2">
+    <img class="icon" src="img/down.png">
+  </a>
+  <a href="javascript:void(0)" id="viewLeft" class="viewControlButton viewControlButton-3">
+    <img class="icon" src="img/left.png">
+  </a>
+  <a href="javascript:void(0)" id="viewRight" class="viewControlButton viewControlButton-4">
+    <img class="icon" src="img/right.png">
+  </a>
+  <a href="javascript:void(0)" id="viewIn" class="viewControlButton viewControlButton-5">
+    <img class="icon" src="img/plus.png">
+  </a>
+  <a href="javascript:void(0)" id="viewOut" class="viewControlButton viewControlButton-6">
+    <img class="icon" src="img/minus.png">
+  </a>
+  <script src="vendor/screenfull.min.js"></script>
+  <script src="vendor/bowser.min.js"></script>
+  <script src="vendor/marzipano.js"></script>
+
+  <script src="https://unpkg.com/webxr-polyfill@latest/build/webxr-polyfill.min.js"></script>
+
+  <script src="data.js"></script>
+  <script src="WebVrView.js"></script>
+  <script src="index.js"></script>
+  <script src="main.js"></script>
+
+</body>
+
+</html>

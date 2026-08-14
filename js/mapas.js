@@ -453,7 +453,11 @@ function generarLotes(proyecto) {
   for (let m = 0; m < cfg.manzanas; m++) {
     for (let l = 0; l < cfg.lotesPorManzana; l++) {
       const r = rnd();
-      const estado = proyecto.pendiente ? 'disponible'
+      // Centro comercial y otros proyectos "de disposición": no se marca
+      // disponible/reservado/vendido, cada área tiene su propio precio y
+      // sólo interesa mostrar la distribución física.
+      const estado = cfg.disposicion ? 'unidad'
+                   : proyecto.pendiente ? 'disponible'
                    : r < 0.46 ? 'disponible'
                    : r < 0.63 ? 'reservado'
                    : 'vendido';
@@ -482,7 +486,9 @@ const COLOR_ESTADO = {
   /* Colores calibrados para leerse sobre el plano blanco */
   disponible: { relleno: '#1E9E5A', borde: '#177C46', texto: 'Disponible' },
   reservado:  { relleno: '#D79626', borde: '#B87D18', texto: 'Reservado'  },
-  vendido:    { relleno: '#CBD3DE', borde: '#AEB8C6', texto: 'Vendido'    }
+  vendido:    { relleno: '#CBD3DE', borde: '#AEB8C6', texto: 'Vendido'    },
+  // Proyectos "de disposición": un solo color neutro para todas las áreas.
+  unidad:     { relleno: '#3E7CB8', borde: '#2F5F8F', texto: 'Unidad'     }
 };
 
 function construirPlanoSVG(proyecto, lotes, proporcionObjetivo) {

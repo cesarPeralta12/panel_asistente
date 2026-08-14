@@ -254,16 +254,22 @@ function llenarResumen(p) {
   $('#resDesc').textContent = p.descripcion;
   $('#resServicios').innerHTML = p.servicios.map(s => `<li>${s}</li>`).join('');
 
-  /* Recuento real de unidades a partir del plano generado */
+  /* Recuento real de unidades a partir del plano generado. En proyectos "de
+     disposición" no hay noción de disponible/reservado/vendido, así que se
+     dejan los destacados tal como los definió el proyecto. */
   const total = Estado.lotes.length;
   const disp  = Estado.lotes.filter(l => l.estado === 'disponible').length;
   const dest  = p.destacados.map(d => ({ ...d }));
-  if (!p.pendiente) {
+  if (!p.pendiente && !p.plano.disposicion) {
     dest[0] = { valor: String(total), etiqueta: `${p.plano.unidadPlural} totales` };
     dest[1] = { valor: String(disp),  etiqueta: `${p.plano.unidadPlural} disponibles` };
   }
   $('#resDestacados').innerHTML = dest
     .map(d => `<div class="dest"><b>${d.valor}</b><span>${d.etiqueta}</span></div>`).join('');
+
+  const btnTour = $('#btnTour360');
+  btnTour.hidden = !p.recorrido360;
+  btnTour.onclick = () => abrirTour360(p.recorrido360);
 
   /* Galería: el video del proyecto arriba y sus fotografías reales debajo */
   const gal = $('#resGaleria');
@@ -300,15 +306,31 @@ function llenarResumen(p) {
   });
 }
 
+/* Recorrido virtual 360° (Marzipano), descargado offline en assets/tour/.
+   Se carga en un iframe a pantalla completa para no interferir con el resto
+   del panel ni con su propio manejo de teclado/gestos. */
+function abrirTour360(ruta) {
+  if (!ruta) return;
+  $('#tourFrame').src = ruta;
+  $('#tourOverlay').hidden = false;
+  reiniciarInactividad();
+}
+function cerrarTour360() {
+  $('#tourOverlay').hidden = true;
+  $('#tourFrame').src = 'about:blank';   // corta el visor 3D, libera memoria
+  reiniciarInactividad();
+}
+
 /* --- 3.2 Ubicación: vista satelital por niveles --------------------------- */
 function prepararUbicacion(p) {
   const esc = $('#satEscenario');
   esc.querySelectorAll('canvas').forEach(c => c.remove());
   Estado.nivelSat = 0;
 
-  /* Se intenta el mapa real; si no hay internet, sigue la vista generada. */
+  /* Mapa satelital real con teselas precargadas; si a algún proyecto le
+     faltara alguna, cae a la vista generada por software como respaldo. */
   Estado.usaMapaReal = MapaReal.crear($('#mapaReal'), p);
-  MapaReal.alFallar = () => {                       // las teselas no cargaron
+  MapaReal.alFallar = () => {                       // faltan teselas descargadas
     if (!Estado.usaMapaReal) return;
     Estado.usaMapaReal = false;
     aplicarModoMapa(p);
@@ -352,7 +374,7 @@ function aplicarModoMapa(p) {
     ? `${(p.referencias || []).length} puntos de referencia`
     : NIVELES[0].detalle;
   $('.sat-atrib').textContent = real
-    ? 'OpenStreetMap · mapa navegable'
+    ? 'Vista satelital · mapa navegable · sin conexión'
     : 'Vista satelital · imagen precargada · sin conexión';
 }
 
@@ -464,6 +486,15 @@ function llenarLotes(p) {
     g.addEventListener('click', () => seleccionarLote(+g.dataset.idx));
   });
 
+  $('#fichaVacia').hidden = false;
+  $('#fichaDatos').hidden = true;
+
+  /* Proyectos "de disposición" (centro comercial, etc.): sin estados de
+     disponible/reservado/vendido, así que no corresponde leyenda ni
+     filtros por estado — sólo se muestra la distribución de áreas. */
+  $('#lotesBarra').hidden = !!p.plano.disposicion;
+  if (p.plano.disposicion) return;
+
   const cuenta = e => Estado.lotes.filter(l => l.estado === e).length;
   $('#cntDisp').textContent = cuenta('disponible');
   $('#cntRes').textContent  = cuenta('reservado');
@@ -484,9 +515,6 @@ function llenarLotes(p) {
     b.addEventListener('click', () => aplicarFiltro(f.id, b));
     cf.appendChild(b);
   });
-
-  $('#fichaVacia').hidden = false;
-  $('#fichaDatos').hidden = true;
 }
 
 function aplicarFiltro(id, boton) {
@@ -507,8 +535,14 @@ function seleccionarLote(idx) {
   $$('.plano-svg .lote').forEach(g => g.classList.toggle('sel', +g.dataset.idx === idx));
 
   const est = $('#fEstado');
-  est.textContent = COLOR_ESTADO[l.estado].texto;
-  est.className = 'ficha-estado ' + l.estado;
+  if (Estado.proyecto.plano.disposicion) {
+    // Sin estado comercial: la etiqueta destacada es la categoría del área.
+    est.textContent = l.categoria;
+    est.className = 'ficha-estado unidad';
+  } else {
+    est.textContent = COLOR_ESTADO[l.estado].texto;
+    est.className = 'ficha-estado ' + l.estado;
+  }
 
   $('#fCodigo').textContent = l.codigo;
   $('#fManzana').textContent = l.manzana;
@@ -586,6 +620,7 @@ function iniciar() {
   $('#btnSobrevuelo').addEventListener('click', sobrevuelo);
   $('#btnVerTodo').addEventListener('click', () => MapaReal.centrar());
   $('#btnAcercar').addEventListener('click', () => MapaReal.acercar());
+  $('#btnCerrarTour').addEventListener('click', cerrarTour360);
 
   /* Cualquier interacción reinicia el contador de inactividad */
   ['pointerdown', 'keydown', 'wheel'].forEach(ev =>
@@ -612,7 +647,10 @@ function iniciar() {
     if (k === 'd') alternarDiagnostico();
     if (k === 'a') irA('atraccion');
     if (k === 'm') irA('menu');
-    if (k === 'escape') irA('menu');
+    if (k === 'escape') {
+      if (!$('#tourOverlay').hidden) cerrarTour360();
+      else irA('menu');
+    }
   });
 
   /* Arranca siempre en modo atracción: al encender la pantalla,

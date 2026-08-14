@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>El Encanto</title>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui" />
+  <style>
+    @-ms-viewport {
+      width: device-width;
+    }
+  </style>
+  <link rel="stylesheet" href="vendor/reset.min.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="normalize.css">
+  <link rel="stylesheet" href="main.css">
+</head>
+
+<body class="multiple-scenes ">
+
+  <div id="pano"></div>
+
+  <div class="header">
+    <div class="sidebar">
+      <div class="menuToggle">
+        <span> <img class="icon-hotspot" src="img/hotspot.webp" alt="">
+          <p>Hotspots</p>
+        </span>
+        <img class="icon" src="img/menus.png" alt="">
+      </div>
+
+    </div>
+    <div class="logo"><img src="img/logo.webp" alt=""></div>
+    <div class="buttons">
+      <button id="enterVr" class="vr_mode" type="button"><img src="img/vr_icon.webp" alt=""></button>
+    </div>
+  </div>
+
+<div id="sceneList">
+  <ul class="scenes">
+    
+      <a href="javascript:void(0)" class="scene" data-id="0-1d-acera-oeste">
+        <li class="text">1D Acera Oeste</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="1-1-m18a">
+        <li class="text">1 M18A</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="2-2-m18a---m19">
+        <li class="text">2 M18A - M19</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="3-3-ingreso-principal">
+        <li class="text">3 Ingreso Principal</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="4-4-acera-norte">
+        <li class="text">4 Acera Norte</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="5-5-acera-norte">
+        <li class="text">5 Acera Norte</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="6-6d-acera-norte">
+        <li class="text">6D Acera Norte</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="7-6-acera-norte">
+        <li class="text">6 Acera Norte</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="8-7-acera-este">
+        <li class="text">7 Acera Este</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="9-8-acera-este">
+        <li class="text">8 Acera Este</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="10-9-m6---m7">
+        <li class="text">9 M6 - M7</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="11-9d-m6---m7">
+        <li class="text">9D M6 - M7</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="12-10-m7---m8---m23--m24">
+        <li class="text">10 M7 - M8 - M23 -M24</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="13-11-m9---m10---m25---m26">
+        <li class="text">11 M9 - M10 - M25 - M26</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="14-12-m11---m27---ae---av">
+        <li class="text">12 M11 - M27 - AE - AV</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="15-13-ae---av">
+        <li class="text">13 AE - AV</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="16-14-m14---m29---ae--av">
+        <li class="text">14 M14 - M29 - AE -AV</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="17-15-m29---m34---m35---av">
+        <li class="text">15 M29 - M34 - M35 - AV</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="18-16-m33---m34---av">
+        <li class="text">16 M33 - M34 - AV</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="19-17-m32---m33---av">
+        <li class="text">17 M32 - M33 - AV</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="20-18-m27---m32---av">
+        <li class="text">18 M27 - M32 - AV</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="21-19d-av">
+        <li class="text">19D AV</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="22-19-av">
+        <li class="text">19 AV</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="23-20d-av">
+        <li class="text">20D AV</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="24-20-av">
+        <li class="text">20 AV</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="25-21d-m12---m14---ae">
+        <li class="text">21D M12 - M14 - AE</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="26-21-m12---m14---ae">
+        <li class="text">21 M12 - M14 - AE</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="27-22-m11---m12---ae">
+        <li class="text">22 M11 - M12 - AE</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="28-22d-m11---m12---ae">
+        <li class="text">22D M11 - M12 - AE</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="29-23d-ae">
+        <li class="text">23D AE</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="30-23-ae">
+        <li class="text">23 AE</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="31-24-m14---m15---m29---m30">
+        <li class="text">24 M14 - M15 - M29 - M30</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="32-25-m15---m16---m30---m31">
+        <li class="text">25 M15 - M16 - M30 - M31</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="33-26-m6----m7---m16---m31">
+        <li class="text">26 M6  - M7 - M16 - M31</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="34-27b-m6----m7---m16---m31">
+        <li class="text">27B M6  - M7 - M16 - M31</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="35-27a-m6----m7---m16---m31">
+        <li class="text">27A M6  - M7 - M16 - M31</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="36-28-m9---m16---m94---m96a">
+        <li class="text">28 M9 - M16 - M94 - M96A</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="37-29-m4---m5---m31---m37">
+        <li class="text">29 M4 - M5 - M31 - M37</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="38-30-m2---m37">
+        <li class="text">30 M2 - M37</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="39-31-m30---m31---m36---m37">
+        <li class="text">31 M30 - M31 - M36 - M37</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="40-31-m30---m31---m36---m37">
+        <li class="text">31 M30 - M31 - M36 - M37</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="41-32-m29---m30---m35---m36">
+        <li class="text">32 M29 - M30 - M35 - M36</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="42-33-m35---m36">
+        <li class="text">33 M35 - M36</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="43-34-m35---m36">
+        <li class="text">34 M35 - M36</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="44-35-m34---m35">
+        <li class="text">35 M34 - M35</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="45-36-m33---m34">
+        <li class="text">36 M33 - M34</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="46-37-m32---m33">
+        <li class="text">37 M32 - M33</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="47-38-m27---m32">
+        <li class="text">38 M27 - M32</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="48-39-m26---m27">
+        <li class="text">39 M26 - M27</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="49-40-m26---m27">
+        <li class="text">40 M26 - M27</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="50-41-m25---m26">
+        <li class="text">41 M25 - M26</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="51-42-m25---m26">
+        <li class="text">42 M25 - M26</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="52-43-m24---m25">
+        <li class="text">43 M24 - M25</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="53-44-m24---m25">
+        <li class="text">44 M24 - M25</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="54-45-m23---m24">
+        <li class="text">45 M23 - M24</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="55-46-m23---m24">
+        <li class="text">46 M23 - M24</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="56-47-m22---m23">
+        <li class="text">47 M22 - M23</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="57-48-m21---m22">
+        <li class="text">48 M21 - M22</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="58-49-m21---m22">
+        <li class="text">49 M21 - M22</li>
+      </a>
+    
+      <a href="javascript:void(0)" class="scene" data-id="59-51-m20---m21">
+        <li class="text">51 M20 - M21</li>
+      </a>
+    
+  </ul>
+</div>
+
+  <div id="titleBar">
+    <h1 class="sceneName"></h1>
+  </div>
+
+  <a href="javascript:void(0)" id="autorotateToggle">
+    <img class="icon off" src="img/play.png">
+    <img class="icon on" src="img/pause.png">
+  </a>
+
+  <a href="javascript:void(0)" id="fullscreenToggle">
+    <img class="icon off" src="img/fullscreen.png">
+    <img class="icon on" src="img/windowed.png">
+  </a>
+
+  <a href="javascript:void(0)" id="sceneListToggle">
+    <img class="icon off" src="img/expand.png">
+    <img class="icon on" src="img/collapse.png">
+  </a>
+
+  <a href="javascript:void(0)" id="viewUp" class="viewControlButton viewControlButton-1">
+    <img class="icon" src="img/up.png">
+  </a>
+  <a href="javascript:void(0)" id="viewDown" class="viewControlButton viewControlButton-2">
+    <img class="icon" src="img/down.png">
+  </a>
+  <a href="javascript:void(0)" id="viewLeft" class="viewControlButton viewControlButton-3">
+    <img class="icon" src="img/left.png">
+  </a>
+  <a href="javascript:void(0)" id="viewRight" class="viewControlButton viewControlButton-4">
+    <img class="icon" src="img/right.png">
+  </a>
+  <a href="javascript:void(0)" id="viewIn" class="viewControlButton viewControlButton-5">
+    <img class="icon" src="img/plus.png">
+  </a>
+  <a href="javascript:void(0)" id="viewOut" class="viewControlButton viewControlButton-6">
+    <img class="icon" src="img/minus.png">
+  </a>
+  <script src="vendor/screenfull.min.js"></script>
+  <script src="vendor/bowser.min.js"></script>
+  <script src="vendor/marzipano.js"></script>
+
+  <script src="https://unpkg.com/webxr-polyfill@latest/build/webxr-polyfill.min.js"></script>
+
+  <script src="data.js"></script>
+  <script src="WebVrView.js"></script>
+  <script src="index.js"></script>
+  <script src="main.js"></script>
+
+</body>
+
+</html>

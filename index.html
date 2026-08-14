@@ -97,6 +97,10 @@
         </div>
         <div class="resumen-galeria" id="resGaleria"></div>
       </div>
+      <button class="btn-tour360" id="btnTour360" hidden>
+        <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/><ellipse cx="12" cy="12" rx="4.2" ry="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M2.5 12h19" stroke="currentColor" stroke-width="1.6"/></svg>
+        Recorrido virtual 360°
+      </button>
       <div class="destacados" id="resDestacados"></div>
     </div>
 
@@ -154,7 +158,7 @@
     <div class="pane" data-pane="lotes">
       <div class="lotes-wrap">
         <div class="lotes-mapa">
-          <div class="lotes-barra">
+          <div class="lotes-barra" id="lotesBarra">
             <div class="leyenda">
               <span class="lg lg-disponible"><i></i> Disponible <b id="cntDisp">0</b></span>
               <span class="lg lg-reservado"><i></i> Reservado <b id="cntRes">0</b></span>
@@ -203,6 +207,14 @@
   </div>
 </section>
 
+
+<!-- Recorrido virtual 360° (Marzipano, descargado offline en assets/tour/) -->
+<div class="tour-overlay" id="tourOverlay" hidden>
+  <button class="tour-cerrar" id="btnCerrarTour" aria-label="Cerrar recorrido">
+    <svg viewBox="0 0 24 24" width="22" height="22"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+  </button>
+  <iframe id="tourFrame" class="tour-iframe" title="Recorrido virtual 360°"></iframe>
+</div>
 
 <!-- Aviso de contenido de demostración (se apaga desde datos.js) -->
 <div id="aviso" class="aviso" hidden>Datos de ejemplo</div>

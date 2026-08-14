@@ -3,9 +3,11 @@
    datos.js — ÚNICO ARCHIVO QUE HAY QUE EDITAR PARA CARGAR CONTENIDO
    ----------------------------------------------------------------------------
    Los textos, cifras, fotografías y videos se tomaron del sitio oficial
-   inmol.com.bo. Lo que sigue marcado con  // DEMO  es contenido de ejemplo
-   que INMOL todavía tiene que entregar (referencias con distancias reales,
-   etapas de obra y disponibilidad de lotes).
+   inmol.com.bo. Los puntos de referencia (colegios, salud, mercados, plazas)
+   se investigaron en Google Maps a partir de la ubicación real de cada
+   proyecto — nombre, distancia en auto y coordenadas verificadas.
+   La disponibilidad de lotes (qué está vendido/reservado/disponible) sigue
+   siendo generada al azar: INMOL todavía tiene que entregar esos datos.
    ============================================================================ */
 
 const PANEL = {
@@ -31,9 +33,9 @@ const PANEL = {
     // Mostrar precios en pantalla. Definido en NO por decisión comercial.
     mostrarPrecios: false,
     // Aviso discreto de contenido de demostración. Apagar al cargar lo definitivo.
-    datosDeEjemplo: true,
-    // Mapa real (OpenStreetMap). Si no hay internet, cae solo a la vista
-    // satelital generada, que sí funciona sin conexión.
+    datosDeEjemplo: false,
+    // Mapa satelital real con teselas precargadas (100% offline). Si a un
+    // proyecto le faltara alguna tesela, cae solo a la vista generada.
     mapaReal: true
   },
 
@@ -57,7 +59,7 @@ const PANEL = {
       coordenadas: { lat: -17.90523, lng: -63.29574 },
       direccion: 'Av. Doble Vía La Guardia Km 16, Santa Cruz',
       enlaceMapa: 'https://maps.app.goo.gl/i7Aw7BNJCNMzEWzn6',
-      recorrido360: 'https://elencanto.inmol.com.bo/',
+      recorrido360: 'assets/tour/el-encanto/index.html',
 
       // Semilla del generador de vista satelital de respaldo (sin internet).
       semilla: 20481,
@@ -84,15 +86,18 @@ const PANEL = {
         { valor: 'La Guardia',    etiqueta: 'Santa Cruz' }
       ],
 
-      // Puntos de referencia. // DEMO — faltan los reales de INMOL.
-      // Si se conocen las coordenadas, agregar  coordenadas: { lat, lng }
-      // y el pin se ubica exacto; si no, se deduce del ángulo y la distancia.
+      // Puntos de referencia reales, investigados en Google Maps a partir de
+      // la ubicación del proyecto (distancia en auto, la que ve un comprador).
       referencias: [
-        { nombre: 'Av. Doble Vía La Guardia', distancia: '0.2 km', icono: 'via',      angulo: 20 },
-        { nombre: 'Unidad educativa',         distancia: '1.1 km', icono: 'colegio',  angulo: 95 },
-        { nombre: 'Centro de salud',          distancia: '1.8 km', icono: 'salud',    angulo: 160 },
-        { nombre: 'Supermercado',             distancia: '2.4 km', icono: 'comercio', angulo: 240 },
-        { nombre: 'Plaza principal',          distancia: '3.0 km', icono: 'plaza',    angulo: 300 }
+        { nombre: 'Av. Doble Vía La Guardia',      distancia: '0.2 km', icono: 'via',      angulo: 20 },
+        { nombre: 'U.E. Jaime Escalante',          distancia: '3.2 km', icono: 'colegio',  angulo: 102,
+          coordenadas: { lat: -17.9004316, lng: -63.2720356 } },
+        { nombre: 'Centro de Salud San Silvestre', distancia: '2.9 km', icono: 'salud',    angulo: 152,
+          coordenadas: { lat: -17.8905435, lng: -63.2876494 } },
+        { nombre: 'Mercado La Guardia',            distancia: '6.7 km', icono: 'comercio', angulo: 249,
+          coordenadas: { lat: -17.8932282, lng: -63.3290516 } },
+        { nombre: 'Plaza Principal de La Guardia', distancia: '6.8 km', icono: 'plaza',    angulo: 248,
+          coordenadas: { lat: -17.8918621, lng: -63.3310429 } }
       ],
 
       servicios: [
@@ -139,7 +144,7 @@ const PANEL = {
       coordenadas: { lat: -17.88781, lng: -63.17394 },
       direccion: '8vo anillo y Av. Santos Dumont, Santa Cruz de la Sierra',
       enlaceMapa: 'https://maps.app.goo.gl/56LVGHSEHuBsimVt6',
-      recorrido360: 'https://centrocomerciallibertad.inmol.com.bo/',
+      recorrido360: 'assets/tour/libertad/index.html',
 
       semilla: 77310,
 
@@ -159,11 +164,18 @@ const PANEL = {
         { valor: '8vo anillo',  etiqueta: 'y Av. Santos Dumont' }
       ],
 
-      referencias: [ // DEMO
-        { nombre: 'Av. Santos Dumont', distancia: '0.1 km', icono: 'via',      angulo: 45  },
-        { nombre: 'Colegios',          distancia: '0.4 km', icono: 'colegio',  angulo: 130 },
-        { nombre: 'Mercado',           distancia: '0.8 km', icono: 'comercio', angulo: 210 },
-        { nombre: 'Zona residencial',  distancia: '0.6 km', icono: 'plaza',    angulo: 320 }
+      // Puntos de referencia reales, investigados en Google Maps a partir de
+      // la ubicación del proyecto (distancia en auto, la que ve un comprador).
+      referencias: [
+        { nombre: 'Av. Santos Dumont',        distancia: '0.1 km', icono: 'via',      angulo: 45  },
+        { nombre: 'Centro Educ. Luz y Verdad', distancia: '2.4 km', icono: 'colegio',  angulo: 228,
+          coordenadas: { lat: -17.8762346, lng: -63.1872295 } },
+        { nombre: 'Centro de Salud Cortez',   distancia: '1.4 km', icono: 'salud',    angulo: 3,
+          coordenadas: { lat: -17.8936097, lng: -63.1736176 } },
+        { nombre: 'Mercado Palmira',          distancia: '2.1 km', icono: 'comercio', angulo: 167,
+          coordenadas: { lat: -17.8769237, lng: -63.1713592 } },
+        { nombre: 'Parque Las Orquídeas',     distancia: '2.1 km', icono: 'plaza',    angulo: 79,
+          coordenadas: { lat: -17.8893895, lng: -63.1651538 } }
       ],
 
       servicios: [
@@ -186,6 +198,10 @@ const PANEL = {
         // En el centro comercial la sección se llama distinto: no se vende
         // disponibilidad de lotes sino distribución de locales.
         etiqueta: 'Planos y distribución',
+        // A pedido de INMOL: acá no se muestra qué está disponible, reservado
+        // o vendido — cada local tiene su propio precio, así que sólo
+        // interesa la disposición física de las áreas.
+        disposicion: true,
         manzanas: 6, lotesPorManzana: 16, prefijo: 'LB',
         categorias: ['Planta baja', 'Primer piso', 'Área de comidas', 'Esquina'],
         superficieBase: 18, superficieRango: 26,
@@ -223,10 +239,16 @@ const PANEL = {
         { valor: 'Entregado', etiqueta: 'proyecto consolidado' }
       ],
 
-      referencias: [ // DEMO
-        { nombre: 'Av. Doble Vía La Guardia', distancia: '0.2 km', icono: 'via',      angulo: 30  },
-        { nombre: 'Áreas recreativas',        distancia: '0.5 km', icono: 'plaza',    angulo: 150 },
-        { nombre: 'Zona consolidada',         distancia: '1.0 km', icono: 'comercio', angulo: 260 }
+      // Puntos de referencia reales, investigados en Google Maps a partir de
+      // la ubicación del proyecto (distancia en auto, la que ve un comprador).
+      referencias: [
+        { nombre: 'Av. Doble Vía La Guardia',        distancia: '0.2 km', icono: 'via',      angulo: 30 },
+        { nombre: 'Colegio Escuela de Héroes',       distancia: '2.9 km', icono: 'colegio',  angulo: 68,
+          coordenadas: { lat: -17.8673036, lng: -63.2350201 } },
+        { nombre: 'Centro de Salud 23 de Octubre',   distancia: '4.3 km', icono: 'salud',    angulo: 80,
+          coordenadas: { lat: -17.8673836, lng: -63.2197896 } },
+        { nombre: 'Mercado Abasto Nuevo',            distancia: '4.1 km', icono: 'comercio', angulo: 127,
+          coordenadas: { lat: -17.8505902, lng: -63.2296956 } }
       ],
 
       servicios: [
@@ -246,7 +268,10 @@ const PANEL = {
       ],
 
       plano: {
-        etiqueta: 'Disponibilidad',
+        // Mismo criterio que Libertad: sin estados de disponible/reservado/
+        // vendido, sólo la disposición de las áreas (cada una con su precio).
+        etiqueta: 'Disposición',
+        disposicion: true,
         manzanas: 4, lotesPorManzana: 18, prefijo: 'VL',
         categorias: ['Estándar', 'Preferencial', 'Esquina'],
         superficieBase: 275, superficieRango: 225,

@@ -1,25 +1,34 @@
 /* ============================================================================
    INMOL · PANEL INTERACTIVO
-   mapa-real.js — Mapa navegable con la ubicación exacta y sus referencias
+   mapa-real.js — Mapa satelital navegable, 100% offline
    ----------------------------------------------------------------------------
-   Usa Leaflet (incluido en assets/leaflet/) sobre teselas de OpenStreetMap.
-   Se puede arrastrar, hacer zoom con dos dedos y tocar cada pin.
+   Usa Leaflet (incluido en assets/leaflet/) sobre teselas satelitales reales
+   (Esri World Imagery) descargadas de antemano en assets/tiles/<proyecto>/.
+   Se puede arrastrar, hacer zoom con dos dedos y tocar cada pin. No depende
+   de internet: todas las imágenes ya están en el disco del panel.
 
-   NECESITA INTERNET para descargar las teselas. Si no hay conexión —que es lo
-   previsto en el pabellón— el panel lo detecta y muestra la vista satelital
-   generada, que funciona offline. Nunca queda una sección en blanco.
+   Zoom disponible: 12 (contexto de ciudad) a 19 (detalle del predio). Fuera
+   de ese rango, o si faltara alguna tesela puntual, Leaflet deja el cuadro
+   en blanco — por eso el rango se limita con minZoom/maxZoom.
    ============================================================================ */
 
 const MapaReal = {
   mapa: null,
   capaBase: null,
+  proyectoTeselas: null,   // id del proyecto cuyas teselas están cargadas
   marcadores: [],
   disponible: false,
   proyectoActual: null,
 
-  /* Leaflet está cargado y el navegador tiene red */
+  ZOOM_MIN: 12,
+  ZOOM_MAX: 19,
+  // Radio real cubierto por la descarga de teselas (ver herramientas de
+  // descarga): un poco menor al radio descargado, de margen.
+  RADIO_DESCARGADO_M: 7000,
+
+  /* Leaflet está cargado y el panel tiene el mapa real habilitado */
   sePuedeUsar() {
-    return typeof L !== 'undefined' && PANEL.config.mapaReal && navigator.onLine;
+    return typeof L !== 'undefined' && PANEL.config.mapaReal;
   },
 
   /* --- Pines ------------------------------------------------------------- */
@@ -67,29 +76,69 @@ const MapaReal = {
       this.mapa = L.map(contenedor, {
         zoomControl: false,
         attributionControl: true,
+        minZoom: this.ZOOM_MIN,
+        maxZoom: this.ZOOM_MAX,
         // En una pantalla táctil de feria: se arrastra y se pellizca, pero no
         // se hace zoom sin querer con la rueda ni doble toque accidental.
         scrollWheelZoom: false,
         doubleClickZoom: false,
         touchZoom: true,
-        dragging: true
+        dragging: true,
+        // No se puede arrastrar más allá del área con teselas descargadas
+        // (se define por proyecto en limitarArrastre). Viscosidad 1 = tope
+        // firme, no "elástico".
+        maxBoundsViscosity: 1.0
       });
       L.control.zoom({ position: 'bottomright' }).addTo(this.mapa);
-      this.capaBase = L.tileLayer(
-        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-        { maxZoom: 19, attribution: '© OpenStreetMap' }
-      ).addTo(this.mapa);
-
-      // Si las teselas no cargan (sin internet), se avisa una sola vez.
-      let fallos = 0;
-      this.capaBase.on('tileerror', () => {
-        if (++fallos === 4 && this.alFallar) this.alFallar();
-      });
     }
 
+    this.cargarTeselas(proyecto);
     this.dibujar(proyecto);
     this.disponible = true;
     return true;
+  },
+
+  /* Cada proyecto tiene su propia carpeta de teselas descargadas
+     (assets/tiles/<id>/<z>/<x>/<y>.jpg). Al cambiar de proyecto se cambia
+     la capa base para apuntar a la carpeta correspondiente. */
+  cargarTeselas(proyecto) {
+    if (this.proyectoTeselas === proyecto.id) return;
+    if (this.capaBase) this.mapa.removeLayer(this.capaBase);
+
+    this.capaBase = L.tileLayer(
+      `assets/tiles/${proyecto.id}/{z}/{x}/{y}.jpg`,
+      {
+        minZoom: this.ZOOM_MIN,
+        maxZoom: this.ZOOM_MAX,
+        attribution: '© Esri — Imágenes satelitales precargadas'
+      }
+    ).addTo(this.mapa);
+    this.proyectoTeselas = proyecto.id;
+    this.limitarArrastre(proyecto);
+
+    // Si a un proyecto le faltara alguna tesela descargada, se avisa una vez.
+    // El umbral es alto a propósito: Leaflet precarga teselas fuera del
+    // encuadre visible (para que el arrastre se sienta fluido) y algunas
+    // pueden caer justo en el borde de lo descargado sin que se note en
+    // pantalla — eso no debería tirar todo el mapa a la vista de respaldo.
+    let fallos = 0;
+    this.capaBase.on('tileerror', () => {
+      if (++fallos === 15 && this.alFallar) this.alFallar();
+    });
+  },
+
+  /* No dejar que el arrastre saque al usuario del área con teselas
+     descargadas: más allá de eso no hay imagen (offline no hay de dónde
+     traerla), así que directamente no se puede llegar ahí. */
+  limitarArrastre(proyecto) {
+    const { lat, lng } = proyecto.coordenadas;
+    const r = this.RADIO_DESCARGADO_M;
+    const dLat = r / 111320;
+    const dLng = r / (111320 * Math.cos(lat * Math.PI / 180));
+    this.mapa.setMaxBounds([
+      [lat - dLat, lng - dLng],
+      [lat + dLat, lng + dLng]
+    ]);
   },
 
   dibujar(proyecto) {
@@ -120,14 +169,18 @@ const MapaReal = {
     this.centrar();
   },
 
-  /* Encuadra el proyecto con todas sus referencias */
+  /* Encuadra el proyecto con todas sus referencias.
+     Sin animación: si se llama justo cuando el mapa recién se hace visible
+     (tamaño 0 → tamaño real), una transición animada puede quedar a medias
+     y el zoom queda mal calculado y pegado ahí. El "vuelo" cinematográfico
+     ya lo da sobrevuelo()/acercar(); acá interesa que el encuadre sea exacto. */
   centrar() {
     if (!this.mapa || !this.marcadores.length) return;
     const puntos = this.marcadores.filter(m => m.getLatLng).map(m => m.getLatLng());
     if (puntos.length > 1) {
-      this.mapa.fitBounds(L.latLngBounds(puntos), { padding: [90, 90], maxZoom: 16 });
+      this.mapa.fitBounds(L.latLngBounds(puntos), { padding: [90, 90], maxZoom: 16, animate: false });
     } else {
-      this.mapa.setView(puntos[0], 16);
+      this.mapa.setView(puntos[0], 16, { animate: false });
     }
   },
 
@@ -150,5 +203,12 @@ const MapaReal = {
     this.mapa.flyTo([c.lat, c.lng], 17, { duration: 2.2 });
   },
 
-  redimensionar() { if (this.mapa) this.mapa.invalidateSize(); }
+  /* invalidateSize() sólo corrige el tamaño en píxeles del mapa; si el
+     encuadre (fitBounds) se calculó antes de que el contenedor tuviera su
+     tamaño final en pantalla, el zoom queda mal y hay que recalcularlo. */
+  redimensionar() {
+    if (!this.mapa) return;
+    this.mapa.invalidateSize();
+    this.centrar();
+  },
 };
