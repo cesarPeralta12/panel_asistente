@@ -131,6 +131,18 @@ const MapaReal = {
     }
   },
 
+  /* Vuela hasta un punto de referencia y abre su etiqueta */
+  irAReferencia(indice) {
+    if (!this.mapa || !this.proyectoActual) return;
+    const ref = (this.proyectoActual.referencias || [])[indice];
+    if (!ref) return;
+    const pos = this.posicionReferencia(this.proyectoActual, ref);
+    this.mapa.flyTo(pos, 16, { duration: 1.6 });
+    // Los marcadores se guardan como pin, línea, pin, línea… tras el principal
+    const marcador = this.marcadores[1 + indice * 2];
+    if (marcador && marcador.openPopup) setTimeout(() => marcador.openPopup(), 1700);
+  },
+
   /* Vuela al proyecto, como el sobrevuelo de la vista satelital */
   acercar() {
     if (!this.mapa || !this.proyectoActual) return;

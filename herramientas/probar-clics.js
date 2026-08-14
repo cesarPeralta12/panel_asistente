@@ -104,14 +104,14 @@ const ALTO  = parseInt(process.argv[4], 10) || 1080;
     return true;
   };
 
-  const esperadas = ['resumen', 'ubicacion', 'referencias', 'lotes', 'avance'];
-  for (let i = 0; i < 5; i++) {
+  const esperadas = ['resumen', 'ubicacion', 'lotes', 'avance'];
+  for (let i = 0; i < esperadas.length; i++) {
     await clicSel('.tab', i); await esperar(280);
     const e = await estado();
     ok(`Pestaña ${i + 1} → ${e.seccion}`, e.seccion === esperadas[i]);
   }
 
-  await clicSel('.tab', 3); await esperar(300);
+  await clicSel('.tab', 2); await esperar(300);
   await clicSel('.plano-svg .lote', 25); await esperar(220);
   let e = await estado();
   ok(`Clic en un lote → ${e.lote || 'NADA'}`, !!e.lote);

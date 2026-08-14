@@ -29,7 +29,6 @@ $vistas = @(
   @{ n = "03-resumen";          r = "#/proyecto/el-encanto/resumen" },
   @{ n = "04-satelital-ciudad"; r = "#/proyecto/el-encanto/ubicacion/nivel-1" },
   @{ n = "05-satelital-predio"; r = "#/proyecto/el-encanto/ubicacion/nivel-3" },
-  @{ n = "06-referencias";      r = "#/proyecto/el-encanto/referencias" },
   @{ n = "07-lotes";            r = "#/proyecto/el-encanto/lotes/lote-5" },
   @{ n = "08-avance";           r = "#/proyecto/el-encanto/avance" },
   @{ n = "10-libertad";         r = "#/proyecto/libertad/resumen" },

@@ -63,12 +63,13 @@ const ICONO_TAB = {
   avance:      'M4 19h16M6 19V11M11 19V6M16 19v-9'
 };
 
+/* «Qué hay cerca» se fusionó dentro de «Ubicación»: los puntos de referencia
+   ahora son pines sobre el mismo mapa, no una sección aparte. */
 const SECCIONES = [
-  { id: 'resumen',     etiqueta: 'Resumen' },
-  { id: 'ubicacion',   etiqueta: 'Ubicación' },
-  { id: 'referencias', etiqueta: 'Qué hay cerca' },
-  { id: 'lotes',       etiqueta: 'Disponibilidad' },
-  { id: 'avance',      etiqueta: 'Avance de obra' }
+  { id: 'resumen',   etiqueta: 'Resumen' },
+  { id: 'ubicacion', etiqueta: 'Ubicación' },
+  { id: 'lotes',     etiqueta: 'Disponibilidad' },
+  { id: 'avance',    etiqueta: 'Avance de obra' }
 ];
 
 function svgIcono(d, tam = 22) {
@@ -428,13 +429,21 @@ function sobrevuelo() {
 }
 
 /* --- 3.3 Referencias ----------------------------------------------------- */
+/* Lista de referencias dentro de la ficha de ubicación. Tocar una lleva el
+   mapa hasta ese pin. */
 function llenarReferencias(p) {
-  const cont = $('#refsMapa');
-  cont.innerHTML = '';
-  cont.appendChild(construirMapaReferencias(p));
-
-  $('#refsLista').innerHTML = p.referencias
-    .map(r => `<li><b>${r.nombre}</b><span>${r.distancia}</span></li>`).join('');
+  const lista = $('#satRefs');
+  lista.innerHTML = '';
+  (p.referencias || []).forEach((r, i) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<b>${r.nombre}</b><span>${r.distancia}</span>`;
+    li.addEventListener('click', () => {
+      $$('#satRefs li').forEach(o => o.classList.remove('activa'));
+      li.classList.add('activa');
+      MapaReal.irAReferencia(i);
+    });
+    lista.appendChild(li);
+  });
 }
 
 /* --- 3.4 Lotes ----------------------------------------------------------- */
