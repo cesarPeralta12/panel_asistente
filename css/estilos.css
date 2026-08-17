@@ -728,6 +728,15 @@ body.sin-animacion .atr-fondo > .visible {
 .plano-svg .lote.apagado { opacity: .16; }
 .plano-svg .lote.sel rect { stroke: #fff; stroke-width: 2.6; fill-opacity: 1; }
 
+/* --- Plano real de INMOL: visor Leaflet (ver MapaPlano en mapas.js) ------
+   Leaflet toma #planoCont directamente como su contenedor (le agrega la
+   clase .leaflet-container solo): ahí se anula el padding/centrado pensado
+   para el plano esquemático estático, para que el mapa ocupe todo el hueco. */
+#planoCont.leaflet-container {
+  padding: 0; display: block;
+  background: var(--superficie); border-radius: var(--r-sm);
+}
+
 .lote-ficha {
   border-radius: var(--r); border: 1px solid var(--linea);
   background: var(--superficie);

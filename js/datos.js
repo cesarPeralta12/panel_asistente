@@ -3,11 +3,17 @@
    datos.js — ÚNICO ARCHIVO QUE HAY QUE EDITAR PARA CARGAR CONTENIDO
    ----------------------------------------------------------------------------
    Los textos, cifras, fotografías y videos se tomaron del sitio oficial
-   inmol.com.bo. Los puntos de referencia (colegios, salud, mercados, plazas)
-   se investigaron en Google Maps a partir de la ubicación real de cada
-   proyecto — nombre, distancia en auto y coordenadas verificadas.
-   La disponibilidad de lotes (qué está vendido/reservado/disponible) sigue
-   siendo generada al azar: INMOL todavía tiene que entregar esos datos.
+   inmol.com.bo y del documento "DATOS PARA ELABORACION SISTEMA EXPOCRUZ"
+   que entregó INMOL. Los puntos de referencia se investigaron en Google
+   Maps a partir de la ubicación real de cada proyecto (o de los mapas de
+   referencia oficiales de INMOL cuando estaban disponibles) — nombre,
+   distancia en auto y coordenadas verificadas.
+
+   La disponibilidad de lotes/locales (disponible/vendido/reservado/
+   bloqueado) es un snapshot real descargado del sistema de INMOL
+   (inmol.sistemas-orange.com.bo), cargado en los archivos
+   js/disponibilidad-<proyecto>.js. Para actualizarla antes de la próxima
+   feria, hay que volver a correr la herramienta de descarga.
    ============================================================================ */
 
 const PANEL = {
@@ -49,10 +55,12 @@ const PANEL = {
       tipo: 'Urbanización residencial',
       estadoComercial: 'En comercialización',
       claim: 'Vivir la naturaleza con todas las comodidades.',
-      descripcion: 'Terrenos en venta sobre la Av. Doble Vía La Guardia Km 16. ' +
-                   'Servicios básicos, áreas verdes y 1.500 metros de pavimento ' +
-                   'rígido, en una zona de fuerte crecimiento con clima agradable ' +
-                   'y entorno natural atractivo.',
+      descripcion: 'Estratégicamente ubicada a la altura del Km 16 de la Doble ' +
+                   'Vía La Guardia, a tan solo 3 minutos de la carretera, en una ' +
+                   'zona consolidada con vías de acceso pavimentadas, colegios, ' +
+                   'centros de salud y mercados. El Municipio de La Guardia ' +
+                   'combina el crecimiento urbano, el acceso a servicios básicos, ' +
+                   'un clima agradable y un entorno natural atractivo.',
 
       // Ubicación exacta. Código Plus 57JR3PV3+WP2, del enlace de Maps de INMOL.
       coordenadas: { lat: -17.90523, lng: -63.29574 },
@@ -79,10 +87,10 @@ const PANEL = {
       video: 'assets/medios/video/el-encanto.mp4',
 
       destacados: [
-        { valor: '+1.000',        etiqueta: 'lotes' },
-        { valor: '300 – 800 m²',  etiqueta: 'superficie de lotes' },
-        { valor: '1.500 m',       etiqueta: 'de pavimento rígido' },
-        { valor: 'La Guardia',    etiqueta: 'Santa Cruz' }
+        { valor: '1.101',        etiqueta: 'terrenos' },
+        { valor: '300 – 600 m²', etiqueta: 'superficie de terrenos' },
+        { valor: '64,58 ha',     etiqueta: 'superficie total' },
+        { valor: 'Km 16',        etiqueta: 'Doble Vía La Guardia' }
       ],
 
       // Puntos de referencia reales, investigados en Google Maps a partir de
@@ -100,29 +108,39 @@ const PANEL = {
       ],
 
       servicios: [
-        'Agua potable', 'Energía eléctrica', 'Áreas verdes',
-        'Pavimento rígido', 'Urbanización abierta', 'Entorno natural'
+        '1.500 m de pavimento dentro de la urbanización', 'Educación cercana: colegios a fácil acceso',
+        'Salud a pocos minutos', 'Mercados y transporte público',
+        'Luz y agua potable, con pozo propio', 'Gas e internet de fácil acceso',
+        'Áreas verdes y de recreación', 'Área de equipamiento amplio',
+        'Drenaje pluvial y protección contra inundaciones'
       ],
 
       // Ficha técnica: los datos que el vendedor necesita a mano.
       fichaTecnica: [
         { campo: 'Tipología',            valor: 'Urbanización abierta' },
-        { campo: 'Ubicación',            valor: 'La Guardia, Santa Cruz' },
-        { campo: 'Dirección',            valor: 'Av. Doble Vía La Guardia Km 16' },
-        { campo: 'Superficie de lotes',  valor: '300 m² a más de 800 m²' },
-        { campo: 'Cantidad de lotes',    valor: 'Más de 1.000' },
-        { campo: 'Pavimento',            valor: '1.500 m de pavimento rígido' },
-        { campo: 'Servicios básicos',    valor: 'Agua potable y energía eléctrica' },
-        { campo: 'Áreas verdes',         valor: 'Sí, con espacios recreativos' },
+        { campo: 'Ubicación',            valor: 'La Guardia, Km 16 · a 3 min de la carretera' },
+        { campo: 'Superficie total',     valor: '64,58 hectáreas' },
+        { campo: 'Cantidad de terrenos', valor: '1.101' },
+        { campo: 'Superficie de terrenos', valor: '300 m² a 600 m²' },
+        { campo: 'Pavimento',            valor: '1.500 m dentro de la urbanización' },
+        { campo: 'Servicios básicos',    valor: 'Luz, agua potable (pozo propio), gas e internet' },
+        { campo: 'Áreas verdes',         valor: 'Sí, con espacios recreativos y equipamiento' },
         { campo: 'Estado comercial',     valor: 'En comercialización' }
       ],
 
       plano: {
         etiqueta: 'Disponibilidad',
-        manzanas: 8, lotesPorManzana: 24, prefijo: 'EC',
-        categorias: ['Estándar', 'Preferencial', 'Comercial', 'Esquina'],
-        superficieBase: 300, superficieRango: 500,
-        unidad: 'lote', unidadPlural: 'lotes'
+        prefijo: 'EC',
+        // Snapshot real descargado del sistema de INMOL — ver cabecera del
+        // archivo. Reemplaza a la disponibilidad de ejemplo.
+        disponibilidadReal: DISP_EL_ENCANTO,
+        // Plano oficial real (con logo y colores de INMOL), descargado del
+        // mismo sistema. imagenAncho/imagenAlto son las dimensiones del
+        // plano original; escalaImagen es la escala a la que se descargó
+        // assets/planos/el-encanto.jpg (más liviana que el original).
+        imagenReal: 'assets/planos/el-encanto.jpg',
+        imagenAncho: 7070, imagenAlto: 10000, escalaImagen: 0.5,
+        unidad: 'terreno', unidadPlural: 'terrenos'
       }
     },
 
@@ -134,10 +152,13 @@ const PANEL = {
       tipo: 'Centro comercial',
       estadoComercial: 'En comercialización',
       claim: 'Su negocio, en la zona de mayor crecimiento de Santa Cruz.',
-      descripcion: 'Locales comerciales en la Zona Sudeste de Santa Cruz de la ' +
-                   'Sierra. Un centro comercial diseñado para su negocio, rodeado ' +
-                   'de colegios, mercados y áreas urbanizadas, lo que garantiza un ' +
-                   'flujo constante de visitantes.',
+      descripcion: 'Ubicado en la zona Sud Este de Santa Cruz de la Sierra, a ' +
+                   'sólo 20 minutos del centro, continuando por la Av. Santos ' +
+                   'Dumont, prolongación 8vo anillo, zona Plan 4000. Alta ' +
+                   'accesibilidad gracias a su conexión directa con avenidas ' +
+                   'principales y transporte público (micros #21 y #109). ' +
+                   'Rodeado de colegios y áreas urbanizadas, en una de las ' +
+                   'zonas de mayor crecimiento comercial y residencial.',
 
       // Ubicación exacta. Código Plus 57JR4R6G+VC, del enlace de Maps de INMOL.
       coordenadas: { lat: -17.88781, lng: -63.17394 },
@@ -157,8 +178,8 @@ const PANEL = {
       video: 'assets/medios/video/libertad.mp4',
 
       destacados: [
-        { valor: '+300',        etiqueta: 'locales' },
-        { valor: '8.531,93 m²', etiqueta: 'superficie total' },
+        { valor: '326',         etiqueta: 'locales comerciales' },
+        { valor: '9.584,34 m²', etiqueta: 'superficie de terreno' },
         { valor: 'Zona Sur',    etiqueta: 'Santa Cruz' },
         { valor: '8vo anillo',  etiqueta: 'y Av. Santos Dumont' }
       ],
@@ -178,19 +199,21 @@ const PANEL = {
       ],
 
       servicios: [
-        'Estacionamiento', 'Seguridad 24 h', 'Alto flujo peatonal',
-        'Rodeado de colegios', 'Cerca de mercados', 'Zona consolidada'
+        'Proyecto terminado, listo para entrega', 'Transporte público: micros #21 y #109',
+        'Prevención de incendios aprobada por Alcaldía y Bomberos', 'Sistema de alarma e hidrantes',
+        'Proyecto eléctrico aprobado por la CRE', 'Certificado HABITESE',
+        'Documentación individualizada y en regla', 'Rodeado de colegios y áreas urbanizadas'
       ],
 
       fichaTecnica: [
-        { campo: 'Tipología',          valor: 'Centro comercial' },
-        { campo: 'Ubicación',          valor: 'Zona Sudeste, Santa Cruz de la Sierra' },
-        { campo: 'Dirección',          valor: '8vo anillo y Av. Santos Dumont' },
-        { campo: 'Superficie total',   valor: '8.531,93 m²' },
-        { campo: 'Cantidad de locales', valor: 'Más de 300' },
-        { campo: 'Entorno',            valor: 'Colegios, mercados y áreas urbanizadas' },
-        { campo: 'Flujo de visitantes', valor: 'Constante, zona consolidada' },
-        { campo: 'Estado comercial',   valor: 'En comercialización' }
+        { campo: 'Tipología',           valor: 'Centro comercial' },
+        { campo: 'Ubicación',           valor: 'Zona Sudeste, 8vo anillo y Av. Santos Dumont' },
+        { campo: 'Terreno',             valor: '9.584,34 m²' },
+        { campo: 'Construcción',        valor: '8.531,93 m²' },
+        { campo: 'Cubierta',            valor: '6.057,94 m² (326 locales comerciales)' },
+        { campo: 'Contra incendios',    valor: 'Alarma, extintores, hidrantes y tanque propio' },
+        { campo: 'Certificaciones',     valor: 'HABITESE · proyecto eléctrico aprobado por la CRE' },
+        { campo: 'Estado comercial',    valor: 'En comercialización, proyecto terminado' }
       ],
 
       plano: {
@@ -201,80 +224,95 @@ const PANEL = {
         // o vendido — cada local tiene su propio precio, así que sólo
         // interesa la disposición física de las áreas.
         disposicion: true,
-        manzanas: 6, lotesPorManzana: 16, prefijo: 'LB',
-        categorias: ['Planta baja', 'Primer piso', 'Área de comidas', 'Esquina'],
-        superficieBase: 18, superficieRango: 26,
+        prefijo: 'LB',
+        // Numeración real de locales (snapshot del sistema de INMOL), sin
+        // mostrar el estado comercial — ver "disposicion" arriba.
+        disponibilidadReal: DISP_LIBERTAD,
+        imagenReal: 'assets/planos/libertad.jpg',
+        imagenAncho: 5500, imagenAlto: 3760, escalaImagen: 0.5,
         unidad: 'local', unidadPlural: 'locales'
       }
     },
 
-    /* ================= 3. URBANIZACIÓN VISTA LINDA (vendido) ============== */
+    /* ================ 3. URBANIZACIÓN EL ENCANTO 2 (La Guardia) =========== */
     {
-      id: 'vista-linda',
-      nombre: 'Urbanización Vista Linda',
-      subtitulo: 'La Guardia Km 9 · Santa Cruz',
+      id: 'el-encanto-2',
+      nombre: 'Urbanización El Encanto 2',
+      subtitulo: 'La Guardia · Santa Cruz',
       tipo: 'Urbanización residencial',
-      estadoComercial: '100% vendido',
-      vendido: true,
-      claim: 'Tu hogar soñado en un entorno tranquilo.',
-      descripcion: 'Proyecto residencial abierto con 71 terrenos sobre la Av. ' +
-                   'Doble Vía La Guardia Km 9, hoy 100% vendidos. Un desarrollo ' +
-                   'consolidado, seguro y de gran crecimiento poblacional, que ' +
-                   'cumplió el sueño de muchas familias en Santa Cruz.',
+      estadoComercial: 'En comercialización',
+      // Todavía faltan fotos, video y la ubicación exacta confirmada por
+      // INMOL — se avisa en la tarjeta del menú para no generar expectativas.
+      pendiente: true,
+      claim: 'La segunda etapa de El Encanto, sobre la carretera a Camiri.',
+      descripcion: 'Estratégicamente ubicada a la altura del Km 13 de la Doble ' +
+                   'Vía La Guardia, ingresando tan solo 5 km sobre la carretera ' +
+                   'a Camiri, en zona consolidada con vías de acceso pavimentadas, ' +
+                   'colegios, centros de salud y mercados en sus alrededores.',
 
-      coordenadas: { lat: -17.8628, lng: -63.2470 },
-      direccion: 'Av. Doble Vía La Guardia Km 9, Santa Cruz',
+      // NOTA: INMOL todavía no entregó el pin exacto de Google Maps (el
+      // propio documento de datos lo marca "en proceso de habilitar").
+      // Esta coordenada es una estimación a partir de los puntos de
+      // referencia de su mapa oficial (Módulo Educativo José Villarroel
+      // Robles y Centro Médico Salud ADvenir, los más cercanos al predio) —
+      // hay que reemplazarla apenas INMOL confirme la ubicación registrada.
+      coordenadas: { lat: -17.9050, lng: -63.2601 },
+      direccion: 'Km 13 Doble Vía La Guardia, sobre carretera a Camiri, Santa Cruz',
       enlaceMapa: '',
+      recorrido360: '',
 
-      semilla: 51027,
+      semilla: 63204,
 
-      fotos: ['assets/medios/marca/vista-linda-normal.png'],
+      // Todavía no hay fotos ni video propios de este proyecto; el panel
+      // cae automáticamente a la vista satelital generada.
+      fotos: [],
       video: '',
 
       destacados: [
-        { valor: '71',        etiqueta: 'terrenos' },
-        { valor: '100%',      etiqueta: 'vendido' },
-        { valor: 'Km 9',      etiqueta: 'Doble Vía La Guardia' },
-        { valor: 'Entregado', etiqueta: 'proyecto consolidado' }
+        { valor: '249',                  etiqueta: 'terrenos' },
+        { valor: '300 – 29.128 m²',      etiqueta: 'superficie de terrenos' },
+        { valor: '25 ha',                etiqueta: 'superficie total' },
+        { valor: 'Km 13',                etiqueta: 'Doble Vía La Guardia' }
       ],
 
-      // Puntos de referencia reales, investigados en Google Maps a partir de
-      // la ubicación del proyecto (distancia en auto, la que ve un comprador).
+      // Puntos de referencia del mapa oficial de INMOL para este proyecto,
+      // ubicados en Google Maps (distancia en auto).
       referencias: [
-        { nombre: 'Av. Doble Vía La Guardia',        distancia: '0.2 km', icono: 'via',      angulo: 30 },
-        { nombre: 'Colegio Escuela de Héroes',       distancia: '2.9 km', icono: 'colegio',  angulo: 68,
-          coordenadas: { lat: -17.8673036, lng: -63.2350201 } },
-        { nombre: 'Centro de Salud 23 de Octubre',   distancia: '4.3 km', icono: 'salud',    angulo: 80,
-          coordenadas: { lat: -17.8673836, lng: -63.2197896 } },
-        { nombre: 'Mercado Abasto Nuevo',            distancia: '4.1 km', icono: 'comercio', angulo: 127,
-          coordenadas: { lat: -17.8505902, lng: -63.2296956 } }
+        { nombre: 'Cruce Km 13 Doble Vía La Guardia', distancia: '4.3 km', icono: 'via', angulo: 197,
+          coordenadas: { lat: -17.8680828, lng: -63.2721053 } },
+        { nombre: 'Módulo Educ. José Villarroel Robles', distancia: '0.3 km', icono: 'colegio', angulo: 249,
+          coordenadas: { lat: -17.9040467, lng: -63.2627157 } },
+        { nombre: 'Centro Médico Salud ADvenir', distancia: '1.0 km', icono: 'salud', angulo: 16,
+          coordenadas: { lat: -17.9139666, lng: -63.2574233 } },
+        { nombre: 'Hipermaxi Mi Barrio', distancia: '4.3 km', icono: 'comercio', angulo: 197,
+          coordenadas: { lat: -17.8680828, lng: -63.2721053 } }
       ],
 
       servicios: [
-        'Agua potable', 'Energía eléctrica', 'Áreas verdes',
-        'Vías pavimentadas', 'Espacios recreativos', 'Entorno natural'
+        'Ingreso principal pavimentado, directo desde la carretera a Camiri',
+        'Educación cercana: acceso fácil a colegios', 'Salud a pocos minutos',
+        'Mercados y transporte público', 'Luz, agua, gas e internet de fácil acceso',
+        'Áreas verdes bien ubicadas', 'Área de equipamiento amplio'
       ],
 
       fichaTecnica: [
-        { campo: 'Tipología',           valor: 'Urbanización abierta residencial' },
-        { campo: 'Ubicación',           valor: 'La Guardia, Santa Cruz' },
-        { campo: 'Dirección',           valor: 'Av. Doble Vía La Guardia Km 9' },
-        { campo: 'Cantidad de terrenos', valor: '71' },
-        { campo: 'Servicios básicos',   valor: 'Agua potable y energía eléctrica' },
-        { campo: 'Accesos',             valor: 'Vías pavimentadas' },
-        { campo: 'Áreas verdes',        valor: 'Entorno natural con espacios recreativos' },
-        { campo: 'Estado comercial',    valor: '100% vendido' }
+        { campo: 'Tipología',            valor: 'Urbanización abierta' },
+        { campo: 'Ubicación',            valor: 'La Guardia, Km 13 · 5 km sobre carretera a Camiri' },
+        { campo: 'Superficie total',     valor: '25 hectáreas' },
+        { campo: 'Cantidad de terrenos', valor: '249' },
+        { campo: 'Superficie de terrenos', valor: '300 m² a 29.128 m²' },
+        { campo: 'Ingreso',              valor: 'Pavimentado, directo desde la carretera a Camiri' },
+        { campo: 'Servicios básicos',    valor: 'Luz, agua, gas e internet' },
+        { campo: 'Estado comercial',     valor: 'En comercialización' }
       ],
 
       plano: {
-        // Mismo criterio que Libertad: sin estados de disponible/reservado/
-        // vendido, sólo la disposición de las áreas (cada una con su precio).
-        etiqueta: 'Disposición',
-        disposicion: true,
-        manzanas: 4, lotesPorManzana: 18, prefijo: 'VL',
-        categorias: ['Estándar', 'Preferencial', 'Esquina'],
-        superficieBase: 275, superficieRango: 225,
-        unidad: 'lote', unidadPlural: 'lotes'
+        etiqueta: 'Disponibilidad',
+        prefijo: 'EC2',
+        disponibilidadReal: DISP_EL_ENCANTO_2,
+        imagenReal: 'assets/planos/el-encanto-2.jpg',
+        imagenAncho: 5000, imagenAlto: 7411, escalaImagen: 0.5,
+        unidad: 'terreno', unidadPlural: 'terrenos'
       }
     }
   ]

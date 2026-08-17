@@ -140,11 +140,7 @@
       <div class="lotes-wrap">
         <div class="lotes-mapa">
           <div class="lotes-barra" id="lotesBarra">
-            <div class="leyenda">
-              <span class="lg lg-disponible"><i></i> Disponible <b id="cntDisp">0</b></span>
-              <span class="lg lg-reservado"><i></i> Reservado <b id="cntRes">0</b></span>
-              <span class="lg lg-vendido"><i></i> Vendido <b id="cntVen">0</b></span>
-            </div>
+            <div class="leyenda" id="leyenda"></div>
             <div class="filtros" id="filtros"></div>
           </div>
           <div class="plano-cont" id="planoCont"></div>
@@ -158,8 +154,8 @@
             <span class="ficha-estado" id="fEstado"></span>
             <h3 class="ficha-codigo" id="fCodigo"></h3>
             <div class="ficha-fila"><span>Manzana</span><b id="fManzana"></b></div>
-            <div class="ficha-fila"><span>Superficie</span><b id="fSuperficie"></b></div>
-            <div class="ficha-fila"><span>Categoría</span><b id="fCategoria"></b></div>
+            <div class="ficha-fila" id="filaSuperficie"><span>Superficie</span><b id="fSuperficie"></b></div>
+            <div class="ficha-fila" id="filaCategoria"><span>Categoría</span><b id="fCategoria"></b></div>
             <div class="ficha-nota">
               El precio y el plan de pago se elaboran de forma personalizada.
               Consulte con su asesor INMOL.
@@ -204,6 +200,9 @@
 <div id="diag" class="diag" hidden></div>
 
 <script src="assets/leaflet/leaflet.js"></script>
+<script src="js/disponibilidad-el-encanto.js"></script>
+<script src="js/disponibilidad-libertad.js"></script>
+<script src="js/disponibilidad-el-encanto-2.js"></script>
 <script src="js/datos.js"></script>
 <script src="js/mapas.js"></script>
 <script src="js/mapa-real.js"></script>

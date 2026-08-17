@@ -443,9 +443,29 @@ const SAT_ANCHO = 1500, SAT_ALTO = 860;
 
 /* ============================================================================
    PLANO DE LOTES
+   ----------------------------------------------------------------------------
+   Si el proyecto trae disponibilidad real (plano.disponibilidadReal, un
+   snapshot descargado del sistema de INMOL), se usa esa — manzanas y
+   números reales, estado real de cada lote. Si no, se genera una
+   distribución de ejemplo (sólo para proyectos que todavía no la tienen).
    ============================================================================ */
 function generarLotes(proyecto) {
   const cfg = proyecto.plano;
+
+  if (cfg.disponibilidadReal) {
+    return cfg.disponibilidadReal.map(l => ({
+      codigo: `${cfg.prefijo}-${l.manzana}-${l.numero}`,
+      manzana: l.manzana,
+      numero: l.numero,
+      // Proyectos "de disposición": no se marca disponible/reservado/vendido,
+      // cada área tiene su propio precio y sólo interesa la distribución.
+      estado: cfg.disposicion ? 'unidad' : l.estado,
+      // Posición real en el plano oficial (assets/planos/<proyecto>.jpg),
+      // para el punto superpuesto — ver construirPlanoImagen().
+      x: l.x, y: l.y
+    }));
+  }
+
   const rnd = mulberry32(proyecto.semilla + 4242);
   const cats = cfg.categorias || ['Estándar'];
   const lotes = [];
@@ -453,9 +473,6 @@ function generarLotes(proyecto) {
   for (let m = 0; m < cfg.manzanas; m++) {
     for (let l = 0; l < cfg.lotesPorManzana; l++) {
       const r = rnd();
-      // Centro comercial y otros proyectos "de disposición": no se marca
-      // disponible/reservado/vendido, cada área tiene su propio precio y
-      // sólo interesa mostrar la distribución física.
       const estado = cfg.disposicion ? 'unidad'
                    : proyecto.pendiente ? 'disponible'
                    : r < 0.46 ? 'disponible'
@@ -487,47 +504,22 @@ const COLOR_ESTADO = {
   disponible: { relleno: '#1E9E5A', borde: '#177C46', texto: 'Disponible' },
   reservado:  { relleno: '#D79626', borde: '#B87D18', texto: 'Reservado'  },
   vendido:    { relleno: '#CBD3DE', borde: '#AEB8C6', texto: 'Vendido'    },
+  // Del sistema real de INMOL: lotes que no están a la venta (uso interno,
+  // equipamiento, etc.), distintos de "vendido".
+  bloqueado:  { relleno: '#9AA5B1', borde: '#7A8492', texto: 'No disponible' },
   // Proyectos "de disposición": un solo color neutro para todas las áreas.
   unidad:     { relleno: '#3E7CB8', borde: '#2F5F8F', texto: 'Unidad'     }
 };
 
+/* Arma el plano agrupando los lotes por manzana real (cada una puede tener
+   una cantidad distinta de lotes) y acomoda esas manzanas en una grilla tipo
+   "estantería": de izquierda a derecha hasta llenar el ancho objetivo, y
+   salta de fila. Reemplaza al viejo esquema de manzanas todas iguales, que
+   sólo servía para datos de ejemplo. */
 function construirPlanoSVG(proyecto, lotes, proporcionObjetivo) {
-  const cfg = proyecto.plano;
   const NS = 'http://www.w3.org/2000/svg';
-  const porFila = Math.ceil(cfg.lotesPorManzana / 2);
-
-  const anchoLote = 38, altoLote = 72, calle = 52, margen = 44;
-  const anchoMz = porFila * anchoLote;
-  const altoMz = altoLote * 2;
-
-  /* Se elige la distribución de manzanas cuya proporción se acerque más a la
-     del contenedor real, para que los lotes salgan lo más grandes posible y
-     sean cómodos de tocar. En una pantalla horizontal las manzanas quedan en
-     fila; en un tótem vertical se apilan solas. */
-  const objetivo = proporcionObjetivo && isFinite(proporcionObjetivo) && proporcionObjetivo > 0.15
-    ? proporcionObjetivo : 2.05;
-
-  const dims = c => ({
-    cols: c,
-    filas: Math.ceil(cfg.manzanas / c),
-    W: margen * 2 + c * anchoMz + (c - 1) * calle,
-    H: margen * 2 + Math.ceil(cfg.manzanas / c) * altoMz +
-       (Math.ceil(cfg.manzanas / c) - 1) * calle + 52
-  });
-  // Se compara en escala logarítmica: así una proporción del doble y una de la
-  // mitad se penalizan igual, y no gana siempre la distribución más ancha.
-  const error = d => Math.abs(Math.log((d.W / d.H) / objetivo));
-  let mejor = dims(1);
-  for (let c = 2; c <= cfg.manzanas; c++) {
-    const d = dims(c);
-    if (error(d) < error(mejor)) mejor = d;
-  }
-  const { cols, filas, W, H } = mejor;
-
-  const svg = document.createElementNS(NS, 'svg');
-  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  svg.setAttribute('class', 'plano-svg');
-  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  const anchoLote = 34, altoLote = 32, margenCelda = 3;
+  const calleManz = 30, margen = 44, alturaEtiqueta = 22;
 
   const crear = (tag, attrs) => {
     const el = document.createElementNS(NS, tag);
@@ -535,44 +527,87 @@ function construirPlanoSVG(proyecto, lotes, proporcionObjetivo) {
     return el;
   };
 
+  /* Agrupar preservando el orden de llegada (ya vienen ordenados por
+     manzana y número). */
+  const manzanas = [];
+  const porNombre = new Map();
+  lotes.forEach((lote, idx) => {
+    let grupo = porNombre.get(lote.manzana);
+    if (!grupo) {
+      grupo = { nombre: lote.manzana, items: [] };
+      porNombre.set(lote.manzana, grupo);
+      manzanas.push(grupo);
+    }
+    grupo.items.push({ lote, idx });
+  });
+
+  /* Cada manzana es su propia mini-grilla, apaisada, del tamaño que le
+     corresponda según cuántos lotes tenga. */
+  manzanas.forEach(g => {
+    g.cols = Math.max(1, Math.round(Math.sqrt(g.items.length * 2)));
+    g.rows = Math.ceil(g.items.length / g.cols);
+    g.w = g.cols * anchoLote;
+    g.h = alturaEtiqueta + g.rows * altoLote;
+  });
+
+  /* Ancho objetivo de fila a partir del área total y la proporción real del
+     hueco disponible, para que en horizontal las manzanas queden en fila y
+     en un tótem vertical se apilen solas. */
+  const objetivo = proporcionObjetivo && isFinite(proporcionObjetivo) && proporcionObjetivo > 0.15
+    ? proporcionObjetivo : 2.05;
+  const areaTotal = manzanas.reduce((s, g) => s + g.w * g.h, 0);
+  const anchoObjetivo = Math.max(anchoLote * 6, Math.sqrt(areaTotal * objetivo));
+
+  let x = margen, y = margen, altoFila = 0, anchoMax = 0;
+  manzanas.forEach(g => {
+    if (x > margen && x + g.w > anchoObjetivo) {
+      x = margen;
+      y += altoFila + calleManz;
+      altoFila = 0;
+    }
+    g.x = x; g.y = y;
+    x += g.w + calleManz;
+    altoFila = Math.max(altoFila, g.h);
+    anchoMax = Math.max(anchoMax, x - calleManz);
+  });
+  const W = anchoMax + margen;
+  const H = y + altoFila + margen + 30;
+
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('class', 'plano-svg');
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
   /* Fondo: terreno + calles */
   svg.appendChild(crear('rect', { x: 0, y: 0, width: W, height: H, fill: '#FFFFFF', rx: 10 }));
 
-  lotes.forEach((lote, idx) => {
-    const m = lote.manzana - 1;
-    const col = m % cols, fila = Math.floor(m / cols);
-    const i = lote.numero - 1;
-    const filaLote = i < porFila ? 0 : 1;
-    const colLote = i < porFila ? i : i - porFila;
+  manzanas.forEach(gr => {
+    gr.items.forEach((it, i) => {
+      const col = i % gr.cols, fila = Math.floor(i / gr.cols);
+      const x = gr.x + col * anchoLote;
+      const y = gr.y + alturaEtiqueta + fila * altoLote;
 
-    const x = margen + col * (anchoMz + calle) + colLote * anchoLote;
-    const y = margen + fila * (altoMz + calle) + filaLote * altoLote;
-
-    const c = COLOR_ESTADO[lote.estado];
-    const g = crear('g', { class: 'lote', 'data-idx': idx, 'data-estado': lote.estado });
-    g.appendChild(crear('rect', {
-      x: x + 1.5, y: y + 1.5, width: anchoLote - 3, height: altoLote - 3,
-      rx: 3, fill: c.relleno, stroke: c.borde, 'stroke-width': 1,
-      'fill-opacity': lote.estado === 'vendido' ? 0.55 : 0.85
-    }));
-    const t = crear('text', {
-      x: x + anchoLote / 2, y: y + altoLote / 2 + 4,
-      'text-anchor': 'middle', class: 'lote-num'
+      const c = COLOR_ESTADO[it.lote.estado] || COLOR_ESTADO.bloqueado;
+      const g = crear('g', { class: 'lote', 'data-idx': it.idx, 'data-estado': it.lote.estado });
+      g.appendChild(crear('rect', {
+        x: x + margenCelda / 2, y: y + margenCelda / 2,
+        width: anchoLote - margenCelda, height: altoLote - margenCelda,
+        rx: 3, fill: c.relleno, stroke: c.borde, 'stroke-width': 1,
+        'fill-opacity': it.lote.estado === 'vendido' ? 0.55 : 0.85
+      }));
+      const t = crear('text', {
+        x: x + anchoLote / 2, y: y + altoLote / 2 + 4,
+        'text-anchor': 'middle', class: 'lote-num'
+      });
+      t.textContent = it.lote.numero;
+      g.appendChild(t);
+      svg.appendChild(g);
     });
-    t.textContent = lote.numero;
-    g.appendChild(t);
-    svg.appendChild(g);
-  });
 
-  /* Etiquetas de manzana */
-  for (let m = 0; m < cfg.manzanas; m++) {
-    const col = m % cols, fila = Math.floor(m / cols);
-    const x = margen + col * (anchoMz + calle) + anchoMz / 2;
-    const y = margen + fila * (altoMz + calle) - 12;
-    const t = crear('text', { x, y, 'text-anchor': 'middle', class: 'mz-label' });
-    t.textContent = `MANZANA ${m + 1}`;
+    const t = crear('text', { x: gr.x, y: gr.y + 14, class: 'mz-label' });
+    t.textContent = `MZ ${gr.nombre}`;
     svg.appendChild(t);
-  }
+  });
 
   /* Rosa de los vientos */
   const gN = crear('g', { transform: `translate(${W - margen - 6}, ${H - 34})` });
@@ -583,6 +618,113 @@ function construirPlanoSVG(proyecto, lotes, proporcionObjetivo) {
 
   return svg;
 }
+
+/* ============================================================================
+   PLANO REAL: la imagen oficial de INMOL (con su logo, colores y leyenda),
+   descargada del sistema de disponibilidad, con un punto superpuesto por
+   cada lote en su posición exacta. Se usa en vez de construirPlanoSVG()
+   cuando el proyecto trae plano.imagenReal.
+
+   Es un mapa Leaflet con CRS.Simple (coordenadas en píxeles de la imagen,
+   no geográficas) — el mismo mecanismo que usa el propio sistema de INMOL
+   para su plano interactivo. Así el operador puede acercarse con los dedos
+   a leer un lote puntual y alejarse para ver el proyecto completo, igual
+   que en la pestaña Ubicación.
+   ============================================================================ */
+const MapaPlano = {
+  mapa: null,
+  overlay: null,
+  marcadores: [],
+  lotes: null,
+  activo: false,
+
+  crear(contenedor, proyecto, lotes) {
+    this.destruir();
+    const cfg = proyecto.plano;
+    this.lotes = lotes;
+
+    const ancho = cfg.imagenAncho * cfg.escalaImagen;
+    const alto = cfg.imagenAlto * cfg.escalaImagen;
+    const bounds = [[-alto, 0], [0, ancho]];
+
+    this.mapa = L.map(contenedor, {
+      crs: L.CRS.Simple,
+      zoomControl: false,
+      attributionControl: false,
+      maxBoundsViscosity: 1.0,
+      // Sin esto, getBoundsZoom()/fitBounds() quedan atados al minZoom por
+      // defecto (0) y no dejan alejar lo suficiente para ver el plano
+      // completo — la imagen es mucho más grande que la pantalla.
+      minZoom: -10,
+      maxZoom: 4,
+      // Como en Ubicación: se arrastra y se pellizca, sin zoom accidental
+      // con la rueda ni doble toque.
+      scrollWheelZoom: false,
+      doubleClickZoom: false
+    });
+    L.control.zoom({ position: 'bottomright' }).addTo(this.mapa);
+
+    this.overlay = L.imageOverlay(cfg.imagenReal, bounds).addTo(this.mapa);
+
+    // No dejar que el arrastre saque el plano de foco: un margen chico
+    // alrededor del predio, ni la ciudad entera ni pegado al borde exacto.
+    const margen = Math.max(ancho, alto) * 0.12;
+    this.mapa.setMaxBounds([[-alto - margen, -margen], [margen, ancho + margen]]);
+
+    lotes.forEach((lote, idx) => {
+      if (lote.x == null || lote.y == null) return;
+      const latlng = [-(lote.y * cfg.escalaImagen), lote.x * cfg.escalaImagen];
+      const c = COLOR_ESTADO[lote.estado] || COLOR_ESTADO.bloqueado;
+      const m = L.circleMarker(latlng, {
+        radius: 6, color: c.borde, weight: 2,
+        fillColor: c.relleno, fillOpacity: .9
+      }).addTo(this.mapa);
+      m.loteIdx = idx;
+      m.on('click', () => seleccionarLote(idx));
+      this.marcadores.push(m);
+    });
+
+    this.activo = true;
+    // El contenedor puede estar oculto todavía (la pestaña no está a la
+    // vista): el encuadre correcto se recalcula recién cuando se muestra
+    // (ver mostrarSeccion en app.js), igual que con el mapa satelital.
+    this.mapa.fitBounds(bounds, { animate: false });
+  },
+
+  /* El encuadre inicial (fitBounds en crear()) puede haberse calculado con
+     el contenedor todavía oculto — igual que el mapa satelital, se repite
+     sin animación en cuanto la pestaña se hace visible de verdad. */
+  encuadrar() {
+    if (!this.mapa) return;
+    this.mapa.invalidateSize();
+    this.mapa.fitBounds(this.overlay.getBounds(), { animate: false });
+  },
+
+  filtrar(estado) {
+    if (!this.activo) return;
+    this.marcadores.forEach(m => {
+      const apagar = estado !== 'todos' && this.lotes[m.loteIdx].estado !== estado;
+      m.setStyle({ opacity: apagar ? .15 : 1, fillOpacity: apagar ? .15 : .9 });
+    });
+  },
+
+  seleccionar(idx) {
+    if (!this.activo) return;
+    this.marcadores.forEach(m => {
+      const esSel = m.loteIdx === idx;
+      m.setStyle({ weight: esSel ? 4 : 2, radius: esSel ? 9 : 6 });
+      if (esSel) m.bringToFront();
+    });
+  },
+
+  destruir() {
+    if (this.mapa) { this.mapa.remove(); this.mapa = null; }
+    this.overlay = null;
+    this.marcadores = [];
+    this.lotes = null;
+    this.activo = false;
+  }
+};
 
 /* ============================================================================
    MAPA DE PUNTOS DE REFERENCIA (esquemático, legible a distancia)

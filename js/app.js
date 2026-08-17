@@ -243,6 +243,9 @@ function mostrarSeccion(id) {
   if (id === 'ubicacion') {
     setTimeout(() => MapaReal.redimensionar(), 60);
   }
+  if (id === 'lotes' && MapaPlano.activo) {
+    setTimeout(() => MapaPlano.encuadrar(), 60);
+  }
   reiniciarInactividad();
 }
 
@@ -355,16 +358,26 @@ function llenarReferencias(p) {
 /* --- 3.4 Lotes ----------------------------------------------------------- */
 function llenarLotes(p) {
   const cont = $('#planoCont');
-  cont.innerHTML = '';
-  /* El plano se arma según la forma real del hueco disponible: en horizontal
-     las manzanas quedan en fila, en un tótem vertical se apilan. */
-  const proporcion = cont.clientHeight > 0 ? cont.clientWidth / cont.clientHeight : 0;
-  const svg = construirPlanoSVG(p, Estado.lotes, proporcion);
-  cont.appendChild(svg);
 
-  svg.querySelectorAll('.lote').forEach(g => {
-    g.addEventListener('click', () => seleccionarLote(+g.dataset.idx));
-  });
+  /* Si INMOL entregó el plano oficial (con su logo y colores), se usa un
+     visor Leaflet con esa imagen real y un punto por lote encima — se puede
+     acercar y alejar con los dedos igual que en Ubicación. Si no, el
+     esquema genérico (SVG estático, sin zoom). */
+  if (p.plano.imagenReal) {
+    cont.innerHTML = '';
+    MapaPlano.crear(cont, p, Estado.lotes);
+  } else {
+    MapaPlano.destruir();
+    cont.innerHTML = '';
+    /* El plano se arma según la forma real del hueco disponible: en horizontal
+       las manzanas quedan en fila, en un tótem vertical se apilan. */
+    const proporcion = cont.clientHeight > 0 ? cont.clientWidth / cont.clientHeight : 0;
+    const svg = construirPlanoSVG(p, Estado.lotes, proporcion);
+    cont.appendChild(svg);
+    svg.querySelectorAll('.lote').forEach(g => {
+      g.addEventListener('click', () => seleccionarLote(+g.dataset.idx));
+    });
+  }
 
   $('#fichaVacia').hidden = false;
   $('#fichaDatos').hidden = true;
@@ -375,24 +388,40 @@ function llenarLotes(p) {
   $('#lotesBarra').hidden = !!p.plano.disposicion;
   if (p.plano.disposicion) return;
 
-  const cuenta = e => Estado.lotes.filter(l => l.estado === e).length;
-  $('#cntDisp').textContent = cuenta('disponible');
-  $('#cntRes').textContent  = cuenta('reservado');
-  $('#cntVen').textContent  = cuenta('vendido');
+  /* Leyenda y filtros se arman según los estados que realmente aparecen en
+     este proyecto (con datos reales no todos tienen "reservado", y sólo
+     El Encanto y El Encanto 2 tienen "bloqueado"). */
+  const ORDEN_ESTADOS = ['disponible', 'reservado', 'vendido', 'bloqueado'];
+  const presentes = ORDEN_ESTADOS.filter(e => Estado.lotes.some(l => l.estado === e));
 
-  const filtros = [
-    { id: 'todos',      etq: 'Todos' },
-    { id: 'disponible', etq: 'Sólo disponibles' },
-    { id: 'reservado',  etq: 'Reservados' },
-    { id: 'vendido',    etq: 'Vendidos' }
-  ];
+  const ly = $('#leyenda');
+  ly.innerHTML = '';
+  presentes.forEach(e => {
+    const cantidad = Estado.lotes.filter(l => l.estado === e).length;
+    const span = document.createElement('span');
+    span.className = 'lg';
+    const i = document.createElement('i');
+    i.style.background = COLOR_ESTADO[e].relleno;
+    span.appendChild(i);
+    span.append(` ${COLOR_ESTADO[e].texto} `);
+    const b = document.createElement('b');
+    b.textContent = cantidad;
+    span.appendChild(b);
+    ly.appendChild(span);
+  });
+
   const cf = $('#filtros');
   cf.innerHTML = '';
-  filtros.forEach(f => {
+  const bTodos = document.createElement('button');
+  bTodos.className = 'filtro activo';
+  bTodos.textContent = 'Todos';
+  bTodos.addEventListener('click', () => aplicarFiltro('todos', bTodos));
+  cf.appendChild(bTodos);
+  presentes.forEach(e => {
     const b = document.createElement('button');
-    b.className = 'filtro' + (f.id === 'todos' ? ' activo' : '');
-    b.textContent = f.etq;
-    b.addEventListener('click', () => aplicarFiltro(f.id, b));
+    b.className = 'filtro';
+    b.textContent = COLOR_ESTADO[e].texto;
+    b.addEventListener('click', () => aplicarFiltro(e, b));
     cf.appendChild(b);
   });
 }
@@ -400,10 +429,14 @@ function llenarLotes(p) {
 function aplicarFiltro(id, boton) {
   Estado.filtro = id;
   $$('.filtro').forEach(b => b.classList.toggle('activo', b === boton));
-  $$('.plano-svg .lote').forEach(g => {
-    const apagar = id !== 'todos' && g.dataset.estado !== id;
-    g.classList.toggle('apagado', apagar);
-  });
+  if (MapaPlano.activo) {
+    MapaPlano.filtrar(id);
+  } else {
+    $$('.plano-svg .lote').forEach(g => {
+      const apagar = id !== 'todos' && g.dataset.estado !== id;
+      g.classList.toggle('apagado', apagar);
+    });
+  }
   reiniciarInactividad();
 }
 
@@ -412,12 +445,17 @@ function seleccionarLote(idx) {
   if (!l) return;
   Estado.loteSel = l;
 
-  $$('.plano-svg .lote').forEach(g => g.classList.toggle('sel', +g.dataset.idx === idx));
+  if (MapaPlano.activo) {
+    MapaPlano.seleccionar(idx);
+  } else {
+    $$('.plano-svg .lote').forEach(g => g.classList.toggle('sel', +g.dataset.idx === idx));
+  }
 
   const est = $('#fEstado');
   if (Estado.proyecto.plano.disposicion) {
-    // Sin estado comercial: la etiqueta destacada es la categoría del área.
-    est.textContent = l.categoria;
+    // Sin estado comercial: la etiqueta destacada es la categoría del área
+    // si existe (datos de ejemplo) o el nombre genérico de la unidad.
+    est.textContent = l.categoria || (Estado.proyecto.plano.unidad || 'Unidad');
     est.className = 'ficha-estado unidad';
   } else {
     est.textContent = COLOR_ESTADO[l.estado].texto;
@@ -426,8 +464,13 @@ function seleccionarLote(idx) {
 
   $('#fCodigo').textContent = l.codigo;
   $('#fManzana').textContent = l.manzana;
-  $('#fSuperficie').textContent = `${l.superficie} m²`;
-  $('#fCategoria').textContent = l.categoria;
+
+  // La disponibilidad real (snapshot de INMOL) no trae superficie ni
+  // categoría por unidad — esas filas sólo se muestran cuando el dato existe.
+  $('#filaSuperficie').hidden = l.superficie == null;
+  if (l.superficie != null) $('#fSuperficie').textContent = `${l.superficie} m²`;
+  $('#filaCategoria').hidden = !l.categoria;
+  if (l.categoria) $('#fCategoria').textContent = l.categoria;
 
   $('#fichaVacia').hidden = true;
   $('#fichaDatos').hidden = false;
