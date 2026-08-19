@@ -185,10 +185,12 @@ const PANEL = {
         { valor: '8vo anillo',  etiqueta: 'y Av. Santos Dumont' }
       ],
 
-      // Puntos de referencia reales, investigados en Google Maps a partir de
-      // la ubicación del proyecto (distancia en auto, la que ve un comprador).
+      // Puntos de referencia reales. Los dos primeros son los "Ingresos" del
+      // mapa de accesos oficial de INMOL; el resto se investigó en Google
+      // Maps a partir de la ubicación del proyecto (distancia en auto).
       referencias: [
-        { nombre: 'Av. Santos Dumont',        distancia: '0.1 km', icono: 'via',      angulo: 45  },
+        { nombre: 'Ingreso: Av. Santos Dumont Final',           distancia: '0.1 km', icono: 'via', angulo: 45  },
+        { nombre: 'Ingreso: Doble Vía a La Guardia (8vo anillo)', distancia: '0.2 km', icono: 'via', angulo: 200 },
         { nombre: 'Centro Educ. Luz y Verdad', distancia: '2.4 km', icono: 'colegio',  angulo: 228,
           coordenadas: { lat: -17.8762346, lng: -63.1872295 } },
         { nombre: 'Centro de Salud Cortez',   distancia: '1.4 km', icono: 'salud',    angulo: 3,
@@ -209,6 +211,7 @@ const PANEL = {
       fichaTecnica: [
         { campo: 'Tipología',           valor: 'Centro comercial' },
         { campo: 'Ubicación',           valor: 'Zona Sudeste, 8vo anillo y Av. Santos Dumont' },
+        { campo: 'Ingresos',            valor: 'Av. Santos Dumont Final (≈30 min del centro) · Doble Vía a La Guardia, 8vo anillo (≈32 min)' },
         { campo: 'Terreno',             valor: '9.584,34 m²' },
         { campo: 'Construcción',        valor: '8.531,93 m²' },
         { campo: 'Cubierta',            valor: '6.057,94 m² (326 locales comerciales)' },
