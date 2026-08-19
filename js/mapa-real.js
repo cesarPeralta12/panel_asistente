@@ -24,6 +24,7 @@ const MapaReal = {
   proyectoTeselas: null,   // id del proyecto cuyas teselas están cargadas
   marcadores: [],
   marcadoresOtros: [],     // pines discretos de los demás proyectos
+  rutas: [],               // líneas de acceso (ver dibujarRutas)
   disponible: false,
   proyectoActual: null,
   limiteProyecto: null,    // límite de arrastre cuando se está en zoom de detalle
@@ -200,10 +201,44 @@ const MapaReal = {
       });
   },
 
+  /* Rutas de acceso reales (calculadas con OSRM sobre calles reales, ver
+     js/rutas.js) desde puntos de referencia hasta el proyecto — el mismo
+     "por dónde ir" que muestran los mapas de accesos oficiales de INMOL,
+     con una línea gruesa de color y un número al inicio de cada una. */
+  dibujarRutas(proyecto) {
+    this.rutas.forEach(l => this.mapa.removeLayer(l));
+    this.rutas = [];
+
+    const lista = (typeof RUTAS !== 'undefined' ? RUTAS[proyecto.id] : null) || [];
+    lista.forEach((ruta, i) => {
+      // Trazo blanco debajo, más ancho, para que la línea de color se lea
+      // bien sobre cualquier zona de la foto satelital (oscura o clara).
+      const casing = L.polyline(ruta.puntos, {
+        color: '#FFFFFF', weight: 7, opacity: .85, lineCap: 'round', lineJoin: 'round'
+      }).addTo(this.mapa);
+      const linea = L.polyline(ruta.puntos, {
+        color: ruta.color, weight: 4, opacity: .95, lineCap: 'round', lineJoin: 'round'
+      }).addTo(this.mapa).bindPopup(`<b>${ruta.nombre}</b>`);
+      this.rutas.push(casing, linea);
+
+      const inicio = ruta.puntos[0];
+      const numero = L.marker(inicio, {
+        icon: L.divIcon({
+          className: 'pin-ruta-num',
+          html: `<span style="background:${ruta.color}">${i + 1}</span>`,
+          iconSize: [26, 26], iconAnchor: [13, 13]
+        }),
+        zIndexOffset: 500
+      }).addTo(this.mapa).bindPopup(`<b>${ruta.nombre}</b>`);
+      this.rutas.push(numero);
+    });
+  },
+
   dibujar(proyecto) {
     this.proyectoActual = proyecto;
     this.marcadores.forEach(m => this.mapa.removeLayer(m));
     this.marcadores = [];
+    this.dibujarRutas(proyecto);
 
     const centro = [proyecto.coordenadas.lat, proyecto.coordenadas.lng];
 
