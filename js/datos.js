@@ -93,16 +93,17 @@ const PANEL = {
         { valor: 'Km 16',        etiqueta: 'Doble Vía La Guardia' }
       ],
 
-      // Puntos de referencia reales, investigados en Google Maps a partir de
-      // la ubicación del proyecto (distancia en auto, la que ve un comprador).
+      // Puntos de referencia del mapa oficial de INMOL para este proyecto
+      // ("VÍAS DE ACCESO" + puntos de interés de La Guardia), ubicados en
+      // Google Maps para tener distancia real y coordenadas exactas.
       referencias: [
         { nombre: 'Av. Doble Vía La Guardia',      distancia: '0.2 km', icono: 'via',      angulo: 20 },
-        { nombre: 'U.E. Jaime Escalante',          distancia: '3.2 km', icono: 'colegio',  angulo: 102,
-          coordenadas: { lat: -17.9004316, lng: -63.2720356 } },
+        { nombre: 'U.E. Victoria',                 distancia: '2.8 km', icono: 'colegio',  angulo: 250,
+          coordenadas: { lat: -17.8966432, lng: -63.3204914 } },
         { nombre: 'Centro de Salud San Silvestre', distancia: '2.9 km', icono: 'salud',    angulo: 152,
           coordenadas: { lat: -17.8905435, lng: -63.2876494 } },
-        { nombre: 'Mercado La Guardia',            distancia: '6.7 km', icono: 'comercio', angulo: 249,
-          coordenadas: { lat: -17.8932282, lng: -63.3290516 } },
+        { nombre: 'Mercado Campesino La Guardia',  distancia: '2.9 km', icono: 'comercio', angulo: 238,
+          coordenadas: { lat: -17.8914751, lng: -63.3186963 } },
         { nombre: 'Plaza Principal de La Guardia', distancia: '6.8 km', icono: 'plaza',    angulo: 248,
           coordenadas: { lat: -17.8918621, lng: -63.3310429 } }
       ],
