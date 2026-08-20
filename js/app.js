@@ -80,11 +80,24 @@ function svgIcono(d, tam = 22) {
    NAVEGACIÓN ENTRE PANTALLAS
    ============================================================================ */
 function irA(pantalla) {
+  const anterior = Estado.pantalla;
   $$('.pantalla').forEach(p => p.classList.toggle('activa', p.id === pantalla));
   Estado.pantalla = pantalla;
 
-  if (pantalla === 'atraccion') iniciarAtraccion();
-  else detenerAtraccion();
+  /* El asistente acompaña todas las pantallas, incluida la de atracción:
+     se presenta solo al entrar, sin que nadie toque nada. */
+  $('#asistente').classList.add('visible');
+  construirOpcionesAsistente();
+
+  if (pantalla === 'atraccion') {
+    iniciarAtraccion();
+    if (anterior !== 'atraccion') escribir(PANEL.asistente.saludo);
+  } else {
+    detenerAtraccion();
+    /* Alguien acaba de despertar la pantalla: es el momento de hablar. */
+    if (anterior === 'atraccion') decir(PANEL.asistente.saludo, 'saludo');
+    else escribir(saludoDeContexto());
+  }
 
   reiniciarInactividad();
 }
@@ -531,8 +544,102 @@ function alternarDiagnostico() {
 /* ============================================================================
    7. ARRANQUE
    ============================================================================ */
+/* ============================================================================
+   ASISTENTE DE VOZ
+   ============================================================================ */
+function saludoDeContexto() {
+  return Estado.proyecto
+    ? `Estamos viendo ${Estado.proyecto.nombre}. ¿Qué desea saber?`
+    : PANEL.asistente.saludo;
+}
+
+/* Cambia el texto del asistente sin hablar */
+function escribir(texto) {
+  $('#asisBurbuja').textContent = texto;
+  $('#asisEstado').textContent = 'Toque una pregunta';
+}
+
+function callarAsistente() {
+  Voz.callar();
+  $('#asisAvatar').classList.remove('hablando');
+  $('#asisEstado').textContent = 'Toque una pregunta';
+}
+
+/* clave: identifica el audio pregrabado (assets/voz/indice.js). Si falta,
+   Voz recurre al motor de voz del sistema. */
+function decir(texto, clave) {
+  $('#asisBurbuja').textContent = texto;
+  $('#asisEstado').textContent = 'Hablando…';
+  $('#asisAvatar').classList.add('hablando');
+  Voz.hablar(texto, () => {
+    $('#asisAvatar').classList.remove('hablando');
+    $('#asisEstado').textContent = 'Toque una pregunta';
+  }, clave);
+}
+
+/* Presentación al entrar. Los navegadores bloquean el audio antes de que el
+   usuario interactúe; en el kiosco no pasa porque INICIAR PANEL.bat arranca
+   Chrome con --autoplay-policy=no-user-gesture-required. Si igual quedara
+   bloqueado, el texto queda en pantalla y la voz suena al primer toque. */
+function presentarse() {
+  escribir(PANEL.asistente.saludo);
+  decir(PANEL.asistente.saludo, 'saludo');
+
+  setTimeout(() => {
+    if (Voz.sonando()) return;
+    const alTocar = () => {
+      document.removeEventListener('pointerdown', alTocar, true);
+      if (!Voz.sonando()) decir(PANEL.asistente.saludo, 'saludo');
+    };
+    document.addEventListener('pointerdown', alTocar, true);
+  }, 700);
+}
+
+function construirOpcionesAsistente() {
+  const cont = $('#asisOpciones');
+  cont.innerHTML = '';
+  const flecha = svgIcono('M9 6l6 6-6 6', 18);
+
+  const g1 = document.createElement('div');
+  g1.className = 'asis-grupo';
+  g1.textContent = Estado.proyecto ? 'Cambiar de proyecto' : 'Elija un proyecto';
+  cont.appendChild(g1);
+
+  PANEL.proyectos.forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'asis-opcion' + (Estado.proyecto && Estado.proyecto.id === p.id ? ' activa' : '');
+    b.innerHTML = `<span>${p.nombre}</span>${flecha}`;
+    b.addEventListener('click', () => {
+      abrirProyecto(p.id);
+      decir(`${p.nombre}. ${p.claim} ${p.descripcion}`, `proyecto-${p.id}`);
+    });
+    cont.appendChild(b);
+  });
+
+  if (Estado.proyecto) {
+    const g2 = document.createElement('div');
+    g2.className = 'asis-grupo';
+    g2.textContent = 'Preguntas frecuentes';
+    cont.appendChild(g2);
+
+    PANEL.asistente.preguntas.forEach(q => {
+      const b = document.createElement('button');
+      b.className = 'asis-opcion';
+      b.innerHTML = `<span>${q.texto}</span>${flecha}`;
+      b.addEventListener('click', () => {
+        if (q.seccion) mostrarSeccion(q.seccion);
+        decir(q.respuesta(Estado.proyecto), `${Estado.proyecto.id}--${q.id}`);
+        $$('.asis-opcion').forEach(o => o.classList.remove('activa'));
+        b.classList.add('activa');
+      });
+      cont.appendChild(b);
+    });
+  }
+}
+
 function iniciar() {
   if (QUIETO) document.body.classList.add('sin-animacion');
+  Voz.iniciar();
   $('#aviso').hidden = !PANEL.config.datosDeEjemplo;
   construirMenu();
 
@@ -540,6 +647,7 @@ function iniciar() {
   $('#atraccion').addEventListener('click', () => irA('menu'));
 
   $('#btnVolver').addEventListener('click', () => { Estado.proyecto = null; irA('menu'); });
+  $('#asisSilencio').addEventListener('click', callarAsistente);
   $('#btnVerTodo').addEventListener('click', () => MapaReal.centrar());
   $('#btnAcercar').addEventListener('click', () => MapaReal.acercar());
   $('#btnCerrarTour').addEventListener('click', cerrarTour360);
@@ -581,6 +689,11 @@ function iniciar() {
      cualquier vista concreta — útil para pruebas y para capturas. */
   aplicarRuta();
   window.addEventListener('hashchange', aplicarRuta);
+
+  /* El asistente se presenta solo, sin botón. El texto se escribe siempre;
+     la voz sólo cuando el panel está en uso real (no al tomar capturas). */
+  escribir(PANEL.asistente.saludo);
+  if (!QUIETO) setTimeout(presentarse, 600);
 }
 
 function aplicarRuta() {

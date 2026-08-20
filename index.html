@@ -194,6 +194,29 @@
 </div>
 
 <!-- Aviso de contenido de demostración (se apaga desde datos.js) -->
+<!-- ══════════════════════════════════════════════════════════════════════════
+     ASISTENTE DE VOZ
+     Tarjeta fija a la derecha, siempre visible. No hay botón: al entrar se
+     presenta solo y cuenta qué proyectos hay.
+     ══════════════════════════════════════════════════════════════════════ -->
+<aside id="asistente" class="asistente">
+  <div class="asis-cabecera">
+    <div class="asis-avatar" id="asisAvatar">
+      <span class="eq"><i></i><i></i><i></i><i></i><i></i></span>
+    </div>
+    <div class="asis-id">
+      <h3>Asistente INMOL</h3>
+      <span class="asis-estado" id="asisEstado">Toque una pregunta</span>
+    </div>
+  </div>
+  <div class="asis-burbuja" id="asisBurbuja"></div>
+  <div class="asis-opciones" id="asisOpciones"></div>
+  <div class="asis-pie">
+    <button class="asis-silencio" id="asisSilencio">Detener voz</button>
+    <span class="asis-nota">Funciona sin conexión</span>
+  </div>
+</aside>
+
 <div id="aviso" class="aviso" hidden>Datos de ejemplo</div>
 
 <!-- Panel técnico (tecla D) -->
@@ -207,9 +230,11 @@
 <script src="js/disponibilidad-libertad.js?v=6"></script>
 <script src="js/disponibilidad-el-encanto-2.js?v=6"></script>
 <script src="js/rutas.js?v=6"></script>
+<script src="assets/voz/indice.js?v=6"></script>
 <script src="js/datos.js?v=6"></script>
 <script src="js/mapas.js?v=6"></script>
 <script src="js/mapa-real.js?v=6"></script>
+<script src="js/voz.js?v=6"></script>
 <script src="js/app.js?v=6"></script>
 </body>
 </html>
