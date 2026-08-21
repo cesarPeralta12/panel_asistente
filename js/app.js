@@ -15,7 +15,10 @@ const Estado = {
   seccion: 'resumen',
   temporizadorAtraccion: null,
   temporizadorInactividad: null,
-  indiceAtraccion: 0
+  indiceAtraccion: 0,
+  /* Ya se saludó a este visitante. Se reinicia cuando el panel vuelve
+     solo al modo atracción, que es cuando llega alguien nuevo. */
+  yaSaludo: false
 };
 
 /* Cache de renders satelitales: se dibuja una vez y se reutiliza siempre. */
@@ -94,9 +97,15 @@ function irA(pantalla) {
     if (anterior !== 'atraccion') escribir(PANEL.asistente.saludo);
   } else {
     detenerAtraccion();
-    /* Alguien acaba de despertar la pantalla: es el momento de hablar. */
-    if (anterior === 'atraccion') decir(PANEL.asistente.saludo, 'saludo');
-    else escribir(saludoDeContexto());
+    /* Alguien despertó la pantalla. Sólo se saluda si a este visitante no se
+       le saludó ya: al cargar el panel la presentación suena sola, y sin esta
+       comprobación el primer toque la repetía desde el principio. */
+    if (anterior === 'atraccion' && !Estado.yaSaludo) {
+      Estado.yaSaludo = true;
+      decir(PANEL.asistente.saludo, 'saludo');
+    } else {
+      escribir(saludoDeContexto());
+    }
   }
 
   reiniciarInactividad();
@@ -514,6 +523,8 @@ function reiniciarInactividad() {
   clearTimeout(Estado.temporizadorInactividad);
   if (QUIETO || Estado.pantalla === 'atraccion') return;
   Estado.temporizadorInactividad = setTimeout(() => {
+    /* Vuelve al modo atracción: el próximo que toque es otro visitante. */
+    Estado.yaSaludo = false;
     Estado.proyecto = null;
     irA('atraccion');
   }, PANEL.config.segundosInactividad * 1000);
@@ -556,7 +567,8 @@ function saludoDeContexto() {
 /* Cambia el texto del asistente sin hablar */
 function escribir(texto) {
   $('#asisBurbuja').textContent = texto;
-  $('#asisEstado').textContent = 'Toque una pregunta';
+  // Si todavía está hablando, no se le cambia el rótulo a «Toque una pregunta».
+  if (!Voz.sonando()) $('#asisEstado').textContent = 'Toque una pregunta';
 }
 
 function callarAsistente() {
@@ -582,6 +594,7 @@ function decir(texto, clave) {
    Chrome con --autoplay-policy=no-user-gesture-required. Si igual quedara
    bloqueado, el texto queda en pantalla y la voz suena al primer toque. */
 function presentarse() {
+  Estado.yaSaludo = true;
   escribir(PANEL.asistente.saludo);
   decir(PANEL.asistente.saludo, 'saludo');
 
