@@ -884,6 +884,8 @@ body.sin-animacion .atr-fondo > .visible {
   padding: .25rem .7rem; box-shadow: 0 2px 8px rgba(0,0,0,.16);
 }
 .pin-ref-txt b { display: block; font-weight: 500; color: var(--rojo); font-size: .72rem; }
+/* Referencia que cae sobre otra: su etiqueta va arriba del pin, no abajo */
+.pin-ref-alto .pin-ref-txt { top: auto; bottom: 2.9rem; }
 
 /* Pin discreto de los otros proyectos: visible al alejarse del mapa */
 .pin-otro { display: grid; place-items: center; cursor: pointer; }
@@ -902,12 +904,43 @@ body.sin-animacion .atr-fondo > .visible {
   padding: .25rem .7rem; box-shadow: 0 2px 8px rgba(0,0,0,.16);
 }
 
+/* --- Guía de calles sobre el satelital (ver dibujarCalles en mapa-real.js) --
+   Texto blanco con contorno oscuro: es lo único que se lee igual de bien sobre
+   un techo claro, un baldío o el monte. El halo va con text-shadow en vez de
+   -webkit-text-stroke porque éste adelgaza la letra y a este tamaño se pierde. */
+.rotulo-calle {
+  pointer-events: none;
+  display: flex; align-items: center; justify-content: center;
+  white-space: nowrap;
+}
+.rotulo-calle span {
+  position: absolute; transform: translate(-50%, -50%);
+  font-size: .72rem; font-weight: 600; letter-spacing: .01em;
+  color: #FFFFFF;
+  text-shadow: 0 0 3px rgba(0,0,0,.95), 0 0 6px rgba(0,0,0,.75),
+               0 1px 2px rgba(0,0,0,.9);
+}
+.rotulo-calle-troncal span { font-size: .82rem; font-weight: 700; }
+
 /* Número al inicio de cada ruta de acceso (ver dibujarRutas en mapa-real.js) */
 .pin-ruta-num span {
   display: grid; place-items: center;
   width: 26px; height: 26px; border-radius: 50%;
   color: #fff; font-size: .78rem; font-weight: 700;
   border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,.35);
+}
+/* Nombre de la avenida por la que se ingresa, bajo el número */
+/* Ingreso que arranca en el mismo punto que otro —los dos accesos al centro
+   comercial salen del mismo lugar del centro—: se lo sube para que los dos
+   números y los dos nombres queden a la vista. */
+.pin-ruta-alto > span { transform: translateY(-24px); }
+.pin-ruta-alto .pin-ruta-via { top: auto !important; bottom: 54px; }
+.pin-ruta-num .pin-ruta-via {
+  position: absolute; top: 30px; left: 50%; transform: translateX(-50%);
+  white-space: nowrap; font-size: .72rem; font-weight: 600;
+  color: var(--texto); background: rgba(255,255,255,.94);
+  border-radius: 100px; padding: .2rem .6rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,.18);
 }
 
 /* --- Aviso de contenido de demostración ---------------------------------- */

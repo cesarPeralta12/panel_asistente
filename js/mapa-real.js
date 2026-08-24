@@ -25,6 +25,7 @@ const MapaReal = {
   marcadores: [],
   marcadoresOtros: [],     // pines discretos de los demás proyectos
   rutas: [],               // líneas de acceso (ver dibujarRutas)
+  calles: [],              // guía de nombres de calles (ver dibujarCalles)
   disponible: false,
   proyectoActual: null,
   limiteProyecto: null,    // límite de arrastre cuando se está en zoom de detalle
@@ -67,10 +68,10 @@ const MapaReal = {
     });
   },
 
-  iconoReferencia(ref) {
+  iconoReferencia(ref, arriba) {
     const d = (typeof ICONOS !== 'undefined' && ICONOS[ref.icono]) || '';
     return L.divIcon({
-      className: 'pin-ref',
+      className: 'pin-ref' + (arriba ? ' pin-ref-alto' : ''),
       html: '<span class="pin-ref-circulo">' +
             `<svg viewBox="0 0 28 28" width="22" height="22"><path d="${d}" fill="none" ` +
             'stroke="#E3333E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
@@ -130,6 +131,10 @@ const MapaReal = {
       // El límite de arrastre depende del zoom: alejado, toda la ciudad;
       // acercado, sólo el área con detalle descargada del proyecto abierto.
       this.mapa.on('zoomend', () => this.actualizarLimites());
+      /* Los rótulos de calle se filtran y se reorientan al cambiar el zoom:
+         de lejos sólo las troncales, de cerca todas. */
+      this.mapa.on('zoomend', () => requestAnimationFrame(() => this.actualizarCalles()));
+      this.mapa.on('zoomend', () => this.actualizarReferencias());
       this.actualizarLimites();
     }
 
@@ -205,11 +210,23 @@ const MapaReal = {
      js/rutas.js) desde puntos de referencia hasta el proyecto — el mismo
      "por dónde ir" que muestran los mapas de accesos oficiales de INMOL,
      con una línea gruesa de color y un número al inicio de cada una. */
+  /* Distancia aproximada en metros entre dos [lat, lng]. */
+  metros(a, b) {
+    const dy = (b[0] - a[0]) * 111320;
+    const dx = (b[1] - a[1]) * 111320 * Math.cos(a[0] * Math.PI / 180);
+    return Math.hypot(dx, dy);
+  },
+
   dibujarRutas(proyecto) {
     this.rutas.forEach(l => this.mapa.removeLayer(l));
     this.rutas = [];
 
     const lista = (typeof RUTAS !== 'undefined' ? RUTAS[proyecto.id] : null) || [];
+    /* Varios ingresos pueden salir de la misma avenida —en El Encanto los tres
+       nacen de la Doble Vía—. El rótulo se escribe una sola vez por avenida:
+       repetido tres veces sólo tapa el mapa. */
+    const avenidasPuestas = new Set();
+    const arranques = [];
     lista.forEach((ruta, i) => {
       // Trazo blanco debajo, más ancho, para que la línea de color se lea
       // bien sobre cualquier zona de la foto satelital (oscura o clara).
@@ -221,16 +238,133 @@ const MapaReal = {
       }).addTo(this.mapa).bindPopup(`<b>${ruta.nombre}</b>`);
       this.rutas.push(casing, linea);
 
+      /* Marca de arranque: el número de ingreso y, debajo, la avenida por la
+         que se llega. Sin esto la línea parece nacer de la nada; con el rótulo
+         se lee de un vistazo «se entra por tal avenida». */
       const inicio = ruta.puntos[0];
+      const repetida = ruta.desde && avenidasPuestas.has(ruta.desde);
+      if (ruta.desde) avenidasPuestas.add(ruta.desde);
+      /* Si justo ahí ya hay un pin de referencia —en El Encanto 2 el arranque
+         cae sobre el «Cruce Km 13»— el rótulo diría dos veces lo mismo y los
+         globos se pisan. En ese caso el nombre queda sólo en el popup. */
+      const yaHayPin = (proyecto.referencias || []).some(ref => {
+        const p = this.posicionReferencia(proyecto, ref);
+        return this.metros(inicio, [p[0], p[1]]) < 200;
+      });
+      const rotulo = (ruta.desde && !repetida && !yaHayPin)
+        ? `<b class="pin-ruta-via">${ruta.desde}</b>` : '';
+      /* Los dos ingresos del centro comercial salen del mismo punto del centro
+         de la ciudad: sin esto el ① queda escondido debajo del ②. */
+      const encimado = arranques.some(p => this.metros(p, inicio) < 250);
+      arranques.push(inicio);
       const numero = L.marker(inicio, {
         icon: L.divIcon({
-          className: 'pin-ruta-num',
-          html: `<span style="background:${ruta.color}">${i + 1}</span>`,
+          className: 'pin-ruta-num' + (encimado ? ' pin-ruta-alto' : ''),
+          html: `<span style="background:${ruta.color}">${i + 1}</span>${rotulo}`,
           iconSize: [26, 26], iconAnchor: [13, 13]
         }),
         zIndexOffset: 500
-      }).addTo(this.mapa).bindPopup(`<b>${ruta.nombre}</b>`);
+      }).addTo(this.mapa)
+        .bindPopup(`<b>${ruta.nombre}</b>` +
+                   (ruta.desde ? `<br>Se llega por ${ruta.desde}` : ''));
       this.rutas.push(numero);
+    });
+  },
+
+  /* ==========================================================================
+     GUÍA DE CALLES Y AVENIDAS
+     --------------------------------------------------------------------------
+     INMOL pidió ver los nombres de las calles sobre el satelital, «como en
+     Google Maps». Google no sirve sin conexión —sus condiciones prohíben
+     guardar las teselas— y la capa de rótulos de Esri no tiene datos de
+     Bolivia arriba del zoom 16. Así que los nombres vienen de OpenStreetMap
+     (js/calles.js) y se dibujan acá: se leen nítidos a cualquier zoom, giran
+     con la calle y ocupan unos pocos KB.
+     ========================================================================== */
+  dibujarCalles(proyecto) {
+    this.calles.forEach(c => this.mapa.removeLayer(c.capa));
+    this.calles = [];
+    const lista = (typeof CALLES !== 'undefined' ? CALLES[proyecto.id] : null) || [];
+
+    lista.forEach(calle => {
+      const grupo = L.layerGroup();
+
+      /* Las avenidas llevan además una línea tenue: así el nombre se apoya en
+         algo y no queda flotando sobre el barrio. Las calles de barrio ya se
+         distinguen solas en la foto satelital. */
+      if (calle.r <= 2) {
+        calle.t.forEach(tramo => {
+          L.polyline(tramo, {
+            color: '#FFFFFF', weight: calle.r === 1 ? 3 : 2,
+            opacity: calle.r === 1 ? .5 : .35, interactive: false
+          }).addTo(grupo);
+        });
+      }
+
+      const rotulo = L.marker(this.puntoMedio(calle.p), {
+        icon: L.divIcon({
+          className: 'rotulo-calle' + (calle.r === 1 ? ' rotulo-calle-troncal' : ''),
+          html: `<span>${calle.n}</span>`,
+          iconSize: [0, 0], iconAnchor: [0, 0]
+        }),
+        interactive: false,
+        zIndexOffset: -400              // siempre por debajo de pines y rutas
+      }).addTo(grupo);
+
+      this.calles.push({ rango: calle.r, largo: calle.l, puntos: calle.p,
+                         capa: grupo, rotulo });
+    });
+    // No se agregan todavía: se espera a que el mapa tenga vista (ver dibujar).
+  },
+
+  /* Punto medio real del tramo (a mitad de su recorrido, no del array). */
+  puntoMedio(pts) {
+    const total = pts.reduce((d, _, i) => i ? d + this.metros(pts[i - 1], pts[i]) : 0, 0);
+    let acum = 0;
+    for (let i = 1; i < pts.length; i++) {
+      const d = this.metros(pts[i - 1], pts[i]);
+      if (acum + d >= total / 2) {
+        const t = d ? (total / 2 - acum) / d : 0;
+        return [pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * t,
+                pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * t];
+      }
+      acum += d;
+    }
+    return pts[Math.floor(pts.length / 2)];
+  },
+
+  /* Qué rótulos se ven y con qué inclinación, según el zoom actual.
+     El ángulo se recalcula en píxeles: la proyección estira distinto según la
+     latitud y el zoom, así que un ángulo fijo se despegaría de la calle. */
+  actualizarCalles() {
+    if (!this.mapa || !this.calles.length) return;
+    /* Mientras la pestaña Ubicación está oculta el contenedor mide 0 px y el
+       dibujante SVG de Leaflet todavía no tiene límites: agregarle una línea
+       ahí revienta dentro de la propia librería. Se espera a redimensionar(),
+       que es cuando el mapa aparece de verdad. */
+    if (!this.mapa._loaded || this.mapa.getSize().x < 2) return;
+    const z = this.mapa.getZoom();
+    /* De lejos sólo las principales; al acercarse aparecen todas.
+       No alcanza con el rango de OpenStreetMap: en Santa Cruz muchas avenidas
+       largas están etiquetadas como calle de barrio, así que una calle también
+       entra por longitud. Si no, en El Encanto se veían dos nombres y nada más. */
+    const rangoVisible = z >= 16 ? 3 : (z >= 15 ? 2 : 1);
+    const largoMinimo  = z >= 16 ? 0 : (z >= 15 ? 350 : 700);
+
+    this.calles.forEach(c => {
+      const mostrar = c.rango <= rangoVisible || c.largo >= largoMinimo;
+      if (mostrar && !this.mapa.hasLayer(c.capa)) c.capa.addTo(this.mapa);
+      if (!mostrar && this.mapa.hasLayer(c.capa)) this.mapa.removeLayer(c.capa);
+      if (!mostrar) return;
+
+      const a = this.mapa.latLngToLayerPoint(L.latLng(c.puntos[0]));
+      const b = this.mapa.latLngToLayerPoint(L.latLng(c.puntos[c.puntos.length - 1]));
+      let ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
+      // Nunca de cabeza: si va hacia la izquierda, se le da media vuelta.
+      if (ang > 90) ang -= 180;
+      if (ang < -90) ang += 180;
+      const el = c.rotulo.getElement();
+      if (el) el.style.transform += ` rotate(${ang.toFixed(1)}deg)`;
     });
   },
 
@@ -239,6 +373,7 @@ const MapaReal = {
     this.marcadores.forEach(m => this.mapa.removeLayer(m));
     this.marcadores = [];
     this.dibujarRutas(proyecto);
+    this.dibujarCalles(proyecto);
 
     const centro = [proyecto.coordenadas.lat, proyecto.coordenadas.lng];
 
@@ -247,9 +382,16 @@ const MapaReal = {
       .bindPopup(`<b>${proyecto.nombre}</b><br>${proyecto.direccion}`);
     this.marcadores.push(principal);
 
+    const puestas = [];
     (proyecto.referencias || []).forEach(ref => {
       const pos = this.posicionReferencia(proyecto, ref);
-      const m = L.marker(pos, { icon: this.iconoReferencia(ref) })
+      /* Dos referencias pueden venir con la misma coordenada —«Cruce Km 13» e
+         «Hipermaxi Mi Barrio» la comparten en datos.js— y entonces sus rótulos
+         se montan uno encima del otro. Cuando eso pasa, el segundo lleva su
+         etiqueta arriba del pin en vez de abajo, para que ambos se lean. */
+      const encimado = puestas.some(p => this.metros(p, pos) < 120);
+      puestas.push(pos);
+      const m = L.marker(pos, { icon: this.iconoReferencia(ref, encimado) })
         .addTo(this.mapa)
         .bindPopup(`<b>${ref.nombre}</b><br>a ${ref.distancia} del proyecto`);
       this.marcadores.push(m);
@@ -261,6 +403,26 @@ const MapaReal = {
     });
 
     this.centrar();
+    /* Los rótulos van un cuadro después: Leaflet arma los límites de su lienzo
+       SVG recién cuando termina de acomodar la vista, y si se le agrega una
+       línea antes de eso falla dentro de la propia librería. */
+    requestAnimationFrame(() => this.actualizarCalles());
+    this.actualizarReferencias();
+  },
+
+  /* Los puntos de referencia sólo tienen sentido de cerca. Con el recorrido
+     completo desde la ciudad en pantalla se apilan todos sobre el proyecto y
+     no se lee ninguno, así que por debajo del zoom 14 se ocultan: queda el
+     mapa de accesos limpio, como el plano que entrega INMOL. */
+  actualizarReferencias() {
+    if (!this.mapa || !this.marcadores.length) return;
+    const cerca = this.mapa.getZoom() >= 14;
+    // El primero es el pin del proyecto: ése no se esconde nunca.
+    this.marcadores.slice(1).forEach(m => {
+      const el = m.getElement ? m.getElement() : null;
+      if (el) el.style.display = cerca ? '' : 'none';
+      if (m.setStyle) m.setStyle({ opacity: cerca ? .45 : 0 });
+    });
   },
 
   /* Encuadra el proyecto con todas sus referencias.
@@ -271,8 +433,25 @@ const MapaReal = {
   centrar() {
     if (!this.mapa || !this.marcadores.length) return;
     const puntos = this.marcadores.filter(m => m.getLatLng).map(m => m.getLatLng());
+    /* Las rutas de acceso también entran en el encuadre: si sólo se ajusta a
+       los pines, las líneas se salen de la pantalla y quedan cortadas, como si
+       no llevaran a ninguna parte. */
+    this.rutas.forEach(l => { if (l.getLatLngs) puntos.push(...l.getLatLngs()); });
+
+    /* La ficha de ubicación flota sobre la esquina superior izquierda y los
+       botones sobre la inferior. Si el encuadre no los descuenta, el arranque
+       de una ruta puede quedar escondido detrás de la ficha —que fue justo lo
+       que pasaba con el Ingreso 2 de Libertad—. Se mide la ficha en vivo, para
+       que siga funcionando cuando la pantalla cambia de tamaño. */
+    const ficha = this.mapa.getContainer().parentElement.querySelector('.sat-hud');
+    const anchoFicha = ficha ? Math.round(ficha.getBoundingClientRect().width) : 0;
+
     if (puntos.length > 1) {
-      this.mapa.fitBounds(L.latLngBounds(puntos), { padding: [90, 90], maxZoom: 16, animate: false });
+      this.mapa.fitBounds(L.latLngBounds(puntos), {
+        paddingTopLeft:     [anchoFicha + 40, 40],
+        paddingBottomRight: [60, 110],
+        maxZoom: 16, animate: false
+      });
     } else {
       this.mapa.setView(puntos[0], 16, { animate: false });
     }
@@ -304,5 +483,7 @@ const MapaReal = {
     if (!this.mapa) return;
     this.mapa.invalidateSize();
     this.centrar();
+    // Recién ahora el mapa tiene tamaño: es el momento de rotular las calles.
+    this.actualizarCalles();
   },
 };
