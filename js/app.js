@@ -501,15 +501,38 @@ function seleccionarLote(idx) {
 
 /* --- 3.5 Ficha técnica --------------------------------------------------- */
 function llenarFicha(p) {
-  $('#fichaTabla').innerHTML = (p.fichaTecnica || []).map(f => `
-    <tr>
-      <th>${f.campo}</th>
-      <td>${f.valor}</td>
-    </tr>`).join('');
-
   /* Al costado, las cifras que más se repiten en la conversación comercial */
   $('#fichaDestacado').innerHTML = p.destacados
     .map(d => `<div class="fd"><b>${d.valor}</b><span>${d.etiqueta}</span></div>`).join('');
+
+  const grupos = p.fichaGrupos || [];
+  const detalle = $('#fichaDetalle');
+
+  /* Los proyectos con ficha oficial completa —hoy el centro comercial— se
+     muestran por secciones, tal como las entrega INMOL. Los demás siguen con
+     la tabla corta de siempre hasta que nos pasen la suya. */
+  $('#fichaTablaCaja').hidden = grupos.length > 0;
+  detalle.hidden = grupos.length === 0;
+
+  if (!grupos.length) {
+    $('#fichaTabla').innerHTML = (p.fichaTecnica || []).map(f => `
+      <tr>
+        <th>${f.campo}</th>
+        <td>${f.valor}</td>
+      </tr>`).join('');
+    return;
+  }
+
+  detalle.innerHTML = grupos.map((g, i) => {
+    const cuerpo = g.filas
+      ? `<table class="fg-tabla"><tbody>${g.filas.map(f =>
+          `<tr><th>${f.campo}</th><td>${f.valor}</td></tr>`).join('')}</tbody></table>`
+      : `<ul class="fg-lista">${(g.items || []).map(x => `<li>${x}</li>`).join('')}</ul>`;
+    return `<section class="fg">
+      <h3 class="fg-titulo"><i>${i + 1}</i>${g.titulo}</h3>
+      ${cuerpo}
+    </section>`;
+  }).join('');
 }
 
 /* ============================================================================

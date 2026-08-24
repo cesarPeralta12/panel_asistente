@@ -168,9 +168,13 @@
     <!-- ── FICHA TÉCNICA ──────────────────────────────────────────────── -->
     <div class="pane" data-pane="ficha">
       <div class="ficha-wrap">
-        <table class="ficha-tabla">
-          <tbody id="fichaTabla"></tbody>
-        </table>
+        <div id="fichaTablaCaja">
+          <table class="ficha-tabla">
+            <tbody id="fichaTabla"></tbody>
+          </table>
+        </div>
+        <!-- Ficha oficial completa, por secciones (ver llenarFicha) -->
+        <div class="ficha-detalle" id="fichaDetalle" hidden></div>
         <aside class="ficha-lado">
           <div class="ficha-destacado" id="fichaDestacado"></div>
           <p class="ficha-pie">

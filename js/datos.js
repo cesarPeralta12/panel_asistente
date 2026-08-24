@@ -222,6 +222,119 @@ const PANEL = {
         { campo: 'Estado comercial',    valor: 'En comercialización, proyecto terminado' }
       ],
 
+      /* Ficha técnica completa, transcrita de la ficha oficial de INMOL
+         (PDF-Fichas-CCL, secciones 1 a 9 de FICHA TÉCNICA más la ficha legal).
+         La tabla corta de arriba sigue siendo el resumen que lee el asistente;
+         esto es el detalle que el asesor muestra en pantalla.
+         Sin precios: es decisión comercial de INMOL no exhibirlos. */
+      fichaGrupos: [
+        {
+          titulo: 'Superficie',
+          filas: [
+            { campo: 'Terreno',      valor: '9.584,34 m²' },
+            { campo: 'Construcción', valor: '8.531,93 m²' },
+            { campo: 'Cubierta',     valor: '6.057,94 m² · 326 locales comerciales' }
+          ]
+        },
+        {
+          titulo: 'Medida de cada local comercial',
+          filas: [
+            { campo: 'Planta baja',      valor: '9 m² (3 × 3 medido a eje) · área útil 8,13 m²' },
+            { campo: 'Mezanine',         valor: '3,6 m² (3 × 1,20 medido a eje) · área útil 3,42 m², losa de 2,85 × 1,20' },
+            { campo: 'Superficie total', valor: '12,6 m² · superficie útil 11,55 m²' },
+            { campo: 'Área común',       valor: '10,61 m²' },
+            { campo: 'Fracción Ideal de Terreno', valor: '29,29 m² (0,31 %)' }
+          ]
+        },
+        {
+          titulo: 'Características de cada local',
+          items: [
+            'Piso de planta baja de hormigón pulido',
+            'Losa del piso del mezanine apoyada en 3 caras a los muros',
+            'Muros de ladrillo de 6 huecos, revocado y pintado en blanco',
+            'Cerramiento con cortinas arrollables metálicas galvanizadas con ensamble',
+            'Altura útil de planta baja: 3,35 m',
+            'Altura útil de mezanine: 3,10 m',
+            'Altura útil de planta baja a cubierta: 9,00 m',
+            'Acceso al mezanine mediante escalera metálica',
+            'Pasillos de hormigón pulido: 2,5 m los exteriores y 3 m los internos'
+          ]
+        },
+        {
+          titulo: 'Puntos eléctricos y agua por local',
+          items: [
+            '2 tomacorrientes dobles normales en planta baja',
+            '1 interruptor doble en planta baja',
+            '2 puntos de iluminación: uno en planta baja y otro en el mezanine',
+            '1 tablero de distribución eléctrico en planta baja',
+            '2 puntos de acceso con caja de 2” × 4” para TV e internet',
+            'Patio de comidas y carnes: agua potable y 1 tomacorriente de fuerza adicional',
+            'Sector peluquería: conexión de agua potable'
+          ]
+        },
+        {
+          titulo: 'Baños',
+          items: [
+            'Sectorizados para hombres y mujeres',
+            'Baños para personas con discapacidad',
+            'Duchas, baterías de inodoros y baterías de urinarios'
+          ]
+        },
+        {
+          titulo: 'Iluminación',
+          filas: [
+            { campo: 'Pasillos e interiores de locales', valor: 'Tubo LED doble de 18 W T8' },
+            { campo: 'Baños',                            valor: 'Plafón circular LED de 24 W' },
+            { campo: 'Oficina de administración',        valor: 'Plafón cuadrado LED de 24 W' },
+            { campo: 'Exteriores',                       valor: 'Luminaria tipo calle LED de 150 W con fotocélula autorregulable' }
+          ]
+        },
+        {
+          titulo: 'Energía eléctrica',
+          items: [
+            'Medidores de energía eléctrica individuales para cada local',
+            '2 transformadores de energía exclusivos para el centro comercial',
+            'Protección con diferencial eléctrico en cada tablero',
+            'Alimentadores desde el tablero principal hasta los locales, en bandejas portacables',
+            'Bandeja para alimentadores según la normativa NB 777-2024 vigente',
+            'Instalaciones ejecutadas en cumplimiento de la normativa NB 777'
+          ]
+        },
+        {
+          titulo: 'Características externas',
+          items: [
+            'Techo de cubierta sellada mecánicamente, con calamina prensada (no perforada), que garantiza no tener filtraciones de agua',
+            'Piso de parqueo de hormigón simple',
+            '3 ingresos y salidas vehiculares de 6 m de ancho cada una',
+            '1 ingreso y salida de carga y descarga de 5,6 m de ancho',
+            '1 ingreso principal peatonal de 14 m de ancho',
+            '4 accesos peatonales secundarios de 2,5 m y 1 acceso de 3,18 m',
+            'Puente de acceso vehicular',
+            'Área de parqueo en todo el contorno'
+          ]
+        },
+        {
+          titulo: 'Sistema contra incendios',
+          items: [
+            'Sistema de alarma con pulsadores manuales y sensores fotoeléctricos',
+            'Red de hidrantes internos y externos',
+            'Extintores portátiles ABC y CO₂',
+            'Aprobado y certificado por las autoridades municipales y personal de bomberos'
+          ]
+        },
+        {
+          titulo: 'Aprobaciones y documentación',
+          filas: [
+            { campo: 'Proyecto aprobado',      valor: 'Resolución Técnica Administrativa DRU N° 0610/2023 del 4 de diciembre de 2023, Gobierno Autónomo Municipal de Santa Cruz de la Sierra' },
+            { campo: 'Licencia de construcción', valor: 'Resolución Técnica Administrativa DRU N° 0167/2024' },
+            { campo: 'Licencia ambiental',     valor: 'Categoría 3, Gobierno Autónomo Departamental de Santa Cruz, 4 de abril de 2024 · PPM-PASA 147/24 N° 079/2024' },
+            { campo: 'Propiedad horizontal',   valor: 'Escritura Pública N° 1066/2024 del 19 de agosto de 2024 · 326 unidades funcionales individualizadas' },
+            { campo: 'Certificado de habitabilidad', valor: 'CH-17122025 del 17 de diciembre de 2025' },
+            { campo: 'Por cada local',         valor: 'Plano de ubicación y uso de suelo y certificado catastral aprobados' }
+          ]
+        }
+      ],
+
       plano: {
         // En el centro comercial la sección se llama distinto: no se vende
         // disponibilidad de lotes sino distribución de locales.

@@ -796,6 +796,58 @@ body.sin-animacion .atr-fondo > .visible {
   line-height: 1.35;
 }
 
+/* Ficha oficial completa, en secciones numeradas (ver llenarFicha en app.js).
+   Rejilla en vez de columnas CSS: con columnas el navegador llena la primera
+   de arriba abajo y las secciones quedaban 1-6 a la izquierda y 7-10 a la
+   derecha, así que había que bajar y volver a subir para seguir leyendo. Con
+   la rejilla el orden es el natural: 1-2, 3-4, 5-6… */
+.ficha-detalle {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem; align-items: start;
+}
+@media (max-aspect-ratio: 1/1) { .ficha-detalle { grid-template-columns: 1fr; } }
+
+.fg {
+  margin: 0; padding: 1.25rem 1.4rem;
+  background: var(--superficie); border-radius: var(--r-sm); box-shadow: var(--sombra);
+}
+.fg-titulo {
+  display: flex; align-items: center; gap: .7rem;
+  margin: 0 0 .9rem; padding-bottom: .75rem;
+  border-bottom: 1px solid var(--linea);
+  font-size: .78rem; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--texto-2);
+}
+.fg-titulo i {
+  flex: none; display: grid; place-items: center;
+  width: 1.6rem; height: 1.6rem; border-radius: 50%;
+  background: var(--rojo); color: #FFFFFF;
+  font-size: .8rem; font-weight: 700; font-style: normal; letter-spacing: 0;
+}
+
+.fg-tabla { width: 100%; border-collapse: collapse; }
+.fg-tabla tr + tr th, .fg-tabla tr + tr td { border-top: 1px solid var(--linea); }
+.fg-tabla th {
+  text-align: left; vertical-align: top; width: 40%;
+  padding: .6rem .9rem .6rem 0;
+  font-size: .82rem; font-weight: 500; color: var(--texto-3); line-height: 1.4;
+}
+.fg-tabla td {
+  padding: .6rem 0;
+  font-size: .95rem; font-weight: 500; color: var(--texto); line-height: 1.45;
+}
+
+.fg-lista { margin: 0; padding: 0; list-style: none; }
+.fg-lista li {
+  position: relative; padding: .34rem 0 .34rem 1.1rem;
+  font-size: .95rem; color: var(--texto); line-height: 1.45;
+}
+/* Viñeta propia: un punto rojo chico, más discreto que el marcador del sistema */
+.fg-lista li::before {
+  content: ''; position: absolute; left: 0; top: .82em;
+  width: .32rem; height: .32rem; border-radius: 50%; background: var(--rojo);
+}
+
 .ficha-lado { display: flex; flex-direction: column; gap: 1.6rem; }
 .ficha-destacado { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; }
 .fd {
