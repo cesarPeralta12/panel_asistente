@@ -94,7 +94,12 @@ function irA(pantalla) {
 
   if (pantalla === 'atraccion') {
     iniciarAtraccion();
-    if (anterior !== 'atraccion') escribir(PANEL.asistente.saludo);
+    /* Se vuelve al modo atracción porque el cliente se fue. Si el asistente
+       estaba a mitad de una respuesta —la ficha técnica dura casi medio
+       minuto— seguía hablando solo frente a una pantalla que ya no mostraba
+       ese proyecto, y el siguiente visitante llegaba a un panel narrando algo
+       que no venía a cuento. */
+    if (anterior !== 'atraccion') { callarAsistente(); escribir(); }
   } else {
     detenerAtraccion();
     /* Alguien despertó la pantalla. Sólo se saluda si a este visitante no se
@@ -104,7 +109,7 @@ function irA(pantalla) {
       Estado.yaSaludo = true;
       decir(PANEL.asistente.saludo, 'saludo');
     } else {
-      escribir(saludoDeContexto());
+      escribir();
     }
   }
 
@@ -237,6 +242,12 @@ function abrirProyecto(id, seccion = 'resumen') {
 
   irA('proyecto');
   mostrarSeccion(seccion);
+
+  /* El asistente explica SIEMPRE el proyecto que se acaba de abrir, se haya
+     tocado la tarjeta grande o la lista del asistente. Antes sólo hablaba la
+     lista: al tocar la tarjeta seguía sonando la presentación de bienvenida,
+     que no tenía nada que ver con lo que el cliente estaba mirando. */
+  decir(`${p.nombre}. ${p.claim} ${p.descripcion}`, `proyecto-${p.id}`);
 }
 
 function construirTabs() {
@@ -581,16 +592,12 @@ function alternarDiagnostico() {
 /* ============================================================================
    ASISTENTE DE VOZ
    ============================================================================ */
-function saludoDeContexto() {
-  return Estado.proyecto
-    ? `Estamos viendo ${Estado.proyecto.nombre}. ¿Qué desea saber?`
-    : PANEL.asistente.saludo;
-}
 
 /* Cambia el texto del asistente sin hablar */
-function escribir(texto) {
-  $('#asisBurbuja').textContent = texto;
-  // Si todavía está hablando, no se le cambia el rótulo a «Toque una pregunta».
+/* El asistente es de voz: ya no se transcribe lo que dice.
+   INMOL pidió quitar el cuadro de texto —leerlo hacía que el cliente dejara
+   de mirar el proyecto— así que sólo queda el estado y la lista de opciones. */
+function escribir() {
   if (!Voz.sonando()) $('#asisEstado').textContent = 'Toque una pregunta';
 }
 
@@ -603,7 +610,6 @@ function callarAsistente() {
 /* clave: identifica el audio pregrabado (assets/voz/indice.js). Si falta,
    Voz recurre al motor de voz del sistema. */
 function decir(texto, clave) {
-  $('#asisBurbuja').textContent = texto;
   $('#asisEstado').textContent = 'Hablando…';
   $('#asisAvatar').classList.add('hablando');
   Voz.hablar(texto, () => {
@@ -618,14 +624,27 @@ function decir(texto, clave) {
    bloqueado, el texto queda en pantalla y la voz suena al primer toque. */
 function presentarse() {
   Estado.yaSaludo = true;
-  escribir(PANEL.asistente.saludo);
   decir(PANEL.asistente.saludo, 'saludo');
 
+  /* Chrome puede bloquear el audio hasta que alguien toque la pantalla. Si eso
+     pasó, el primer toque lo desbloquea y se repite la bienvenida.
+     PERO ese toque casi siempre es «abrir un proyecto»: el listener corre en
+     fase de captura, o sea ANTES del clic de la tarjeta, así que lanzaba la
+     bienvenida entera y encima arrancaba la del proyecto — dos voces a la vez,
+     y el cliente escuchando una presentación que ya no correspondía.
+     Ahora se espera un momento y sólo se repite si ese toque no pidió nada
+     más ni cambió de pantalla. */
   setTimeout(() => {
     if (Voz.sonando()) return;
     const alTocar = () => {
       document.removeEventListener('pointerdown', alTocar, true);
-      if (!Voz.sonando()) decir(PANEL.asistente.saludo, 'saludo');
+      const pedidos = Voz.pedidos, pantalla = Estado.pantalla;
+      setTimeout(() => {
+        if (Voz.sonando()) return;                    // ya está hablando otra cosa
+        if (Voz.pedidos !== pedidos) return;          // el toque pidió otra frase
+        if (Estado.pantalla !== pantalla) return;     // el toque navegó a otro lado
+        decir(PANEL.asistente.saludo, 'saludo');
+      }, 500);
     };
     document.addEventListener('pointerdown', alTocar, true);
   }, 700);
@@ -645,10 +664,8 @@ function construirOpcionesAsistente() {
     const b = document.createElement('button');
     b.className = 'asis-opcion' + (Estado.proyecto && Estado.proyecto.id === p.id ? ' activa' : '');
     b.innerHTML = `<span>${p.nombre}</span>${flecha}`;
-    b.addEventListener('click', () => {
-      abrirProyecto(p.id);
-      decir(`${p.nombre}. ${p.claim} ${p.descripcion}`, `proyecto-${p.id}`);
-    });
+    // No dice nada acá: abrirProyecto() ya se encarga de presentarlo.
+    b.addEventListener('click', () => abrirProyecto(p.id));
     cont.appendChild(b);
   });
 
@@ -728,7 +745,7 @@ function iniciar() {
 
   /* El asistente se presenta solo, sin botón. El texto se escribe siempre;
      la voz sólo cuando el panel está en uso real (no al tomar capturas). */
-  escribir(PANEL.asistente.saludo);
+  escribir();
   if (!QUIETO) setTimeout(presentarse, 600);
 }
 

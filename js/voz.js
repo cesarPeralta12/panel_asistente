@@ -24,6 +24,13 @@ const Voz = {
   hablando: false,
   audio: null,
   alTerminar: null,
+  /* Cada pedido de voz lleva un número. Si llega una respuesta tardía —el
+     archivo que no se pudo abrir, el 'ended' de un audio ya reemplazado— y su
+     número ya no es el vigente, se descarta. Sin esto la frase anterior podía
+     revivir con la voz del sistema encima de la nueva: dos narradoras a la vez.
+     Es el defecto que reportó el ingeniero de INMOL. */
+  gen: 0,
+  pedidos: 0,
 
   iniciar() {
     /* Reproductor para los audios pregrabados */
@@ -35,7 +42,7 @@ const Voz = {
       if (!this.hablando) return;
       const t = this._textoPendiente;
       this._textoPendiente = null;
-      if (t) this.sintetizar(t); else this.terminar();
+      if (t) this.sintetizar(t, this.gen); else this.terminar();
     });
 
     /* Motor de voz del sistema, como respaldo */
@@ -83,24 +90,28 @@ const Voz = {
      clave: identificador del audio pregrabado (ver assets/voz/indice.js).
      Si no hay audio para esa clave, habla el motor del sistema.            */
   hablar(texto, onFin, clave) {
-    this.callar();
+    this.callar();                        // callar() invalida lo anterior
     if (!texto) { if (onFin) onFin(); return; }
 
     this.alTerminar = onFin || null;
     this.hablando = true;
+    this.pedidos++;
+    const gen = this.gen;
 
     const pista = (typeof VOCES !== 'undefined' && clave) ? VOCES[clave] : null;
     if (pista) {
       this._textoPendiente = texto;      // por si el archivo falla
       this.audio.src = pista;
       const p = this.audio.play();
-      if (p && p.catch) p.catch(() => this.sintetizar(texto));
+      // El rechazo llega tarde: puede que para entonces ya se pidió otra frase.
+      if (p && p.catch) p.catch(() => this.sintetizar(texto, gen));
     } else {
-      this.sintetizar(texto);
+      this.sintetizar(texto, gen);
     }
   },
 
-  sintetizar(texto) {
+  sintetizar(texto, gen) {
+    if (gen !== undefined && gen !== this.gen) return;   // pedido vencido
     this._textoPendiente = null;
     if (!this.disponible) { this.terminar(); return; }
 
@@ -110,7 +121,8 @@ const Voz = {
     u.rate = 0.98;   // ligeramente pausada: se entiende mejor con ruido
     u.pitch = 1.0;
     u.volume = 1.0;
-    u.onend = u.onerror = () => this.terminar();
+    const mio = this.gen;
+    u.onend = u.onerror = () => { if (mio === this.gen) this.terminar(); };
     speechSynthesis.speak(u);
   },
 
@@ -124,6 +136,7 @@ const Voz = {
   },
 
   callar() {
+    this.gen++;                           // todo lo pendiente queda vencido
     this.hablando = false;
     this._textoPendiente = null;
     this.alTerminar = null;

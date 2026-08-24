@@ -1090,13 +1090,6 @@ body.sin-animacion .pulso::after { display: none; }
 .eq i:nth-child(5) { animation-delay: .48s; }
 @keyframes eq { 0%,100% { height: 22%; } 50% { height: 100%; } }
 
-.asis-burbuja {
-  margin: 1.4rem 1.7rem; padding: 1.4rem 1.6rem; flex: none;
-  background: var(--superficie-3);
-  border-radius: var(--r-sm) var(--r-sm) var(--r-sm) 4px;
-  font-size: 1.06rem; line-height: 1.55; color: var(--texto-2);
-  min-height: 6rem;
-}
 
 .asis-opciones {
   flex: 1; min-height: 0; overflow: auto;
@@ -1151,7 +1144,6 @@ body.sin-animacion .pulso::after { display: none; }
   .asistente.visible { transform: none; }
   .asis-opciones { display: grid; grid-template-columns: 1fr 1fr; align-content: start; gap: .55rem 1rem; }
   .asis-grupo { grid-column: 1 / -1; margin: .7rem 0 .1rem; }
-  .asis-burbuja { min-height: 4rem; }
 
 
   /* Menos margen lateral: sólo hay 1080 px de ancho */
