@@ -632,17 +632,20 @@ function presentarse() {
      fase de captura, o sea ANTES del clic de la tarjeta, así que lanzaba la
      bienvenida entera y encima arrancaba la del proyecto — dos voces a la vez,
      y el cliente escuchando una presentación que ya no correspondía.
-     Ahora se espera un momento y sólo se repite si ese toque no pidió nada
-     más ni cambió de pantalla. */
+     Ahora se espera medio segundo antes de decidir: para entonces el clic ya
+     corrió, así que basta con mirar si pidió otra frase.
+     OJO con el criterio: no sirve exigir que el toque «no cambie de pantalla».
+     El primer toque siempre pasa de la atracción al menú, así que con esa
+     condición la bienvenida no sonaba nunca en un navegador normal. Lo que
+     importa es sólo si hay algo más que decir. */
   setTimeout(() => {
     if (Voz.sonando()) return;
     const alTocar = () => {
       document.removeEventListener('pointerdown', alTocar, true);
-      const pedidos = Voz.pedidos, pantalla = Estado.pantalla;
+      const pedidos = Voz.pedidos;
       setTimeout(() => {
-        if (Voz.sonando()) return;                    // ya está hablando otra cosa
-        if (Voz.pedidos !== pedidos) return;          // el toque pidió otra frase
-        if (Estado.pantalla !== pantalla) return;     // el toque navegó a otro lado
+        if (Voz.sonando()) return;             // ya está hablando otra cosa
+        if (Voz.pedidos !== pedidos) return;   // el toque abrió un proyecto: ése manda
         decir(PANEL.asistente.saludo, 'saludo');
       }, 500);
     };

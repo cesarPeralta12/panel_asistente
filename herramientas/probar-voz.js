@@ -105,7 +105,15 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html')
         Ese toque suele ser «abrir un proyecto». Antes el desbloqueo relanzaba
         la bienvenida en fase de captura y quedaban las dos voces encima. */
   await pg.close();
-  const pg2 = await nav.newPage();
+  /* Los casos 6 y 8 necesitan que Chrome bloquee el audio de verdad, así que
+     van en un navegador aparte, SIN --autoplay-policy. Con la bandera puesta
+     no probaban nada: el audio sonaba solo desde el arranque. */
+  const nav2 = await puppeteer.launch({
+    executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
+    headless: 'new',
+    args: ['--window-size=1920,1080', '--disable-gpu', '--force-device-scale-factor=1']
+  });
+  const pg2 = await nav2.newPage();
   await pg2.setViewport({ width: 1920, height: 1080 });
   await pg2.setCacheEnabled(false);
   await pg2.evaluateOnNewDocument(() => {
@@ -118,6 +126,8 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html')
   });
   await pg2.goto(URL, { waitUntil: 'networkidle0' });
   await esperar(2200);
+  const bloqueado = await pg2.evaluate(() => +(Voz.audio.currentTime || 0) === 0);
+  ok('Chrome bloquea el audio al cargar (es el escenario que se quiere probar)', bloqueado);
   await pg2.evaluate(() => { irA('menu'); window.__voz = []; });
   await esperar(300);
   // Toque real del mouse: dispara pointerdown y despues click, como un dedo
@@ -145,9 +155,30 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html')
   ok('Al volver por inactividad (' + inac.pantalla + ') el asistente se calla',
      inac.hablaba && inac.pantalla === 'atraccion' && !inac.sigue);
 
+  /* 8. La contracara del punto 6: si el primer toque cae en la pantalla de
+        atracción —que es lo normal— la bienvenida SÍ tiene que sonar, aunque
+        Chrome haya bloqueado el audio al cargar. */
+  const pg3 = await nav2.newPage();
+  await pg3.setViewport({ width: 1920, height: 1080 });
+  await pg3.setCacheEnabled(false);
+  await pg3.goto(URL, { waitUntil: 'networkidle0' });
+  await esperar(2600);
+  const mudo = await pg3.evaluate(() => +(Voz.audio.currentTime || 0).toFixed(1));
+  await pg3.mouse.click(700, 540);
+  await esperar(2500);
+  const tras = await pg3.evaluate(() => ({
+    t: +(Voz.audio.currentTime || 0).toFixed(1),
+    pista: (Voz.audio.src || '').split('/').pop(),
+    pantalla: Estado.pantalla
+  }));
+  ok('Con autoplay bloqueado, el 1er toque en la atraccion suena la bienvenida (' +
+     tras.pista + ' ' + tras.t + 's, pantalla ' + tras.pantalla + ')',
+     mudo === 0 && tras.t > 0 && tras.pista.includes('saludo') && tras.pantalla === 'menu');
+
   console.log(res.join('\n'));
   const fallas = res.filter(r => r.startsWith(' FALLA')).length;
   console.log(fallas === 0 ? '\nTODO CORRECTO' : `\n${fallas} PRUEBAS FALLIDAS`);
   await nav.close();
+  await nav2.close();
   process.exit(fallas === 0 ? 0 : 1);
 })().catch(e => { console.error('ERROR: ' + e.message); process.exit(2); });
