@@ -263,9 +263,36 @@ function construirTabs() {
     const etiqueta = (s.id === 'lotes' && Estado.proyecto && Estado.proyecto.plano.etiqueta)
       ? Estado.proyecto.plano.etiqueta : s.etiqueta;
     b.innerHTML = svgIcono(ICONO_TAB[s.id], 20) + `<span>${etiqueta}</span>`;
-    b.addEventListener('click', () => mostrarSeccion(s.id));
+    b.addEventListener('click', () => {
+      mostrarSeccion(s.id);
+      explicarSeccion(s.id);
+    });
     nav.appendChild(b);
   });
+}
+
+/* Explica en voz alta la sección que se acaba de abrir.
+   Cada pestaña tiene una pregunta equivalente en el asistente —Ubicación,
+   Disponibilidad, Ficha técnica y, para Resumen, la de servicios— así que se
+   reutiliza esa misma respuesta y su audio ya grabado: no hace falta grabar
+   nada nuevo. También se marca la opción correspondiente en la lista, para que
+   las pestañas de arriba y el menú del asistente no cuenten cosas distintas. */
+function explicarSeccion(id) {
+  const p = Estado.proyecto;
+  if (!p) return;
+  const q = (PANEL.asistente.preguntas || []).find(x => x.seccion === id);
+  if (!q) return;
+  decir(q.respuesta(p), `${p.id}--${q.id}`);
+  marcarOpcion(q.id);
+}
+
+/* Deja resaltada una sola pregunta de la lista del asistente.
+   Sólo toca las preguntas (las que llevan data-q): el proyecto abierto también
+   se resalta y tiene que seguir marcado, si no el cliente pierde de vista cuál
+   está mirando. */
+function marcarOpcion(idPregunta) {
+  $$('.asis-opcion[data-q]').forEach(o =>
+    o.classList.toggle('activa', o.dataset.q === idPregunta));
 }
 
 function mostrarSeccion(id) {
@@ -682,11 +709,11 @@ function construirOpcionesAsistente() {
       const b = document.createElement('button');
       b.className = 'asis-opcion';
       b.innerHTML = `<span>${q.texto}</span>${flecha}`;
+      b.dataset.q = q.id;
       b.addEventListener('click', () => {
         if (q.seccion) mostrarSeccion(q.seccion);
         decir(q.respuesta(Estado.proyecto), `${Estado.proyecto.id}--${q.id}`);
-        $$('.asis-opcion').forEach(o => o.classList.remove('activa'));
-        b.classList.add('activa');
+        marcarOpcion(q.id);
       });
       cont.appendChild(b);
     });

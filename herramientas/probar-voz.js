@@ -175,6 +175,45 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html')
      tras.pista + ' ' + tras.t + 's, pantalla ' + tras.pantalla + ')',
      mudo === 0 && tras.t > 0 && tras.pista.includes('saludo') && tras.pantalla === 'menu');
 
+  /* 9. Las pestañas de arriba también hacen hablar al asistente, con la
+        respuesta que corresponde a cada una. */
+  const pg4 = await nav.newPage();
+  await pg4.setViewport({ width: 1920, height: 1080 });
+  await pg4.setCacheEnabled(false);
+  await pg4.evaluateOnNewDocument(() => {
+    window.__voz = [];
+    const play = Audio.prototype.play;
+    Audio.prototype.play = function () {
+      if (this.src) window.__voz.push(this.src.split('/').pop());
+      return play.apply(this, arguments);
+    };
+  });
+  await pg4.goto(URL, { waitUntil: 'networkidle0' });
+  await esperar(1800);
+  await pg4.evaluate(() => abrirProyecto('libertad'));
+  await esperar(1200);
+
+  const esperado = { resumen: 'servicios', ubicacion: 'ubicacion',
+                     lotes: 'disponibilidad', ficha: 'ficha' };
+  for (const sec of Object.keys(esperado)) {
+    await pg4.evaluate(() => { window.__voz = []; });
+    await pg4.evaluate(s => document.querySelector(`.tab[data-sec="${s}"]`).click(), sec);
+    await esperar(1100);
+    const r = await pg4.evaluate(() => ({
+      voz: window.__voz,
+      seccion: Estado.seccion,
+      // dataset es un DOMStringMap: no sobrevive al puente con puppeteer
+      marcada: (document.querySelector('.asis-opcion.activa[data-q]') || {})
+                 .getAttribute?.('data-q') || null,
+      proyectoMarcado: !!document.querySelector('.asis-opcion.activa:not([data-q])')
+    }));
+    const clave = `libertad--${esperado[sec]}.mp3`;
+    ok(`Pestaña «${sec}» → sección ${r.seccion}, dice ${r.voz.join(', ') || 'NADA'}` +
+       `, marca «${r.marcada || '—'}» y conserva el proyecto resaltado`,
+       r.seccion === sec && r.voz.length === 1 && r.voz[0] === clave &&
+       r.marcada === esperado[sec] && r.proyectoMarcado);
+  }
+
   console.log(res.join('\n'));
   const fallas = res.filter(r => r.startsWith(' FALLA')).length;
   console.log(fallas === 0 ? '\nTODO CORRECTO' : `\n${fallas} PRUEBAS FALLIDAS`);
