@@ -41,8 +41,11 @@
   --ambar:       #C47F14;
 
   /* Tarjeta del asistente: fija, siempre visible, separada del borde */
-  --asis-ancho:  27rem;
+  --asis-ancho:  20rem;   /* sin la lista de opciones alcanza con esto */
   --asis-alto:   24rem;
+  /* Sitio que se reserva al pie para que la tarjeta del asistente no tape
+     el final del contenido. */
+  --asis-reserva: 15rem;
   --asis-margen: 1.5rem;
 
   /* Ritmo */
@@ -350,6 +353,15 @@ body.sin-animacion .atr-fondo > .visible {
   font-size: 2.05rem; font-weight: 600; letter-spacing: -.028em; line-height: 1.05;
   margin-bottom: .5rem; text-wrap: balance;
 }
+/* Logo oficial del proyecto, en lugar del nombre escrito. Los logos vienen
+   en blanco y naranja sobre fondo transparente, así que se leen sobre la foto
+   sin necesidad de recuadro. La sombra los despega de las zonas claras. */
+.tj-logo {
+  display: block; width: auto; max-width: 82%;
+  max-height: 5rem; margin: .1rem 0 .8rem;
+  object-fit: contain; object-position: left center;
+  filter: drop-shadow(0 2px 10px rgba(0,0,0,.55));
+}
 .tj-sub { font-size: .95rem; color: var(--texto-3); font-weight: 300; }
 .tj-datos {
   display: flex; gap: 2rem; margin-top: 1.8rem;
@@ -439,7 +451,7 @@ body.sin-animacion .atr-fondo > .visible {
 .contenido { position: relative; flex: 1; min-height: 0; }
 .pane {
   position: absolute; inset: 0;
-  padding: 2.4rem 3.4rem 2.6rem;
+  padding: 2.4rem 3.4rem var(--asis-reserva);
   opacity: 0; visibility: hidden; pointer-events: none;
   transform: translateY(1.1rem);
   transition: opacity 460ms ease, transform 460ms cubic-bezier(.16,.84,.3,1),
@@ -566,6 +578,9 @@ body.sin-animacion .atr-fondo > .visible {
 /* --- Pane: UBICACIÓN (satelital) ---------------------------------------- */
 /* La sección de ubicación es el mapa y nada más: los controles van encima,
    flotando, para que la imagen use todo el ancho de la pantalla. */
+/* El mapa sí llega hasta abajo: la tarjeta del asistente flota sobre su
+   esquina, como los controles de cualquier mapa. Los botones del mapa están
+   arriba de esa zona, así que no se tapan. */
 .pane-mapa { padding: 1.5rem 1.6rem 1.7rem; overflow: hidden; }
 .pane-mapa .sat-escenario { height: 100%; }
 
@@ -1038,13 +1053,22 @@ body.sin-animacion .pulso::after { display: none; }
    todas las pantallas —incluida la de atracción— porque se presenta sola al
    entrar, sin que nadie toque nada.
    ============================================================================ */
-#atraccion, #menu, #proyecto {
-  padding-right: calc(var(--asis-ancho) + var(--asis-margen) * 2);
-}
+/* El asistente ya no ocupa una columna: se apoya abajo a la derecha y el
+   contenido usa todo el ancho. El respiro al pie va en cada panel, no en la
+   pantalla: los paneles se posicionan con inset:0 contra la caja de relleno
+   del padre, así que un padding en la pantalla no los empujaría. */
+#atraccion { padding-bottom: var(--asis-reserva); }
+/* El menú reserva menos: la tarjeta del asistente sólo se cruza con la
+   esquina de la última tarjeta de proyecto, y con la reserva completa las
+   tarjetas se achicaban tanto que el logo se salía. */
+#menu { padding-bottom: calc(var(--asis-reserva) * .55); }
 
 .asistente {
   position: fixed; z-index: 70;
-  right: var(--asis-margen); top: var(--asis-margen); bottom: var(--asis-margen);
+  /* Sin la lista de opciones el panel no necesita toda la columna: se pega
+     abajo a la derecha y crece sólo lo que ocupa su contenido, dejándole al
+     proyecto el resto de la pantalla. */
+  right: var(--asis-margen); bottom: var(--asis-margen);
   width: var(--asis-ancho);
   background: var(--superficie);
   border: 1px solid var(--linea);
@@ -1091,25 +1115,6 @@ body.sin-animacion .pulso::after { display: none; }
 @keyframes eq { 0%,100% { height: 22%; } 50% { height: 100%; } }
 
 
-.asis-opciones {
-  flex: 1; min-height: 0; overflow: auto;
-  padding: 0 1.7rem 1.4rem;
-  display: flex; flex-direction: column; gap: .55rem;
-}
-.asis-grupo {
-  font-size: .7rem; letter-spacing: .2em; text-transform: uppercase;
-  color: var(--texto-4); font-weight: 600; margin: 1.2rem 0 .3rem;
-}
-.asis-opcion {
-  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-  padding: 1.05rem 1.3rem; border-radius: var(--r-sm);
-  background: var(--superficie); border: 1px solid var(--linea);
-  font-size: 1.02rem; text-align: left; color: var(--texto);
-  transition: background 280ms, border-color 280ms, transform 200ms;
-}
-.asis-opcion:active { transform: scale(.985); }
-.asis-opcion.activa { background: var(--rojo-tenue); border-color: rgba(227,51,62,.42); }
-.asis-opcion svg { flex: none; opacity: .4; }
 
 .asis-pie {
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
@@ -1131,25 +1136,31 @@ body.sin-animacion .pulso::after { display: none; }
 @media (max-aspect-ratio: 1/1) {
 
   /* En el tótem el asistente pasa al pie */
-  #atraccion, #menu, #proyecto {
-    padding-right: 0;
-    padding-bottom: calc(var(--asis-alto) + var(--asis-margen) * 2);
-  }
+  /* En el tótem vertical la tarjeta del asistente cruza el ancho, abajo. */
+  #atraccion { padding-right: 0; padding-bottom: var(--asis-reserva); }
+  #menu      { padding-right: 0; padding-bottom: calc(var(--asis-reserva) * .55); }
   .asistente {
     left: var(--asis-margen); right: var(--asis-margen);
     top: auto; bottom: var(--asis-margen);
-    width: auto; height: var(--asis-alto);
+    width: auto; height: auto;
     transform: translateY(1.2rem);
   }
   .asistente.visible { transform: none; }
-  .asis-opciones { display: grid; grid-template-columns: 1fr 1fr; align-content: start; gap: .55rem 1rem; }
-  .asis-grupo { grid-column: 1 / -1; margin: .7rem 0 .1rem; }
 
 
   /* Menos margen lateral: sólo hay 1080 px de ancho */
   .barra, .menu-intro, .pie, .atr-top, .atr-centro, .atr-pie { padding-left: 2.4rem; padding-right: 2.4rem; }
   .tarjetas { padding-left: 2.4rem; padding-right: 2.4rem; }
-  .pane { padding: 2.2rem 2.4rem 2.4rem; }
+  .pane { padding: 2.2rem 2.4rem var(--asis-reserva); }
+  /* El mapa llega hasta abajo: la tarjeta del asistente flota sobre su
+     esquina. Sin esto, la regla de arriba le dejaba 250 px de hueco. */
+  .pane-mapa { padding: 1.5rem 1.6rem 1.7rem; }
+  /* En vertical la tarjeta del asistente cruza todo el ancho abajo, justo
+     encima de «Ver todo» y «Acercar al proyecto»: se los sube para que sigan
+     recibiendo el toque. En horizontal la tarjeta va a un costado y no
+     estorba, por eso este ajuste vive sólo acá. */
+  .sat-controles { bottom: 15rem; }
+  .sat-coord     { bottom: 15rem; }
   .tabs { padding: 1.1rem 2.4rem; gap: .4rem; }
   .tab { padding: .9rem 1.2rem; font-size: .95rem; }
 

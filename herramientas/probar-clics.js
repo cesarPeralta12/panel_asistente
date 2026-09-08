@@ -158,24 +158,35 @@ const ALTO  = parseInt(process.argv[4], 10) || 1080;
   const z2 = await pagina.evaluate(() => MapaReal.mapa.getZoom());
   ok(`«Ver todo» encuadra las referencias → zoom ${z2}`, z2 < z1);
 
-  /* 4. El asistente ocupa su columna sin taparle nada al contenido */
+  /* 4. El asistente es una tarjeta chica abajo a la derecha. Ya no ocupa una
+        columna, así que en vez de exigir que no se superponga con el pane
+        —ahora el pane ocupa toda la pantalla— se comprueba que el contenido
+        reserve sitio al pie para que la tarjeta no le tape nada. */
   await esperar(4000);
   const geo = await pagina.evaluate(() => {
-    const a = document.getElementById('asistente').getBoundingClientRect();
-    const p = document.querySelector('.pane.activa').getBoundingClientRect();
-    const b = document.querySelector('.barra-proy').getBoundingClientRect();
-    const sep = (r1, r2) => r1.right <= r2.left + 1 || r2.right <= r1.left + 1 ||
-                            r1.bottom <= r2.top + 1 || r2.bottom <= r1.top + 1;
+    const el = document.getElementById('asistente');
+    const a = el.getBoundingClientRect();
+    /* Se mide en un panel de texto, no en el del mapa: el mapa llega hasta
+       abajo a propósito y la tarjeta flota sobre su esquina. */
+    document.querySelector('.tab[data-sec="resumen"]').click();
+    const pane = document.querySelector('.pane[data-pane="resumen"]');
+    const reserva = parseFloat(getComputedStyle(pane).paddingBottom);
     return {
-      separado: sep(a, p) && sep(a, b),
-      margen: Math.round(innerWidth - a.right),
-      radio: parseFloat(getComputedStyle(document.getElementById('asistente')).borderRadius),
+      alto: Math.round(a.height),
+      reserva: Math.round(reserva),
+      margenDer: Math.round(innerWidth - a.right),
+      margenAbajo: Math.round(innerHeight - a.bottom),
+      radio: parseFloat(getComputedStyle(el).borderRadius),
+      opciones: document.querySelectorAll('.asis-opcion').length,
       hayBoton: !!document.querySelector('#btnAsistente, .btn-asistente')
     };
   });
-  ok('El asistente no se superpone con el contenido', geo.separado);
-  ok(`Separado del borde (${geo.margen}px), redondeado (${geo.radio}px), sin botón`,
-     geo.margen >= 8 && geo.radio >= 8 && !geo.hayBoton);
+  ok(`El contenido reserva ${geo.reserva}px al pie y la tarjeta mide ${geo.alto}px: no tapa nada`,
+     geo.reserva >= geo.alto);
+  ok(`Tarjeta compacta, sin lista de opciones, separada de los bordes ` +
+     `(${geo.margenDer}px / ${geo.margenAbajo}px), redondeada (${geo.radio}px)`,
+     geo.opciones === 0 && geo.margenDer >= 8 && geo.margenAbajo >= 8 &&
+     geo.radio >= 8 && !geo.hayBoton);
 
   await clicSel('#btnVolver', 0); await esperar(400);
   e = await estado();

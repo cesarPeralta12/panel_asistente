@@ -3,11 +3,11 @@
    probar-saludo.js — El asistente debe saludar UNA sola vez por visitante
    ----------------------------------------------------------------------------
    QUÉ COMPRUEBA
-     1. Al cargar el panel, la presentación suena sola: una vez.
-     2. El primer toque (atracción → menú) NO la repite.
-     3. Entrar a un proyecto tampoco la repite.
-     4. Cuando el panel vuelve solo al modo atracción por inactividad, el
-        siguiente visitante SÍ vuelve a escucharla.
+     1. Al cargar, la portada queda EN SILENCIO. No habla sola.
+     2. El primer toque sobre la portada arranca la presentación, una vez.
+     3. Entrar a un proyecto no la repite.
+     4. Cuando el panel vuelve solo a la portada por inactividad, el
+        siguiente visitante vuelve a escucharla.
 
    SÓLO PARA DESARROLLO.
    Uso:  node herramientas/probar-saludo.js
@@ -57,12 +57,17 @@ const URL = 'file:///' +
   await esperar(2000);
 
   const c1 = await cuenta();
-  ok(`Al cargar, la presentación suena ${c1} vez/veces`, c1 === 1);
+  ok(`Al cargar, la portada está en silencio (${c1} saludos)`, c1 === 0);
 
-  // Toque en el centro del área de contenido: atracción → menú
+  /* Se lee ahora, antes de que la propia prueba lo acorte a 1 segundo para no
+     tener que esperar los cinco minutos de verdad. */
+  const espera = await pagina.evaluate(() => PANEL.config.segundosInactividad);
+  ok(`La espera sin actividad es de ${espera} s (5 minutos)`, espera === 300);
+
+  // Toque en el centro del área de contenido: portada → menú
   await clic(700, 540);
   const c2 = await cuenta();
-  ok(`Tras el primer toque (menú): ${c2} en total — no se repite`, c2 === 1);
+  ok(`El primer toque arranca la presentación: ${c2} vez/veces`, c2 === 1);
 
   // Entrar a un proyecto
   await pagina.evaluate(() => {

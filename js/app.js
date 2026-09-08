@@ -87,10 +87,11 @@ function irA(pantalla) {
   $$('.pantalla').forEach(p => p.classList.toggle('activa', p.id === pantalla));
   Estado.pantalla = pantalla;
 
-  /* El asistente acompaña todas las pantallas, incluida la de atracción:
-     se presenta solo al entrar, sin que nadie toque nada. */
+  /* El asistente acompaña todas las pantallas. Ya no lleva lista de opciones:
+     todo se navega tocando el panel —las tarjetas y las pestañas— y él sólo
+     narra lo que se está mirando. Queda como indicador de estado y el botón
+     para cortarlo. */
   $('#asistente').classList.add('visible');
-  construirOpcionesAsistente();
 
   if (pantalla === 'atraccion') {
     iniciarAtraccion();
@@ -102,9 +103,10 @@ function irA(pantalla) {
     if (anterior !== 'atraccion') { callarAsistente(); escribir(); }
   } else {
     detenerAtraccion();
-    /* Alguien despertó la pantalla. Sólo se saluda si a este visitante no se
-       le saludó ya: al cargar el panel la presentación suena sola, y sin esta
-       comprobación el primer toque la repetía desde el principio. */
+    /* Alguien despertó la portada: ese toque es el que arranca la presentación.
+       La bandera evita repetirla si el visitante vuelve al menú más tarde; se
+       reinicia sola cuando el panel regresa a la portada por inactividad, que
+       es cuando llega alguien nuevo. */
     if (anterior === 'atraccion' && !Estado.yaSaludo) {
       Estado.yaSaludo = true;
       decir(PANEL.asistente.saludo, 'saludo');
@@ -198,7 +200,9 @@ function construirMenu() {
       ${p.pendiente ? '<span class="tj-pendiente">Contenido pendiente</span>' : ''}
       <div class="tj-cuerpo">
         <span class="tj-tipo">${p.tipo}</span>
-        <h3 class="tj-nombre">${p.nombre}</h3>
+        ${p.logo
+          ? `<img class="tj-logo" src="${p.logo}" alt="${p.nombre}">`
+          : `<h3 class="tj-nombre">${p.nombre}</h3>`}
         <p class="tj-sub">${p.subtitulo}</p>
         <div class="tj-datos">
           ${p.destacados.slice(0, 2).map(d =>
@@ -283,17 +287,8 @@ function explicarSeccion(id) {
   const q = (PANEL.asistente.preguntas || []).find(x => x.seccion === id);
   if (!q) return;
   decir(q.respuesta(p), `${p.id}--${q.id}`);
-  marcarOpcion(q.id);
 }
 
-/* Deja resaltada una sola pregunta de la lista del asistente.
-   Sólo toca las preguntas (las que llevan data-q): el proyecto abierto también
-   se resalta y tiene que seguir marcado, si no el cliente pierde de vista cuál
-   está mirando. */
-function marcarOpcion(idPregunta) {
-  $$('.asis-opcion[data-q]').forEach(o =>
-    o.classList.toggle('activa', o.dataset.q === idPregunta));
-}
 
 function mostrarSeccion(id) {
   Estado.seccion = id;
@@ -649,76 +644,7 @@ function decir(texto, clave) {
    usuario interactúe; en el kiosco no pasa porque INICIAR PANEL.bat arranca
    Chrome con --autoplay-policy=no-user-gesture-required. Si igual quedara
    bloqueado, el texto queda en pantalla y la voz suena al primer toque. */
-function presentarse() {
-  Estado.yaSaludo = true;
-  decir(PANEL.asistente.saludo, 'saludo');
 
-  /* Chrome puede bloquear el audio hasta que alguien toque la pantalla. Si eso
-     pasó, el primer toque lo desbloquea y se repite la bienvenida.
-     PERO ese toque casi siempre es «abrir un proyecto»: el listener corre en
-     fase de captura, o sea ANTES del clic de la tarjeta, así que lanzaba la
-     bienvenida entera y encima arrancaba la del proyecto — dos voces a la vez,
-     y el cliente escuchando una presentación que ya no correspondía.
-     Ahora se espera medio segundo antes de decidir: para entonces el clic ya
-     corrió, así que basta con mirar si pidió otra frase.
-     OJO con el criterio: no sirve exigir que el toque «no cambie de pantalla».
-     El primer toque siempre pasa de la atracción al menú, así que con esa
-     condición la bienvenida no sonaba nunca en un navegador normal. Lo que
-     importa es sólo si hay algo más que decir. */
-  setTimeout(() => {
-    if (Voz.sonando()) return;
-    const alTocar = () => {
-      document.removeEventListener('pointerdown', alTocar, true);
-      const pedidos = Voz.pedidos;
-      setTimeout(() => {
-        if (Voz.sonando()) return;             // ya está hablando otra cosa
-        if (Voz.pedidos !== pedidos) return;   // el toque abrió un proyecto: ése manda
-        decir(PANEL.asistente.saludo, 'saludo');
-      }, 500);
-    };
-    document.addEventListener('pointerdown', alTocar, true);
-  }, 700);
-}
-
-function construirOpcionesAsistente() {
-  const cont = $('#asisOpciones');
-  cont.innerHTML = '';
-  const flecha = svgIcono('M9 6l6 6-6 6', 18);
-
-  const g1 = document.createElement('div');
-  g1.className = 'asis-grupo';
-  g1.textContent = Estado.proyecto ? 'Cambiar de proyecto' : 'Elija un proyecto';
-  cont.appendChild(g1);
-
-  PANEL.proyectos.forEach(p => {
-    const b = document.createElement('button');
-    b.className = 'asis-opcion' + (Estado.proyecto && Estado.proyecto.id === p.id ? ' activa' : '');
-    b.innerHTML = `<span>${p.nombre}</span>${flecha}`;
-    // No dice nada acá: abrirProyecto() ya se encarga de presentarlo.
-    b.addEventListener('click', () => abrirProyecto(p.id));
-    cont.appendChild(b);
-  });
-
-  if (Estado.proyecto) {
-    const g2 = document.createElement('div');
-    g2.className = 'asis-grupo';
-    g2.textContent = 'Preguntas frecuentes';
-    cont.appendChild(g2);
-
-    PANEL.asistente.preguntas.forEach(q => {
-      const b = document.createElement('button');
-      b.className = 'asis-opcion';
-      b.innerHTML = `<span>${q.texto}</span>${flecha}`;
-      b.dataset.q = q.id;
-      b.addEventListener('click', () => {
-        if (q.seccion) mostrarSeccion(q.seccion);
-        decir(q.respuesta(Estado.proyecto), `${Estado.proyecto.id}--${q.id}`);
-        marcarOpcion(q.id);
-      });
-      cont.appendChild(b);
-    });
-  }
-}
 
 function iniciar() {
   if (QUIETO) document.body.classList.add('sin-animacion');
@@ -776,7 +702,10 @@ function iniciar() {
   /* El asistente se presenta solo, sin botón. El texto se escribe siempre;
      la voz sólo cuando el panel está en uso real (no al tomar capturas). */
   escribir();
-  if (!QUIETO) setTimeout(presentarse, 600);
+  /* El asistente NO habla al cargar: la portada queda en silencio hasta que
+     alguien la toca. Además de ser lo que pidió INMOL, resuelve solo el
+     problema del autoplay: como el saludo pasa a salir de un toque real,
+     Chrome nunca lo bloquea y desaparece todo el parche de desbloqueo. */
 }
 
 function aplicarRuta() {

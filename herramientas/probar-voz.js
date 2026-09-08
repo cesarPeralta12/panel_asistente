@@ -2,12 +2,12 @@
    INMOL · Panel interactivo
    probar-voz.js — El asistente habla del proyecto correcto y de a una voz
    ----------------------------------------------------------------------------
-   QUÉ COMPRUEBA (los tres defectos que reportó el ingeniero de INMOL)
-     1. Tocar la TARJETA GRANDE de un proyecto lo hace explicar ese proyecto,
-        no seguir con la bienvenida.
-     2. Tocar el proyecto en la LISTA del asistente hace lo mismo.
+   QUÉ COMPRUEBA
+     1. Tocar la TARJETA de un proyecto lo hace explicar ese proyecto, no
+        seguir con la bienvenida.
+     2. Tocar una PESTAÑA lo hace explicar esa sección.
      3. Nunca hay dos voces sonando a la vez.
-     4. Ya no se muestra el texto de lo que dice.
+     4. El asistente no muestra texto ni lista de opciones: sólo narra.
 
    SÓLO PARA DESARROLLO.
    Uso:  node herramientas/probar-voz.js
@@ -66,22 +66,32 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html')
      e === 'libertad' && v.some(x => x.includes('proyecto-libertad')) &&
      !v.some(x => x.includes('saludo')));
 
-  /* 3. Lista del asistente → explica ESE proyecto */
-  await pg.evaluate(() => { window.__voz = []; });
-  await pg.evaluate(() => [...document.querySelectorAll('.asis-opcion')]
-    .find(b => b.textContent.includes('El Encanto 2')).click());
+  /* 3. El asistente quedó sin lista de opciones: sólo narra */
+  const sinLista = await pg.evaluate(() => ({
+    opciones: document.querySelectorAll('.asis-opcion').length,
+    caja: !!document.getElementById('asisOpciones'),
+    cabecera: !!document.querySelector('.asis-cabecera'),
+    silencio: !!document.getElementById('asisSilencio')
+  }));
+  ok('El asistente no tiene lista de opciones, sólo cabecera y «Detener voz»',
+     sinLista.opciones === 0 && !sinLista.caja && sinLista.cabecera && sinLista.silencio);
+
+  /* Cambiar de proyecto desde otra tarjeta lo explica igual */
+  await pg.evaluate(() => { irA('menu'); Estado.proyecto = null; window.__voz = []; });
+  await esperar(400);
+  await pg.evaluate(() => document.querySelectorAll('.tarjeta')[2].click());
   await esperar(1800);
   v = await sonando();
   const e2 = await pg.evaluate(() => Estado.proyecto.id);
-  ok(`Lista del asistente «El Encanto 2» → abre ${e2} y dice ${v.join(', ') || 'NADA'}`,
+  ok(`Tarjeta «El Encanto 2» → abre ${e2} y dice ${v.join(', ') || 'NADA'}`,
      e2 === 'el-encanto-2' && v.some(x => x.includes('proyecto-el-encanto-2')) &&
      v.filter(x => x.includes('proyecto-')).length === 1);
 
   /* 4. Cambiar rápido de opción no deja dos voces encima */
   const solapes = await pg.evaluate(async () => {
     window.__voz = [];
-    const ops = [...document.querySelectorAll('.asis-opcion')];
-    for (const b of ops.slice(0, 6)) { b.click(); await new Promise(r => setTimeout(r, 260)); }
+    const ops = [...document.querySelectorAll('.tab')];
+    for (let i = 0; i < 6; i++) { ops[i % ops.length].click(); await new Promise(r => setTimeout(r, 260)); }
     await new Promise(r => setTimeout(r, 900));
     /* El reproductor del asistente no vive en el DOM (es un new Audio), así que
        se lo pregunta directo a Voz. Dos voces = el mp3 sonando Y la síntesis
@@ -90,7 +100,7 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html')
     return { pedidos: window.__voz.length, mp3, sintesis: !!speechSynthesis.speaking,
              pista: (Voz.audio.src || '').split('/').pop() };
   });
-  ok(`6 opciones seguidas → ${solapes.pedidos} pedidos · suena «${solapes.pista}» ` +
+  ok(`6 pestañas seguidas → ${solapes.pedidos} pedidos · suena «${solapes.pista}» ` +
      `(mp3 ${solapes.mp3}, síntesis ${solapes.sintesis}) — nunca las dos`,
      !(solapes.mp3 && solapes.sintesis));
 
@@ -127,7 +137,7 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html')
   await pg2.goto(URL, { waitUntil: 'networkidle0' });
   await esperar(2200);
   const bloqueado = await pg2.evaluate(() => +(Voz.audio.currentTime || 0) === 0);
-  ok('Chrome bloquea el audio al cargar (es el escenario que se quiere probar)', bloqueado);
+  ok('La portada arranca en silencio, sin depender del autoplay', bloqueado);
   await pg2.evaluate(() => { irA('menu'); window.__voz = []; });
   await esperar(300);
   // Toque real del mouse: dispara pointerdown y despues click, como un dedo
@@ -171,8 +181,9 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html')
     pista: (Voz.audio.src || '').split('/').pop(),
     pantalla: Estado.pantalla
   }));
-  ok('Con autoplay bloqueado, el 1er toque en la atraccion suena la bienvenida (' +
-     tras.pista + ' ' + tras.t + 's, pantalla ' + tras.pantalla + ')',
+  ok('El 1er toque en la portada arranca la bienvenida (' +
+     tras.pista + ' ' + tras.t + 's, pantalla ' + tras.pantalla + ')' +
+     ' — y como sale de un toque, Chrome no la bloquea',
      mudo === 0 && tras.t > 0 && tras.pista.includes('saludo') && tras.pantalla === 'menu');
 
   /* 9. Las pestañas de arriba también hacen hablar al asistente, con la
@@ -202,16 +213,11 @@ const URL = 'file:///' + path.resolve(__dirname, '..', 'index.html')
     const r = await pg4.evaluate(() => ({
       voz: window.__voz,
       seccion: Estado.seccion,
-      // dataset es un DOMStringMap: no sobrevive al puente con puppeteer
-      marcada: (document.querySelector('.asis-opcion.activa[data-q]') || {})
-                 .getAttribute?.('data-q') || null,
-      proyectoMarcado: !!document.querySelector('.asis-opcion.activa:not([data-q])')
     }));
     const clave = `libertad--${esperado[sec]}.mp3`;
     ok(`Pestaña «${sec}» → sección ${r.seccion}, dice ${r.voz.join(', ') || 'NADA'}` +
-       `, marca «${r.marcada || '—'}» y conserva el proyecto resaltado`,
-       r.seccion === sec && r.voz.length === 1 && r.voz[0] === clave &&
-       r.marcada === esperado[sec] && r.proyectoMarcado);
+       ``,
+       r.seccion === sec && r.voz.length === 1 && r.voz[0] === clave);
   }
 
   console.log(res.join('\n'));
