@@ -334,17 +334,15 @@ const MapaReal = {
     lista.forEach(calle => {
       const grupo = L.layerGroup();
 
-      /* Las avenidas llevan además una línea tenue: así el nombre se apoya en
-         algo y no queda flotando sobre el barrio. Las calles de barrio ya se
-         distinguen solas en la foto satelital. */
-      if (calle.r <= 2) {
-        calle.t.forEach(tramo => {
-          L.polyline(tramo, {
-            color: '#FFFFFF', weight: calle.r === 1 ? 3 : 2,
-            opacity: calle.r === 1 ? .5 : .35, interactive: false
-          }).addTo(grupo);
-        });
-      }
+      /* Toda calle lleva una línea tenue debajo del nombre: así el rótulo se
+         apoya en algo y se lee como parte del mapa, no como una etiqueta
+         pegada encima de la foto. Más finita y tenue cuanto más chica la vía. */
+      calle.t.forEach(tramo => {
+        L.polyline(tramo, {
+          color: '#FFFFFF', weight: calle.r === 1 ? 3 : (calle.r === 2 ? 2 : 1.4),
+          opacity: calle.r === 1 ? .5 : (calle.r === 2 ? .35 : .25), interactive: false
+        }).addTo(grupo);
+      });
 
       const rotulo = L.marker(this.puntoMedio(calle.p), {
         icon: L.divIcon({
@@ -408,8 +406,14 @@ const MapaReal = {
       // Nunca de cabeza: si va hacia la izquierda, se le da media vuelta.
       if (ang > 90) ang -= 180;
       if (ang < -90) ang += 180;
+      /* El div que devuelve getElement() es el que Leaflet mueve con su
+         propio transform (translate3d) para posicionar el marcador: tocarlo
+         acá pisaría esa posición. La rotación va en el <span> de adentro, que
+         Leaflet no toca, y se reemplaza entero (no se acumula) para que cada
+         zoom/paneo no vaya sumando otra rotación sobre la anterior. */
       const el = c.rotulo.getElement();
-      if (el) el.style.transform += ` rotate(${ang.toFixed(1)}deg)`;
+      const span = el && el.querySelector('span');
+      if (span) span.style.transform = `translate(-50%, -50%) rotate(${ang.toFixed(1)}deg)`;
     });
   },
 
