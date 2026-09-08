@@ -15,7 +15,10 @@ const Estado = {
   seccion: 'resumen',
   temporizadorAtraccion: null,
   temporizadorInactividad: null,
-  indiceAtraccion: 0
+  indiceAtraccion: 0,
+  /* Ya se saludó a este visitante. Se reinicia cuando el panel vuelve
+     solo al modo atracción, que es cuando llega alguien nuevo. */
+  yaSaludo: false
 };
 
 /* Cache de renders satelitales: se dibuja una vez y se reutiliza siempre. */
@@ -80,11 +83,37 @@ function svgIcono(d, tam = 22) {
    NAVEGACIÓN ENTRE PANTALLAS
    ============================================================================ */
 function irA(pantalla) {
+  const anterior = Estado.pantalla;
   $$('.pantalla').forEach(p => p.classList.toggle('activa', p.id === pantalla));
   Estado.pantalla = pantalla;
 
-  if (pantalla === 'atraccion') iniciarAtraccion();
-  else detenerAtraccion();
+  /* El asistente acompaña todas las pantallas. Ya no lleva lista de opciones:
+     todo se navega tocando el panel —las tarjetas y las pestañas— y él sólo
+     narra lo que se está mirando. Queda como indicador de estado y el botón
+     para cortarlo. */
+  $('#asistente').classList.add('visible');
+
+  if (pantalla === 'atraccion') {
+    iniciarAtraccion();
+    /* Se vuelve al modo atracción porque el cliente se fue. Si el asistente
+       estaba a mitad de una respuesta —la ficha técnica dura casi medio
+       minuto— seguía hablando solo frente a una pantalla que ya no mostraba
+       ese proyecto, y el siguiente visitante llegaba a un panel narrando algo
+       que no venía a cuento. */
+    if (anterior !== 'atraccion') { callarAsistente(); escribir(); }
+  } else {
+    detenerAtraccion();
+    /* Alguien despertó la portada: ese toque es el que arranca la presentación.
+       La bandera evita repetirla si el visitante vuelve al menú más tarde; se
+       reinicia sola cuando el panel regresa a la portada por inactividad, que
+       es cuando llega alguien nuevo. */
+    if (anterior === 'atraccion' && !Estado.yaSaludo) {
+      Estado.yaSaludo = true;
+      decir(PANEL.asistente.saludo, 'saludo');
+    } else {
+      escribir();
+    }
+  }
 
   reiniciarInactividad();
 }
@@ -171,7 +200,9 @@ function construirMenu() {
       ${p.pendiente ? '<span class="tj-pendiente">Contenido pendiente</span>' : ''}
       <div class="tj-cuerpo">
         <span class="tj-tipo">${p.tipo}</span>
-        <h3 class="tj-nombre">${p.nombre}</h3>
+        ${p.logo
+          ? `<img class="tj-logo" src="${p.logo}" alt="${p.nombre}">`
+          : `<h3 class="tj-nombre">${p.nombre}</h3>`}
         <p class="tj-sub">${p.subtitulo}</p>
         <div class="tj-datos">
           ${p.destacados.slice(0, 2).map(d =>
@@ -215,6 +246,12 @@ function abrirProyecto(id, seccion = 'resumen') {
 
   irA('proyecto');
   mostrarSeccion(seccion);
+
+  /* El asistente explica SIEMPRE el proyecto que se acaba de abrir, se haya
+     tocado la tarjeta grande o la lista del asistente. Antes sólo hablaba la
+     lista: al tocar la tarjeta seguía sonando la presentación de bienvenida,
+     que no tenía nada que ver con lo que el cliente estaba mirando. */
+  decir(`${p.nombre}. ${p.claim} ${p.descripcion}`, `proyecto-${p.id}`);
 }
 
 function construirTabs() {
@@ -230,10 +267,28 @@ function construirTabs() {
     const etiqueta = (s.id === 'lotes' && Estado.proyecto && Estado.proyecto.plano.etiqueta)
       ? Estado.proyecto.plano.etiqueta : s.etiqueta;
     b.innerHTML = svgIcono(ICONO_TAB[s.id], 20) + `<span>${etiqueta}</span>`;
-    b.addEventListener('click', () => mostrarSeccion(s.id));
+    b.addEventListener('click', () => {
+      mostrarSeccion(s.id);
+      explicarSeccion(s.id);
+    });
     nav.appendChild(b);
   });
 }
+
+/* Explica en voz alta la sección que se acaba de abrir.
+   Cada pestaña tiene una pregunta equivalente en el asistente —Ubicación,
+   Disponibilidad, Ficha técnica y, para Resumen, la de servicios— así que se
+   reutiliza esa misma respuesta y su audio ya grabado: no hace falta grabar
+   nada nuevo. También se marca la opción correspondiente en la lista, para que
+   las pestañas de arriba y el menú del asistente no cuenten cosas distintas. */
+function explicarSeccion(id) {
+  const p = Estado.proyecto;
+  if (!p) return;
+  const q = (PANEL.asistente.preguntas || []).find(x => x.seccion === id);
+  if (!q) return;
+  decir(q.respuesta(p), `${p.id}--${q.id}`);
+}
+
 
 function mostrarSeccion(id) {
   Estado.seccion = id;
@@ -524,6 +579,8 @@ function reiniciarInactividad() {
   clearTimeout(Estado.temporizadorInactividad);
   if (QUIETO || Estado.pantalla === 'atraccion') return;
   Estado.temporizadorInactividad = setTimeout(() => {
+    /* Vuelve al modo atracción: el próximo que toque es otro visitante. */
+    Estado.yaSaludo = false;
     Estado.proyecto = null;
     irA('atraccion');
   }, PANEL.config.segundosInactividad * 1000);
@@ -554,8 +611,44 @@ function alternarDiagnostico() {
 /* ============================================================================
    7. ARRANQUE
    ============================================================================ */
+/* ============================================================================
+   ASISTENTE DE VOZ
+   ============================================================================ */
+
+/* Cambia el texto del asistente sin hablar */
+/* El asistente es de voz: ya no se transcribe lo que dice.
+   INMOL pidió quitar el cuadro de texto —leerlo hacía que el cliente dejara
+   de mirar el proyecto— así que sólo queda el estado y la lista de opciones. */
+function escribir() {
+  if (!Voz.sonando()) $('#asisEstado').textContent = 'Toque una pregunta';
+}
+
+function callarAsistente() {
+  Voz.callar();
+  $('#asisAvatar').classList.remove('hablando');
+  $('#asisEstado').textContent = 'Toque una pregunta';
+}
+
+/* clave: identifica el audio pregrabado (assets/voz/indice.js). Si falta,
+   Voz recurre al motor de voz del sistema. */
+function decir(texto, clave) {
+  $('#asisEstado').textContent = 'Hablando…';
+  $('#asisAvatar').classList.add('hablando');
+  Voz.hablar(texto, () => {
+    $('#asisAvatar').classList.remove('hablando');
+    $('#asisEstado').textContent = 'Toque una pregunta';
+  }, clave);
+}
+
+/* Presentación al entrar. Los navegadores bloquean el audio antes de que el
+   usuario interactúe; en el kiosco no pasa porque INICIAR PANEL.bat arranca
+   Chrome con --autoplay-policy=no-user-gesture-required. Si igual quedara
+   bloqueado, el texto queda en pantalla y la voz suena al primer toque. */
+
+
 function iniciar() {
   if (QUIETO) document.body.classList.add('sin-animacion');
+  Voz.iniciar();
   $('#aviso').hidden = !PANEL.config.datosDeEjemplo;
   construirMenu();
 
@@ -563,6 +656,7 @@ function iniciar() {
   $('#atraccion').addEventListener('click', () => irA('menu'));
 
   $('#btnVolver').addEventListener('click', () => { Estado.proyecto = null; irA('menu'); });
+  $('#asisSilencio').addEventListener('click', callarAsistente);
   $('#btnVerTodo').addEventListener('click', () => MapaReal.centrar());
   $('#btnAcercar').addEventListener('click', () => MapaReal.acercar());
   $('#btnCerrarTour').addEventListener('click', cerrarTour360);
@@ -604,6 +698,14 @@ function iniciar() {
      cualquier vista concreta — útil para pruebas y para capturas. */
   aplicarRuta();
   window.addEventListener('hashchange', aplicarRuta);
+
+  /* El asistente se presenta solo, sin botón. El texto se escribe siempre;
+     la voz sólo cuando el panel está en uso real (no al tomar capturas). */
+  escribir();
+  /* El asistente NO habla al cargar: la portada queda en silencio hasta que
+     alguien la toca. Además de ser lo que pidió INMOL, resuelve solo el
+     problema del autoplay: como el saludo pasa a salir de un toque real,
+     Chrome nunca lo bloquea y desaparece todo el parche de desbloqueo. */
 }
 
 function aplicarRuta() {

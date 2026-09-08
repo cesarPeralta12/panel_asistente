@@ -291,15 +291,13 @@ const MapaReal = {
       if (ruta.desde) avenidasPuestas.add(ruta.desde);
       /* Si justo ahí ya hay un pin de referencia —en El Encanto 2 el arranque
          cae sobre el «Cruce Km 13»— el rótulo diría dos veces lo mismo y los
-         globos se pisan. Pero esos pines se esconden al alejarse, y entonces
-         el número quedaba solo, sin decir por dónde se entra: el rótulo se
-         marca como duplicado y aparece justo cuando el pin no está. */
+         globos se pisan. En ese caso el nombre queda sólo en el popup. */
       const yaHayPin = (proyecto.referencias || []).some(ref => {
         const p = this.posicionReferencia(proyecto, ref);
         return this.metros(inicio, [p[0], p[1]]) < 200;
       });
-      const rotulo = (ruta.desde && !repetida)
-        ? `<b class="pin-ruta-via${yaHayPin ? ' pin-ruta-via-dup' : ''}">${ruta.desde}</b>` : '';
+      const rotulo = (ruta.desde && !repetida && !yaHayPin)
+        ? `<b class="pin-ruta-via">${ruta.desde}</b>` : '';
       /* Los dos ingresos del centro comercial salen del mismo punto del centro
          de la ciudad: sin esto el ① queda escondido debajo del ②. */
       const encimado = arranques.some(p => this.metros(p, inicio) < 250);
@@ -316,35 +314,6 @@ const MapaReal = {
                    (ruta.desde ? `<br>Se llega por ${ruta.desde}` : ''));
       this.rutas.push(numero);
     });
-
-    /* Dos ingresos pueden terminar compartiendo la misma avenida —en el
-       Comercial los últimos 3,2 km son idénticos, igual que en el plano de
-       INMOL—. Dibujados uno encima del otro, el de abajo desaparece y de cerca
-       parece que sólo hay un acceso. Se repasa ese tramo con la línea de abajo
-       punteada por encima: asoman los dos colores y se leen los dos ingresos. */
-    for (let i = 0; i < lista.length; i++) {
-      for (let j = i + 1; j < lista.length; j++) {
-        const tramo = this.tramoFinalComun(lista[i].puntos, lista[j].puntos);
-        if (!tramo.length) continue;
-        this.rutas.push(L.polyline(tramo, {
-          color: lista[i].color, weight: 4, opacity: .95,
-          dashArray: '2 13', lineCap: 'round', interactive: false
-        }).addTo(this.mapa));
-      }
-    }
-  },
-
-  /* El tramo final que dos recorridos recorren exactamente igual, comparando
-     punto por punto desde el proyecto hacia atrás. Menos de dos puntos no es
-     un tramo: es sólo la llegada compartida. */
-  tramoFinalComun(a, b) {
-    let n = 0;
-    while (n < a.length && n < b.length) {
-      const p = a[a.length - 1 - n], q = b[b.length - 1 - n];
-      if (Math.abs(p[0] - q[0]) > 1e-6 || Math.abs(p[1] - q[1]) > 1e-6) break;
-      n++;
-    }
-    return n >= 2 ? a.slice(a.length - n) : [];
   },
 
   /* ==========================================================================
@@ -437,11 +406,11 @@ const MapaReal = {
       // Nunca de cabeza: si va hacia la izquierda, se le da media vuelta.
       if (ang > 90) ang -= 180;
       if (ang < -90) ang += 180;
-      // El div que devuelve getElement() es el que Leaflet mueve con su
-      // propio transform (translate3d) para posicionar el marcador: tocarlo
-      // acá pisaría esa posición. La rotación va en el <span> de adentro, que
-      // Leaflet no toca, y se reemplaza entero (no se acumula) para que cada
-      // zoom/paneo no vaya sumando otra rotación sobre la anterior.
+      /* El div que devuelve getElement() es el que Leaflet mueve con su
+         propio transform (translate3d) para posicionar el marcador: tocarlo
+         acá pisaría esa posición. La rotación va en el <span> de adentro, que
+         Leaflet no toca, y se reemplaza entero (no se acumula) para que cada
+         zoom/paneo no vaya sumando otra rotación sobre la anterior. */
       const el = c.rotulo.getElement();
       const span = el && el.querySelector('span');
       if (span) span.style.transform = `translate(-50%, -50%) rotate(${ang.toFixed(1)}deg)`;
@@ -507,11 +476,6 @@ const MapaReal = {
       if (el) el.style.display = cerca ? '' : 'none';
       if (m.setStyle) m.setStyle({ opacity: cerca ? .45 : 0 });
     });
-    /* El rótulo del ingreso que repetía un pin cercano hace el relevo: se
-       muestra justo cuando ese pin se esconde. */
-    document.querySelectorAll('.pin-ruta-via-dup').forEach(el => {
-      el.style.display = cerca ? 'none' : '';
-    });
   },
 
   /* Encuadra el proyecto con todas sus referencias.
@@ -530,14 +494,10 @@ const MapaReal = {
     const predio = [];
     this.predio.forEach(l => { if (l.getLatLngs) predio.push(...l.getLatLngs().flat()); });
     if (!todo && predio.length > 2) {
-      /* El tope llega hasta donde hay teselas, en vez de a un zoom fijo: las
-         urbanizaciones son tan grandes que el encuadre nunca lo alcanza, pero
-         el terreno del centro comercial no llega a una hectárea y con el tope
-         en 17 quedaba del tamaño de una estampilla. */
       this.mapa.fitBounds(L.latLngBounds(predio), {
         paddingTopLeft: [this.anchoFicha() + 40, 40],
         paddingBottomRight: [60, 110],
-        maxZoom: this.ZOOM_MAX, animate: false
+        maxZoom: 17, animate: false
       });
       return;
     }
@@ -585,22 +545,9 @@ const MapaReal = {
     if (marcador && marcador.openPopup) setTimeout(() => marcador.openPopup(), 1700);
   },
 
-  /* Vuela al proyecto, como el sobrevuelo de la vista satelital.
-     Si el proyecto tiene contorno, el vuelo termina encuadrándolo: un zoom
-     fijo servía cuando todos eran urbanizaciones, pero el terreno del centro
-     comercial es cien veces más chico y a 17 quedaba perdido en el barrio. */
+  /* Vuela al proyecto, como el sobrevuelo de la vista satelital */
   acercar() {
     if (!this.mapa || !this.proyectoActual) return;
-    const predio = [];
-    this.predio.forEach(l => { if (l.getLatLngs) predio.push(...l.getLatLngs().flat()); });
-    if (predio.length > 2) {
-      this.mapa.flyToBounds(L.latLngBounds(predio), {
-        paddingTopLeft: [this.anchoFicha() + 40, 40],
-        paddingBottomRight: [60, 110],
-        maxZoom: this.ZOOM_MAX, duration: 2.2
-      });
-      return;
-    }
     const c = this.proyectoActual.coordenadas;
     this.mapa.flyTo([c.lat, c.lng], 17, { duration: 2.2 });
   },
