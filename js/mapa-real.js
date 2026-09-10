@@ -69,10 +69,10 @@ const MapaReal = {
     });
   },
 
-  iconoReferencia(ref, arriba) {
+  iconoReferencia(ref) {
     const d = (typeof ICONOS !== 'undefined' && ICONOS[ref.icono]) || '';
     return L.divIcon({
-      className: 'pin-ref' + (arriba ? ' pin-ref-alto' : ''),
+      className: 'pin-ref',
       html: '<span class="pin-ref-circulo">' +
             `<svg viewBox="0 0 28 28" width="22" height="22"><path d="${d}" fill="none" ` +
             'stroke="#E3333E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
@@ -435,19 +435,14 @@ const MapaReal = {
       .bindPopup(`<b>${proyecto.nombre}</b><br>${proyecto.direccion}`);
     this.marcadores.push(principal);
 
-    const puestas = [];
+    this.refs = [];
     (proyecto.referencias || []).forEach(ref => {
       const pos = this.posicionReferencia(proyecto, ref);
-      /* Dos referencias pueden venir con la misma coordenada —«Cruce Km 13» e
-         «Hipermaxi Mi Barrio» la comparten en datos.js— y entonces sus rótulos
-         se montan uno encima del otro. Cuando eso pasa, el segundo lleva su
-         etiqueta arriba del pin en vez de abajo, para que ambos se lean. */
-      const encimado = puestas.some(p => this.metros(p, pos) < 120);
-      puestas.push(pos);
-      const m = L.marker(pos, { icon: this.iconoReferencia(ref, encimado) })
+      const m = L.marker(pos, { icon: this.iconoReferencia(ref) })
         .addTo(this.mapa)
         .bindPopup(`<b>${ref.nombre}</b><br>a ${ref.distancia} del proyecto`);
       this.marcadores.push(m);
+      this.refs.push(m);
       // Línea punteada del proyecto a cada referencia
       const linea = L.polyline([centro, pos], {
         color: '#E3333E', weight: 1.5, opacity: .45, dashArray: '4 7'
@@ -475,6 +470,38 @@ const MapaReal = {
       const el = m.getElement ? m.getElement() : null;
       if (el) el.style.display = cerca ? '' : 'none';
       if (m.setStyle) m.setStyle({ opacity: cerca ? .45 : 0 });
+    });
+    if (cerca) this.acomodarRotulos();
+  },
+
+  /* Reparte los rótulos de las referencias para que no se tapen.
+     La ficha de El Encanto trae seis puntos casi en fila sobre la Doble Vía:
+     con todos los rótulos colgando debajo del pin, tres quedaban ilegibles.
+     A cada uno se le prueban cuatro posiciones —abajo, arriba, derecha,
+     izquierda— y se le deja la primera que no pise a las ya colocadas.
+     Se hace sobre coordenadas de pantalla y no sobre metros porque lo que se
+     monta es el rectángulo del rótulo, y su tamaño no depende del zoom. */
+  acomodarRotulos() {
+    const LADOS = ['', 'pin-ref-alto', 'pin-ref-der', 'pin-ref-izq'];
+    const cajas = [];
+    const pisa = (a, b) => !(a.right < b.left || a.left > b.right ||
+                             a.bottom < b.top || a.top > b.bottom);
+
+    (this.refs || []).forEach(m => {
+      const el = m.getElement && m.getElement();
+      const txt = el && el.querySelector('.pin-ref-txt');
+      if (!txt) return;
+      let elegido = LADOS[0];
+      for (const lado of LADOS) {
+        LADOS.forEach(l => l && el.classList.remove(l));
+        if (lado) el.classList.add(lado);
+        const r = txt.getBoundingClientRect();
+        elegido = lado;
+        if (!cajas.some(c => pisa(c, r))) break;
+      }
+      LADOS.forEach(l => l && el.classList.remove(l));
+      if (elegido) el.classList.add(elegido);
+      cajas.push(txt.getBoundingClientRect());
     });
   },
 

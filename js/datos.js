@@ -98,16 +98,23 @@ const PANEL = {
       // Puntos de referencia del mapa oficial de INMOL para este proyecto
       // ("VÍAS DE ACCESO" + puntos de interés de La Guardia), ubicados en
       // Google Maps para tener distancia real y coordenadas exactas.
+      /* Los puntos de referencia son los de la FICHA COMERCIAL de INMOL
+         (pág. 4, «UBICACIÓN»), no una selección nuestra: es lo que pidieron
+         en la presentación. Están en el mismo orden que la ficha.
+         Km 16 es el arranque del Ingreso 1 sobre la Doble Vía, sacado del
+         propio trazado de rutas, así que es exacto. */
       referencias: [
         { nombre: 'Av. Doble Vía La Guardia',      distancia: '0.2 km', icono: 'via',      angulo: 20 },
-        { nombre: 'U.E. Victoria',                 distancia: '2.8 km', icono: 'colegio',  angulo: 250,
-          coordenadas: { lat: -17.8966432, lng: -63.3204914 } },
-        { nombre: 'Centro de Salud San Silvestre', distancia: '2.9 km', icono: 'salud',    angulo: 152,
-          coordenadas: { lat: -17.8905435, lng: -63.2876494 } },
-        { nombre: 'Mercado Campesino La Guardia',  distancia: '2.9 km', icono: 'comercio', angulo: 238,
-          coordenadas: { lat: -17.8914751, lng: -63.3186963 } },
-        { nombre: 'Plaza Principal de La Guardia', distancia: '6.8 km', icono: 'plaza',    angulo: 248,
-          coordenadas: { lat: -17.8918621, lng: -63.3310429 } }
+        { nombre: 'Km 16',                          distancia: '2.2 km', icono: 'via',         angulo: 1,
+          coordenadas: { lat: -17.88522, lng: -63.29533 } },
+        { nombre: 'Laboratorios Terbol S.A.',       distancia: '2.0 km', icono: 'industria',   angulo: 356,
+          coordenadas: { lat: -17.88687, lng: -63.29708 } },
+        { nombre: 'Estación de Servicio Roes',      distancia: '2.2 km', icono: 'combustible', angulo: 325,
+          coordenadas: { lat: -17.88902, lng: -63.30766 } },
+        { nombre: 'Sonnengarten',                   distancia: '2.3 km', icono: 'comida',      angulo: 319,
+          coordenadas: { lat: -17.88944, lng: -63.31020 } },
+        { nombre: 'Mercado Campesino La Guardia',   distancia: '2.9 km', icono: 'comercio',    angulo: 302,
+          coordenadas: { lat: -17.8914751, lng: -63.3186963 } }
       ],
 
       servicios: [
@@ -288,6 +295,11 @@ const PANEL = {
       // Puntos de referencia reales. Los dos primeros son los "Ingresos" del
       // mapa de accesos oficial de INMOL; el resto se investigó en Google
       // Maps a partir de la ubicación del proyecto (distancia en auto).
+      /* La ficha comercial del Comercial (pág. 4) no numera puntos de interés:
+         sólo marca los dos INGRESOS y rotula tres vías —Av. Santos Dumont,
+         8º Anillo y Doble Vía La Guardia—. Los cuatro lugares de abajo no
+         salen de la ficha; los dejamos porque son reales y ayudan a situar el
+         proyecto, pero si INMOL quiere ceñirse a la ficha, se sacan. */
       referencias: [
         { nombre: 'Ingreso: Av. Santos Dumont Final',           distancia: '0.1 km', icono: 'via', angulo: 45  },
         { nombre: 'Ingreso: Doble Vía a La Guardia (8vo anillo)', distancia: '0.2 km', icono: 'via', angulo: 200 },
@@ -507,15 +519,22 @@ const PANEL = {
 
       // Puntos de referencia del mapa oficial de INMOL para este proyecto,
       // ubicados en Google Maps (distancia en auto).
+      /* PUNTOS DE INTERÉS de la ficha comercial (pág. 3), en su mismo orden.
+         Falta Hipermaxi Mi Barrio: no está en ningún mapa abierto y no lo
+         pudimos ubicar con certeza sobre el satelital. Antes figuraba con las
+         coordenadas del Cruce Km 13 —las mismas dos veces—, que era un error;
+         mejor no mostrarlo que mostrarlo en el lugar equivocado. */
       referencias: [
         { nombre: 'Cruce Km 13 Doble Vía La Guardia', distancia: '4.3 km', icono: 'via', angulo: 197,
           coordenadas: { lat: -17.8680828, lng: -63.2721053 } },
+        { nombre: 'Mercado Moderno Km 13', distancia: '4.0 km', icono: 'comercio', angulo: 200,
+          coordenadas: { lat: -17.87092, lng: -63.27365 } },
+        { nombre: 'Surtidor Bicentenario', distancia: '2.4 km', icono: 'combustible', angulo: 197,
+          coordenadas: { lat: -17.88297, lng: -63.26663 } },
         { nombre: 'Módulo Educ. José Villarroel Robles', distancia: '0.3 km', icono: 'colegio', angulo: 249,
           coordenadas: { lat: -17.9040467, lng: -63.2627157 } },
         { nombre: 'Centro Médico Salud ADvenir', distancia: '1.0 km', icono: 'salud', angulo: 16,
-          coordenadas: { lat: -17.9139666, lng: -63.2574233 } },
-        { nombre: 'Hipermaxi Mi Barrio', distancia: '4.3 km', icono: 'comercio', angulo: 197,
-          coordenadas: { lat: -17.8680828, lng: -63.2721053 } }
+          coordenadas: { lat: -17.9139666, lng: -63.2574233 } }
       ],
 
       servicios: [

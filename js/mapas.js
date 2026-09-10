@@ -734,7 +734,14 @@ const ICONOS = {
   colegio:  'M4 11 L14 5 L24 11 L14 17 Z M20 13 v6',
   salud:    'M11 5 h6 v6 h6 v6 h-6 v6 h-6 v-6 H5 v-6 h6 Z',
   comercio: 'M5 10 h18 l-2 12 H7 Z M10 10 V6 a4 4 0 0 1 8 0 v4',
-  plaza:    'M14 4 a10 10 0 1 0 0.1 0 M14 9 v10 M9 14 h10'
+  plaza:    'M14 4 a10 10 0 1 0 0.1 0 M14 9 v10 M9 14 h10',
+  /* Los tres siguientes son los que usan las fichas comerciales de INMOL para
+     sus puntos de referencia: surtidor, laboratorio y restaurante. */
+  combustible: 'M6 23 V7 a2 2 0 0 1 2-2 h6 a2 2 0 0 1 2 2 v16 M4 23 h14 M6 12 h10 '
+             + 'M18 10 h3 a1 1 0 0 1 1 1 v7 a2 2 0 0 0 4 0 V9 l-3-3',
+  industria: 'M11 4 v7 L5 21 a1.5 1.5 0 0 0 1.3 2.2 h15.4 A1.5 1.5 0 0 0 23 21 '
+           + 'L17 11 V4 M9 4 h10 M8.5 16 h11',
+  comida:    'M8 4 v9 a3 3 0 0 0 6 0 V4 M11 4 v20 M20 24 V4 a5 5 0 0 0 0 10 h1'
 };
 
 function construirMapaReferencias(proyecto) {
