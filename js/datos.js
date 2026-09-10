@@ -306,9 +306,9 @@ const PANEL = {
            que no significaba nada. Ahora cada uno se planta sobre su avenida
            —en el tramo donde ese recorrido va solo, sin el otro al lado— y la
            cifra es el largo real de la ruta dibujada. */
-        { nombre: 'Ingreso 1 · Av. Santos Dumont Final', distancia: '13.8 km', icono: 'via',
+        { nombre: 'Ingreso 1 · Av. Santos Dumont Final', distancia: '13.9 km', icono: 'via',
           coordenadas: { lat: -17.822809, lng: -63.184838 } },
-        { nombre: 'Ingreso 2 · Doble Vía La Guardia · 8vo anillo', distancia: '17.4 km', icono: 'via',
+        { nombre: 'Ingreso 2 · Doble Vía La Guardia · 8vo anillo', distancia: '17.5 km', icono: 'via',
           coordenadas: { lat: -17.812607, lng: -63.207690 } },
         { nombre: 'Centro Educ. Luz y Verdad', distancia: '2.4 km', icono: 'colegio',  angulo: 228,
           coordenadas: { lat: -17.8762346, lng: -63.1872295 } },
