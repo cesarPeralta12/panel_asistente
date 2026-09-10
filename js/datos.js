@@ -22,6 +22,7 @@ const PANEL = {
   empresa: {
     nombre: 'INMOL',
     lema: 'Desarrollos Inmobiliarios con respaldo y confianza',
+    slogan: 'Hacemos que sea posible',
     web: 'www.inmol.com.bo',
     telefono: '+591 755 90031',
     oficina: 'Edificio Trébol, Piso 1, Of. 1A · Fortín Corrales 141, Santa Cruz',
@@ -493,7 +494,10 @@ const PANEL = {
       // Todavía faltan fotos, video y la ubicación exacta confirmada por
       // INMOL — se avisa en la tarjeta del menú para no generar expectativas.
       pendiente: true,
-      claim: 'La segunda etapa de El Encanto, sobre la carretera a Camiri.',
+      /* INMOL pidió expresamente que no se lo presente como «la segunda etapa
+         de El Encanto». El claim es ahora la ubicación tal como la describe su
+         propia ficha técnica. */
+      claim: 'A 5 km de la Doble Vía La Guardia, sobre la carretera a Camiri.',
       descripcion: 'Estratégicamente ubicada a la altura del Km 13 de la Doble ' +
                    'Vía La Guardia, ingresando tan solo 5 km sobre la carretera ' +
                    'a Camiri, en zona consolidada con vías de acceso pavimentadas, ' +

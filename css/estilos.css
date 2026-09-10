@@ -136,7 +136,9 @@ ul { list-style: none; }
 #atraccion .atr-toque       { color: rgba(255,255,255,.88); }
 #atraccion .atr-titulo,
 #atraccion .atr-dato b      { color: #FFFFFF; }
-#atraccion .atr-lema        { border-left-color: rgba(255,255,255,.22); }
+#atraccion .marca-txt       { border-left-color: rgba(255,255,255,.22); }
+#atraccion .slogan          { color: rgba(255,255,255,.88); }
+#atraccion .slogan i        { color: #FF8A93; }   /* el rojo de marca no llega sobre la foto */
 #atraccion .atr-datos       { border-top-color: rgba(255,255,255,.22); }
 #atraccion .atr-punto       { background: rgba(255,255,255,.28); }
 
@@ -184,10 +186,27 @@ body.sin-animacion .atr-fondo > .visible {
   padding: 2.6rem 3.6rem;
 }
 .marca { height: 4.4rem; width: auto; object-fit: contain; }
+/* La raya divisoria pasa al contenedor: debajo del lema va el eslogan de
+   INMOL, y la raya tiene que abarcar los dos renglones, no sólo el primero. */
+.marca-txt {
+  display: flex; flex-direction: column; gap: .3rem;
+  padding-left: 1.6rem; border-left: 1px solid var(--linea);
+}
 .atr-lema, .barra-lema {
   font-size: .84rem; letter-spacing: .19em; text-transform: uppercase;
   color: var(--texto-3); font-weight: 500;
-  padding-left: 1.6rem; border-left: 1px solid var(--linea);
+}
+/* «Hacemos que sea posible», el eslogan de la marca. En el original la última
+   palabra va en una manuscrita roja; acá se resuelve con la itálica de la
+   tipografía del panel y el rojo de INMOL, que es lo que hay embebido para
+   que funcione sin conexión. */
+.slogan {
+  font-size: 1rem; font-weight: 600; letter-spacing: -.01em;
+  color: var(--texto-2);
+}
+.slogan i {
+  font-style: italic; font-weight: 500;
+  color: var(--rojo); letter-spacing: 0;
 }
 
 .atr-centro {
