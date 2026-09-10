@@ -15,7 +15,14 @@ const Estado = {
   seccion: 'resumen',
   temporizadorAtraccion: null,
   temporizadorInactividad: null,
-  indiceAtraccion: 0
+  indiceAtraccion: 0,
+  /* Páginas de la ficha oficial del proyecto abierto y cuál se está viendo
+     a pantalla completa */
+  hojas: [],
+  hoja: 0,
+  /* Ya se saludó a este visitante. Se reinicia cuando el panel vuelve
+     solo al modo atracción, que es cuando llega alguien nuevo. */
+  yaSaludo: false
 };
 
 /* Cache de renders satelitales: se dibuja una vez y se reutiliza siempre. */
@@ -80,11 +87,38 @@ function svgIcono(d, tam = 22) {
    NAVEGACIÓN ENTRE PANTALLAS
    ============================================================================ */
 function irA(pantalla) {
+  const anterior = Estado.pantalla;
   $$('.pantalla').forEach(p => p.classList.toggle('activa', p.id === pantalla));
   Estado.pantalla = pantalla;
 
-  if (pantalla === 'atraccion') iniciarAtraccion();
-  else detenerAtraccion();
+  /* El asistente acompaña todas las pantallas. Ya no lleva lista de opciones:
+     todo se navega tocando el panel —las tarjetas y las pestañas— y él sólo
+     narra lo que se está mirando. Queda como indicador de estado y el botón
+     para cortarlo. */
+  $('#asistente').classList.add('visible');
+
+  if (pantalla === 'atraccion') {
+    iniciarAtraccion();
+    /* Se vuelve al modo atracción porque el cliente se fue. Si el asistente
+       estaba a mitad de una respuesta —la ficha técnica dura casi medio
+       minuto— seguía hablando solo frente a una pantalla que ya no mostraba
+       ese proyecto, y el siguiente visitante llegaba a un panel narrando algo
+       que no venía a cuento. */
+    if (anterior !== 'atraccion') { callarAsistente(); escribir(); }
+    if (!$('#hojaVisor').hidden) cerrarHoja();
+  } else {
+    detenerAtraccion();
+    /* Alguien despertó la portada: ese toque es el que arranca la presentación.
+       La bandera evita repetirla si el visitante vuelve al menú más tarde; se
+       reinicia sola cuando el panel regresa a la portada por inactividad, que
+       es cuando llega alguien nuevo. */
+    if (anterior === 'atraccion' && !Estado.yaSaludo) {
+      Estado.yaSaludo = true;
+      decir(PANEL.asistente.saludo, 'saludo');
+    } else {
+      escribir();
+    }
+  }
 
   reiniciarInactividad();
 }
@@ -171,7 +205,9 @@ function construirMenu() {
       ${p.pendiente ? '<span class="tj-pendiente">Contenido pendiente</span>' : ''}
       <div class="tj-cuerpo">
         <span class="tj-tipo">${p.tipo}</span>
-        <h3 class="tj-nombre">${p.nombre}</h3>
+        ${p.logo
+          ? `<img class="tj-logo" src="${p.logo}" alt="${p.nombre}">`
+          : `<h3 class="tj-nombre">${p.nombre}</h3>`}
         <p class="tj-sub">${p.subtitulo}</p>
         <div class="tj-datos">
           ${p.destacados.slice(0, 2).map(d =>
@@ -215,6 +251,12 @@ function abrirProyecto(id, seccion = 'resumen') {
 
   irA('proyecto');
   mostrarSeccion(seccion);
+
+  /* El asistente explica SIEMPRE el proyecto que se acaba de abrir, se haya
+     tocado la tarjeta grande o la lista del asistente. Antes sólo hablaba la
+     lista: al tocar la tarjeta seguía sonando la presentación de bienvenida,
+     que no tenía nada que ver con lo que el cliente estaba mirando. */
+  decir(`${p.nombre}. ${p.claim} ${p.descripcion}`, `proyecto-${p.id}`);
 }
 
 function construirTabs() {
@@ -230,10 +272,28 @@ function construirTabs() {
     const etiqueta = (s.id === 'lotes' && Estado.proyecto && Estado.proyecto.plano.etiqueta)
       ? Estado.proyecto.plano.etiqueta : s.etiqueta;
     b.innerHTML = svgIcono(ICONO_TAB[s.id], 20) + `<span>${etiqueta}</span>`;
-    b.addEventListener('click', () => mostrarSeccion(s.id));
+    b.addEventListener('click', () => {
+      mostrarSeccion(s.id);
+      explicarSeccion(s.id);
+    });
     nav.appendChild(b);
   });
 }
+
+/* Explica en voz alta la sección que se acaba de abrir.
+   Cada pestaña tiene una pregunta equivalente en el asistente —Ubicación,
+   Disponibilidad, Ficha técnica y, para Resumen, la de servicios— así que se
+   reutiliza esa misma respuesta y su audio ya grabado: no hace falta grabar
+   nada nuevo. También se marca la opción correspondiente en la lista, para que
+   las pestañas de arriba y el menú del asistente no cuenten cosas distintas. */
+function explicarSeccion(id) {
+  const p = Estado.proyecto;
+  if (!p) return;
+  const q = (PANEL.asistente.preguntas || []).find(x => x.seccion === id);
+  if (!q) return;
+  decir(q.respuesta(p), `${p.id}--${q.id}`);
+}
+
 
 function mostrarSeccion(id) {
   Estado.seccion = id;
@@ -319,6 +379,28 @@ function abrirTour360(ruta) {
 function cerrarTour360() {
   $('#tourOverlay').hidden = true;
   $('#tourFrame').src = 'about:blank';   // corta el visor 3D, libera memoria
+  reiniciarInactividad();
+}
+
+/* --- 3.1b Visor de la ficha oficial ------------------------------------
+   Las páginas del PDF se ven chicas en la rejilla; al tocar una se abre a
+   pantalla completa y se puede pasar de hoja sin volver atrás. */
+function abrirHoja(i) {
+  const hojas = Estado.hojas || [];
+  if (!hojas.length) return;
+  Estado.hoja = Math.max(0, Math.min(i, hojas.length - 1));
+  $('#hojaVisorImg').src = hojas[Estado.hoja];
+  $('#hojaCuenta').textContent = `${Estado.hoja + 1} / ${hojas.length}`;
+  $('#hojaPrev').disabled = Estado.hoja === 0;
+  $('#hojaSig').disabled = Estado.hoja === hojas.length - 1;
+  $('#hojaVisorImg').classList.remove('zoom');
+  $('#hojaVisor').hidden = false;
+  $('#hojaVisor').scrollTop = 0;
+  reiniciarInactividad();
+}
+function cerrarHoja() {
+  $('#hojaVisor').hidden = true;
+  $('#hojaVisorImg').src = '';
   reiniciarInactividad();
 }
 
@@ -483,6 +565,22 @@ function llenarFicha(p) {
   $('#fichaDestacado').innerHTML = p.destacados
     .map(d => `<div class="fd"><b>${d.valor}</b><span>${d.etiqueta}</span></div>`).join('');
 
+  /* Arriba, las páginas de la ficha oficial tal como las diseñó INMOL.
+     Se tocan para abrirlas grandes: en el tótem la letra del PDF a media
+     pantalla no se alcanza a leer de pie. */
+  const hojas = p.fichaImagenes || [];
+  const oficial = $('#fichaOficial');
+  $('#fichaOficialCaja').hidden = hojas.length === 0;
+  oficial.innerHTML = hojas.map((src, i) => `
+    <button class="hoja" type="button" data-hoja="${i}">
+      <img src="${src}" alt="Ficha técnica ${p.nombre}, página ${i + 1}">
+      <span class="hoja-etq">
+        <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><circle cx="11" cy="11" r="6.4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.6 15.6L20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        ${i + 1} / ${hojas.length}
+      </span>
+    </button>`).join('');
+  Estado.hojas = hojas;
+
   const grupos = p.fichaGrupos || [];
   const detalle = $('#fichaDetalle');
 
@@ -524,6 +622,8 @@ function reiniciarInactividad() {
   clearTimeout(Estado.temporizadorInactividad);
   if (QUIETO || Estado.pantalla === 'atraccion') return;
   Estado.temporizadorInactividad = setTimeout(() => {
+    /* Vuelve al modo atracción: el próximo que toque es otro visitante. */
+    Estado.yaSaludo = false;
     Estado.proyecto = null;
     irA('atraccion');
   }, PANEL.config.segundosInactividad * 1000);
@@ -554,8 +654,44 @@ function alternarDiagnostico() {
 /* ============================================================================
    7. ARRANQUE
    ============================================================================ */
+/* ============================================================================
+   ASISTENTE DE VOZ
+   ============================================================================ */
+
+/* Cambia el texto del asistente sin hablar */
+/* El asistente es de voz: ya no se transcribe lo que dice.
+   INMOL pidió quitar el cuadro de texto —leerlo hacía que el cliente dejara
+   de mirar el proyecto— así que sólo queda el estado y la lista de opciones. */
+function escribir() {
+  if (!Voz.sonando()) $('#asisEstado').textContent = 'Toque una pregunta';
+}
+
+function callarAsistente() {
+  Voz.callar();
+  $('#asisAvatar').classList.remove('hablando');
+  $('#asisEstado').textContent = 'Toque una pregunta';
+}
+
+/* clave: identifica el audio pregrabado (assets/voz/indice.js). Si falta,
+   Voz recurre al motor de voz del sistema. */
+function decir(texto, clave) {
+  $('#asisEstado').textContent = 'Hablando…';
+  $('#asisAvatar').classList.add('hablando');
+  Voz.hablar(texto, () => {
+    $('#asisAvatar').classList.remove('hablando');
+    $('#asisEstado').textContent = 'Toque una pregunta';
+  }, clave);
+}
+
+/* Presentación al entrar. Los navegadores bloquean el audio antes de que el
+   usuario interactúe; en el kiosco no pasa porque INICIAR PANEL.bat arranca
+   Chrome con --autoplay-policy=no-user-gesture-required. Si igual quedara
+   bloqueado, el texto queda en pantalla y la voz suena al primer toque. */
+
+
 function iniciar() {
   if (QUIETO) document.body.classList.add('sin-animacion');
+  Voz.iniciar();
   $('#aviso').hidden = !PANEL.config.datosDeEjemplo;
   construirMenu();
 
@@ -563,9 +699,33 @@ function iniciar() {
   $('#atraccion').addEventListener('click', () => irA('menu'));
 
   $('#btnVolver').addEventListener('click', () => { Estado.proyecto = null; irA('menu'); });
+  $('#asisSilencio').addEventListener('click', callarAsistente);
   $('#btnVerTodo').addEventListener('click', () => MapaReal.centrar());
   $('#btnAcercar').addEventListener('click', () => MapaReal.acercar());
   $('#btnCerrarTour').addEventListener('click', cerrarTour360);
+
+  /* Ficha oficial: abrir una hoja grande y pasar páginas */
+  $('#fichaOficial').addEventListener('click', e => {
+    const hoja = e.target.closest('.hoja');
+    if (hoja) abrirHoja(Number(hoja.dataset.hoja));
+  });
+  $('#hojaCerrar').addEventListener('click', cerrarHoja);
+  $('#hojaPrev').addEventListener('click', () => abrirHoja(Estado.hoja - 1));
+  $('#hojaSig').addEventListener('click', () => abrirHoja(Estado.hoja + 1));
+  /* Tocar la hoja la acerca y la aleja */
+  $('#hojaVisorImg').addEventListener('click', () => {
+    const img = $('#hojaVisorImg'), visor = $('#hojaVisor');
+    const acercar = !img.classList.contains('zoom');
+    img.classList.toggle('zoom', acercar);
+    /* Se empieza por el margen izquierdo, que es donde arranca el texto */
+    visor.scrollLeft = 0;
+    visor.scrollTop = 0;
+  });
+
+  /* Tocar el fondo negro también cierra: es el gesto que la gente intenta */
+  $('#hojaVisor').addEventListener('click', e => {
+    if (e.target === $('#hojaVisor')) cerrarHoja();
+  });
 
   /* Cualquier interacción reinicia el contador de inactividad */
   ['pointerdown', 'keydown', 'wheel'].forEach(ev =>
@@ -593,8 +753,13 @@ function iniciar() {
     if (k === 'a') irA('atraccion');
     if (k === 'm') irA('menu');
     if (k === 'escape') {
-      if (!$('#tourOverlay').hidden) cerrarTour360();
+      if (!$('#hojaVisor').hidden) cerrarHoja();
+      else if (!$('#tourOverlay').hidden) cerrarTour360();
       else irA('menu');
+    }
+    if (!$('#hojaVisor').hidden) {
+      if (k === 'arrowleft') abrirHoja(Estado.hoja - 1);
+      if (k === 'arrowright') abrirHoja(Estado.hoja + 1);
     }
   });
 
@@ -604,6 +769,14 @@ function iniciar() {
      cualquier vista concreta — útil para pruebas y para capturas. */
   aplicarRuta();
   window.addEventListener('hashchange', aplicarRuta);
+
+  /* El asistente se presenta solo, sin botón. El texto se escribe siempre;
+     la voz sólo cuando el panel está en uso real (no al tomar capturas). */
+  escribir();
+  /* El asistente NO habla al cargar: la portada queda en silencio hasta que
+     alguien la toca. Además de ser lo que pidió INMOL, resuelve solo el
+     problema del autoplay: como el saludo pasa a salir de un toque real,
+     Chrome nunca lo bloquea y desaparece todo el parche de desbloqueo. */
 }
 
 function aplicarRuta() {

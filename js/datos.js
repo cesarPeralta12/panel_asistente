@@ -32,8 +32,10 @@ const PANEL = {
 
   /* --- Comportamiento del kiosco ------------------------------------------ */
   config: {
+    // Idioma para la voz del sistema (respaldo si falta un audio).
+    idiomaVoz: 'es-BO',
     // Segundos sin que nadie toque la pantalla antes de volver al modo atracción.
-    segundosInactividad: 90,
+    segundosInactividad: 300,   // 5 minutos sin que nadie toque → vuelve a la portada
     // Segundos que dura cada slide del modo atracción.
     segundosPorSlide: 11,
     // Mostrar precios en pantalla. Definido en NO por decisión comercial.
@@ -50,6 +52,8 @@ const PANEL = {
     /* ====================== 1. URBANIZACIÓN EL ENCANTO ==================== */
     {
       id: 'el-encanto',
+      // Logo oficial del proyecto, recortado de su ficha PDF.
+      logo: 'assets/logos/el-encanto.png',
       nombre: 'Urbanización El Encanto',
       subtitulo: 'La Guardia · Santa Cruz',
       tipo: 'Urbanización residencial',
@@ -129,6 +133,102 @@ const PANEL = {
         { campo: 'Estado comercial',     valor: 'En comercialización' }
       ],
 
+      /* Páginas de la ficha técnica oficial de INMOL, tal cual salen del PDF.
+         Se muestran arriba en la pestaña Ficha técnica; debajo va la versión
+         transcrita (fichaGrupos) para lectura rápida en pantalla. */
+      fichaImagenes: [
+        'assets/fichas/el-encanto/01.jpg',
+        'assets/fichas/el-encanto/02.jpg',
+        'assets/fichas/el-encanto/03.jpg',
+        'assets/fichas/el-encanto/04.jpg'
+      ],
+
+      /* Ficha técnica completa, transcrita de la ficha oficial de INMOL
+         (PDF-Fichas-ElEncanto2026, secciones 1 a 9 de FICHA TÉCNICA más la
+         ficha legal). La tabla corta de arriba sigue siendo el resumen que lee
+         el asistente; esto es el detalle que el asesor muestra en pantalla.
+         Sin precios: es decisión comercial de INMOL no exhibirlos. */
+      fichaGrupos: [
+        {
+          titulo: 'Superficie',
+          filas: [
+            { campo: 'Superficie total', valor: '64,58 hectáreas · 645.801,07 m²' },
+            { campo: 'Área útil',        valor: '387.504,20 m² — 60,00 %' },
+            { campo: 'Área de calles',   valor: '118.168,45 m² — 18,30 %' },
+            { campo: 'Área de avenidas', valor: '70.356,99 m² — 10,89 %' },
+            { campo: 'Área de equipamiento', valor: '41.522,48 m² — 6,43 %' },
+            { campo: 'Áreas verdes',     valor: '28.248,95 m² — 4,37 %' },
+            { campo: 'Terrenos',         valor: '1.101 lotes de 300 m² a 851,68 m², dentro del área útil' }
+          ]
+        },
+        {
+          titulo: 'Sistema de drenaje pluvial',
+          items: [
+            'La urbanización se diseñó y construyó para que todos los lotes queden por encima de las calles y drenen el agua hacia ellas',
+            'Todas las calles cumplen la función de canalización terciaria',
+            'Aseguran la evacuación de toda el agua fuera de la urbanización, para evitar inundaciones'
+          ]
+        },
+        {
+          titulo: 'Protección contra inundaciones',
+          items: [
+            'El agua que llega de urbanizaciones vecinas se colecta en el canal P4c, construido respetando el Plan Maestro de Drenaje del Municipio de La Guardia',
+            'El canal P4b protege a las urbanizaciones vecinas del agua que sale de El Encanto'
+          ]
+        },
+        {
+          titulo: 'Protección contra la erosión',
+          items: [
+            'El 100 % de la superficie —manzanos, áreas verdes y de equipamiento— está sembrada con pasto de la variedad decumbens revestida',
+            'Protege el suelo de la erosión hídrica y eólica, típica de la zona'
+          ]
+        },
+        {
+          titulo: 'Pavimento',
+          items: [
+            'Dos accesos principales pavimentados, más de 1.500 m',
+            'Funcionan además como canales terciarios de drenaje'
+          ]
+        },
+        {
+          titulo: 'Agua potable',
+          filas: [
+            { campo: 'Red',        valor: 'Diseñada para toda la urbanización; pasa por las aceras para no perjudicar el pavimento actual ni el que se construya' },
+            { campo: 'Conexión',   valor: 'Mediante pozo propio, en coordinación con la Cooperativa de Agua Potable de La Guardia (COSPLAG)' },
+            { campo: 'Caudal',     valor: '14 a 15 litros por segundo, según la demanda proyectada' },
+            { campo: 'Pozo',       valor: '250 m de profundidad y 10” de diámetro' },
+            { campo: 'Filtros',    valor: 'De acero al carbón y tipo Johnson, para evitar la corrosión y garantizar la durabilidad' }
+          ]
+        },
+        {
+          titulo: 'Energía eléctrica y gas',
+          items: [
+            'Energía eléctrica a través de la Cooperativa Rural de Electrificación (CRE)',
+            'Gas domiciliario solicitándolo directamente a YPFB'
+          ]
+        },
+        {
+          titulo: 'Obra social ejecutada',
+          filas: [
+            { campo: 'Total invertido', valor: 'Bs. 4.213.480,67, en cumplimiento del Decreto Municipal 35/2022' },
+            { campo: 'Luminarias',      valor: '273 unidades · Bs. 581.039,55' },
+            { campo: 'Maquinaria',      valor: '1 motoniveladora modelo 140K · Bs. 2.164.560' },
+            { campo: 'Pavimento',       valor: 'Bs. 1.467.881,12' }
+          ]
+        },
+        {
+          titulo: 'Aprobaciones y documentación',
+          filas: [
+            { campo: 'Radio urbano',        valor: 'Ordenanza Municipal 35/2004 del 16 de abril de 2004, Gobierno Autónomo Municipal de La Guardia · homologada por Resolución Suprema N° 223847 del 25 de agosto de 2005' },
+            { campo: 'Urbanización abierta', valor: 'Aprobada por Decreto Municipal N° 35/2022 del 2 de septiembre de 2022' },
+            { campo: 'Licencia ambiental',  valor: 'Categoría 3, Gobierno Autónomo Departamental de Santa Cruz, 3 de febrero de 2023 · PPM-PASA 1114/22 N° 013/2023' },
+            { campo: 'Por cada lote',       valor: 'Plano de ubicación y uso de suelo, certificado catastral y matrícula registrada en Derechos Reales de Santa Cruz' },
+            { campo: 'Contrato de venta',   valor: 'Con reserva de propiedad, aprobado por el Viceministerio de Defensa de los Derechos del Usuario y del Consumidor el 14 de noviembre de 2023' },
+            { campo: 'Transferencia',       valor: 'INMOL se hace cargo de la transferencia definitiva sin costo para el comprador: asume el Impuesto a la Transferencia y los aranceles en Derechos Reales y en la Alcaldía de La Guardia' }
+          ]
+        }
+      ],
+
       plano: {
         etiqueta: 'Disponibilidad',
         prefijo: 'EC',
@@ -148,6 +248,8 @@ const PANEL = {
     /* ===================== 2. CENTRO COMERCIAL LIBERTAD =================== */
     {
       id: 'libertad',
+      // Logo oficial del proyecto, recortado de su ficha PDF.
+      logo: 'assets/logos/libertad.png',
       nombre: 'Centro Comercial Libertad',
       subtitulo: 'Zona Sur · Santa Cruz',
       tipo: 'Centro comercial',
@@ -218,6 +320,17 @@ const PANEL = {
         { campo: 'Contra incendios',    valor: 'Alarma, extintores, hidrantes y tanque propio' },
         { campo: 'Certificaciones',     valor: 'HABITESE · proyecto eléctrico aprobado por la CRE' },
         { campo: 'Estado comercial',    valor: 'En comercialización, proyecto terminado' }
+      ],
+
+      /* Páginas de la ficha técnica oficial de INMOL, tal cual salen del PDF.
+         Se muestran arriba en la pestaña Ficha técnica; debajo va la versión
+         transcrita (fichaGrupos) para lectura rápida en pantalla. */
+      fichaImagenes: [
+        'assets/fichas/libertad/01.jpg',
+        'assets/fichas/libertad/02.jpg',
+        'assets/fichas/libertad/03.jpg',
+        'assets/fichas/libertad/04.jpg',
+        'assets/fichas/libertad/05.jpg'
       ],
 
       /* Ficha técnica completa, transcrita de la ficha oficial de INMOL
@@ -354,6 +467,8 @@ const PANEL = {
     /* ================ 3. URBANIZACIÓN EL ENCANTO 2 (La Guardia) =========== */
     {
       id: 'el-encanto-2',
+      // Logo oficial del proyecto, recortado de su ficha PDF.
+      logo: 'assets/logos/el-encanto-2.png',
       nombre: 'Urbanización El Encanto 2',
       subtitulo: 'La Guardia · Santa Cruz',
       tipo: 'Urbanización residencial',
@@ -388,7 +503,7 @@ const PANEL = {
       destacados: [
         { valor: '249',                  etiqueta: 'terrenos' },
         { valor: '300 – 29.128 m²',      etiqueta: 'superficie de terrenos' },
-        { valor: '25 ha',                etiqueta: 'superficie total' },
+        { valor: '24,97 ha',             etiqueta: 'superficie total' },
         { valor: 'Km 13',                etiqueta: 'Doble Vía La Guardia' }
       ],
 
@@ -415,12 +530,108 @@ const PANEL = {
       fichaTecnica: [
         { campo: 'Tipología',            valor: 'Urbanización abierta' },
         { campo: 'Ubicación',            valor: 'La Guardia, Km 13 · 5 km sobre carretera a Camiri' },
-        { campo: 'Superficie total',     valor: '25 hectáreas' },
+        { campo: 'Superficie total',     valor: '24,97 hectáreas' },
         { campo: 'Cantidad de terrenos', valor: '249' },
         { campo: 'Superficie de terrenos', valor: '300 m² a 29.128 m²' },
         { campo: 'Ingreso',              valor: 'Pavimentado, directo desde la carretera a Camiri' },
         { campo: 'Servicios básicos',    valor: 'Luz, agua, gas e internet' },
         { campo: 'Estado comercial',     valor: 'En comercialización' }
+      ],
+
+      /* Páginas de la ficha técnica oficial de INMOL, tal cual salen del PDF.
+         Se muestran arriba en la pestaña Ficha técnica; debajo va la versión
+         transcrita (fichaGrupos) para lectura rápida en pantalla. */
+      fichaImagenes: [
+        'assets/fichas/el-encanto-2/01.jpg',
+        'assets/fichas/el-encanto-2/02.jpg',
+        'assets/fichas/el-encanto-2/03.jpg',
+        'assets/fichas/el-encanto-2/04.jpg'
+      ],
+
+      /* Ficha técnica completa, transcrita de la ficha oficial de INMOL
+         (PDF FICHAS URBANIZACION EL ENCANTO 2, secciones 1 a 9 de FICHA
+         TÉCNICA más la ficha legal). La tabla corta de arriba sigue siendo el
+         resumen que lee el asistente; esto es el detalle que el asesor muestra
+         en pantalla. Sin precios: es decisión comercial de INMOL. */
+      fichaGrupos: [
+        {
+          titulo: 'Superficie',
+          filas: [
+            { campo: 'Superficie total',     valor: '24,97 hectáreas · 249.747,29 m²' },
+            { campo: 'Área útil',            valor: '148.797,30 m² — 59,61 %' },
+            { campo: 'Área de calles',       valor: '43.555,20 m² — 17,43 %' },
+            { campo: 'Área verde',           valor: '24.752,73 m² — 9,90 %' },
+            { campo: 'Área de equipamiento', valor: '24.213,06 m² — 9,69 %' },
+            { campo: 'Área de avenida',      valor: '8.429,00 m² — 3,37 %' },
+            { campo: 'Terrenos',             valor: '249 lotes de 300 m² a 29.128 m², dentro del área útil' }
+          ]
+        },
+        {
+          titulo: 'Sistema de drenaje pluvial',
+          items: [
+            'La urbanización se diseñó y construyó para que todos los lotes queden por encima de las calles y drenen el agua hacia ellas',
+            'Todas las calles cumplen la función de canalización terciaria',
+            'Aseguran la evacuación de toda el agua fuera de la urbanización, para evitar inundaciones'
+          ]
+        },
+        {
+          titulo: 'Protección contra inundaciones',
+          items: [
+            'El agua que llega de urbanizaciones vecinas se colecta en un canal sobre la calle E4',
+            'Construido respetando el Plan Maestro de Drenaje del Municipio de La Guardia'
+          ]
+        },
+        {
+          titulo: 'Protección contra la erosión',
+          items: [
+            'El 100 % de la superficie —manzanos, áreas verdes y de equipamiento— está sembrada con pasto de la variedad decumbens revestida',
+            'Protege el suelo de la erosión hídrica y eólica, típica de la zona'
+          ]
+        },
+        {
+          titulo: 'Pavimento',
+          items: [
+            'Acceso principal pavimentado de 270 metros lineales, directo desde la carretera a Camiri',
+            'Funciona además como canal terciario de drenaje'
+          ]
+        },
+        {
+          titulo: 'Agua potable',
+          filas: [
+            { campo: 'Red',      valor: 'Diseñada para toda la urbanización; pasa por las aceras para no perjudicar el pavimento actual ni el que se construya' },
+            { campo: 'Convenio', valor: 'Con la Cooperativa de Agua Potable de La Guardia (COSIMBO R.L.)' },
+            { campo: 'Conexión', valor: 'Los propietarios se conectan a la red matriz principal y secundaria' }
+          ]
+        },
+        {
+          titulo: 'Energía eléctrica y gas',
+          items: [
+            'Energía eléctrica a través de la Cooperativa Rural de Electrificación (CRE)',
+            'Gas domiciliario solicitándolo directamente a YPFB'
+          ]
+        },
+        {
+          titulo: 'Obra social ejecutada',
+          filas: [
+            { campo: 'Total invertido', valor: 'Bs. 1.644.105,12 en 674,92 m², en cumplimiento del Decreto Municipal 09/2024' },
+            { campo: 'Deducción de pavimento', valor: '236,22 m² · Bs. 575.431,92 — según OM 54/2013' },
+            { campo: 'U.E. Ángel Foianini Banzer', valor: '1 aula · 74,28 m² · Bs. 180.954,49' },
+            { campo: 'U.E. Juana Azurduy',         valor: '1 aula · 74,28 m² · Bs. 180.954,49' },
+            { campo: 'U.E. Maestro Pitágoras II',  valor: '1 laboratorio de computación · 114,94 m² · Bs. 280.000' },
+            { campo: 'U.E. Cumbre de las Américas', valor: '1 proscenio · 100,67 m² · Bs. 245.240,41' },
+            { campo: 'Urbanización El Encanto',     valor: '1 cancha polifuncional con graderías · 74,52 m² · Bs. 181.523,81' }
+          ]
+        },
+        {
+          titulo: 'Aprobaciones y documentación',
+          filas: [
+            { campo: 'Radio urbano',         valor: 'Ordenanza Municipal 35/2004 del 16 de abril de 2004, Gobierno Autónomo Municipal de La Guardia · homologada por Resolución Suprema N° 223847 del 25 de agosto de 2005' },
+            { campo: 'Urbanización abierta', valor: 'Aprobada por Decreto Municipal N° 09/2024 del 2 de julio de 2024' },
+            { campo: 'Licencia ambiental',   valor: 'Categoría 3, Gobierno Autónomo Departamental de Santa Cruz, 7 de febrero de 2024 · PPM-PASA 884/23 N° 019/2024' },
+            { campo: 'Por cada lote',        valor: 'Plano de ubicación y uso de suelo, certificado catastral y matrícula registrada en Derechos Reales de Santa Cruz' },
+            { campo: 'Transferencia',        valor: 'INMOL se hace cargo de la transferencia definitiva a nombre del cliente, una vez firmada y cancelada la minuta y el testimonio de transferencia' }
+          ]
+        }
       ],
 
       plano: {
@@ -432,5 +643,68 @@ const PANEL = {
         unidad: 'terreno', unidadPlural: 'terrenos'
       }
     }
-  ]
+  ],
+
+  /* --- ASISTENTE DE VOZ ---------------------------------------------------
+     Tarjeta fija a la derecha, siempre visible. No hay botón: al entrar al
+     panel se presenta solo y cuenta qué proyectos hay. Cada pregunta es un
+     botón que responde hablando y lleva la pantalla a la sección adecuada.
+     Al cambiar cualquier texto de aquí hay que regenerar los audios:
+       node herramientas/generar-voces.js
+     ---------------------------------------------------------------------- */
+  asistente: {
+    saludo: 'Bienvenido a INMOL, desarrollos inmobiliarios con respaldo y ' +
+            'confianza. Le presento nuestros proyectos: Urbanización El ' +
+            'Encanto y El Encanto 2, en La Guardia; y Centro Comercial ' +
+            'Libertad, en la zona sur de Santa Cruz. Toque el proyecto que ' +
+            'desea conocer, o elija una de las preguntas de esta lista.',
+
+    preguntas: [
+      {
+        id: 'ubicacion',
+        texto: '¿Dónde está y qué hay cerca?',
+        seccion: 'ubicacion',
+        respuesta: p => {
+          const tres = (p.referencias || []).slice(0, 3)
+            .map(r => `${r.nombre} a ${r.distancia}`).join(', ');
+          return `${p.nombre} se encuentra en ${p.direccion}. ` +
+                 `En el mapa puede ver su ubicación exacta. Cerca encontrará ${tres}.`;
+        }
+      },
+      {
+        id: 'disponibilidad',
+        texto: 'Ver disponibilidad',
+        seccion: 'lotes',
+        respuesta: p => `Le muestro el plano de ${p.nombre}. En verde están las ` +
+                        `unidades disponibles, en ámbar las reservadas y en gris ` +
+                        `las vendidas. Puede tocar cualquiera para ver su código, ` +
+                        `superficie y categoría.`
+      },
+      {
+        id: 'ficha',
+        texto: 'Ficha técnica',
+        seccion: 'ficha',
+        respuesta: p => {
+          const f = (p.fichaTecnica || []).slice(0, 4)
+            .map(x => `${x.campo}: ${x.valor}`).join('. ');
+          return `Ficha técnica de ${p.nombre}. ${f}.`;
+        }
+      },
+      {
+        id: 'servicios',
+        texto: '¿Qué servicios tiene?',
+        seccion: 'resumen',
+        respuesta: p => `El proyecto cuenta con ${(p.servicios || []).slice(0, 4).join(', ')}, ` +
+                        `entre otros servicios.`
+      },
+      {
+        id: 'precio',
+        texto: '¿Cuál es el precio?',
+        seccion: null,
+        respuesta: () => `Los precios y planes de pago se elaboran de forma ` +
+                         `personalizada. Un asesor de INMOL le preparará una ` +
+                         `cotización a su medida en este mismo momento.`
+      }
+    ]
+  }
 };
