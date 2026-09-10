@@ -34,7 +34,6 @@ start "" "%NAVEGADOR%" ^
   --disable-features=TranslateUI,Translate ^
   --overscroll-history-navigation=0 ^
   --disable-pinch ^
-  --autoplay-policy=no-user-gesture-required ^
   --user-data-dir="%LOCALAPPDATA%\InmolPanel" ^
   "file:///%CARPETA%index.html"
 

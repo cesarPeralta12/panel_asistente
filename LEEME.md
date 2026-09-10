@@ -81,15 +81,15 @@ presentación que rota entre los tres proyectos, pensada para verse desde el
 pasillo. No hace falta que nadie toque nada.
 
 Cuando alguien toca la pantalla, entra al menú de proyectos. Si pasan
-**90 segundos sin que nadie la use**, vuelve solo al modo atracción.
+**5 minutos sin que nadie la use**, vuelve solo al modo atracción.
 
 ### Atajos para el operador
 | Tecla | Acción |
 |---|---|
-| `D` | Panel técnico: resolución, estado de la voz, conexión |
+| `D` | Panel técnico: resolución, pantalla actual, conexión |
 | `A` | Ir al modo atracción |
 | `M` | Ir al menú de proyectos |
-| `Esc` | Cerrar el asistente y volver al menú |
+| `Esc` | Cerrar la hoja de la ficha o el recorrido, y volver al menú |
 
 ---
 
@@ -166,13 +166,16 @@ se pueda demostrar. **Para la feria hay que reemplazarlos por capturas reales.**
 
 ## El asistente con voz (retirado)
 
-El asistente táctil con voz se quitó del panel por decisión del cliente.
+Se llegó a armar un asistente que presentaba el panel hablando, con 22 audios
+grabados con voz neuronal boliviana. Se probó en el tótem y finalmente se
+decidió que el panel fuera sólo visual: nadie se para a escuchar medio minuto
+de narración en el pasillo de una feria.
 
-Todo su código y los 22 audios grabados con voz neuronal boliviana quedaron
-guardados en **`_retirado/asistente/`**. Si más adelante lo quieren de vuelta,
-está completo y probado: no hay que rehacerlo.
+El asistente sigue vivo y probado, no hay que rehacerlo:
 
-Esa carpeta no la carga el panel. Se puede borrar sin ningún efecto.
+- versión vieja, con la lista de preguntas: **`_retirado/asistente/`**
+- versión última, la que se presentó: rama **`main`** de este repositorio y
+  repositorio **`cesarPeralta12/panel_asistente`**
 
 ---
 
@@ -186,7 +189,6 @@ Esto es lo que separa una demo de una instalación que aguanta diez días:
 - [ ] Poner `INICIAR PANEL.bat` en la carpeta de **Inicio** de Windows
       (`Win + R` → `shell:startup`) para que arranque solo al encender
 - [ ] Configurar la BIOS/UEFI para que el equipo **encienda solo al volver la luz**
-- [ ] Verificar la voz en español (tecla `D`)
 - [ ] Probar en la **pantalla real**, no en el monitor de desarrollo:
       el texto que se ve bien en un monitor de escritorio suele quedar
       **demasiado chico** a 6 metros
@@ -207,7 +209,6 @@ panel interactivo/
 ├── js/
 │   ├── datos.js             ← EL ÚNICO ARCHIVO QUE SE EDITA
 │   ├── mapas.js             Vista satelital, plano de lotes, referencias
-│   ├── voz.js               Asistente hablado (voz local de Windows)
 │   └── app.js               Navegación, modo atracción, secciones
 ├── assets/
 │   ├── inmol-logo.png       Logotipo oficial (isotipo rojo + texto blanco)

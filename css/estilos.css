@@ -40,14 +40,6 @@
   --verde:       #1E9E5A;
   --ambar:       #C47F14;
 
-  /* Tarjeta del asistente: fija, siempre visible, separada del borde */
-  --asis-ancho:  20rem;   /* sin la lista de opciones alcanza con esto */
-  --asis-alto:   24rem;
-  /* Sitio que se reserva al pie para que la tarjeta del asistente no tape
-     el final del contenido. */
-  --asis-reserva: 15rem;
-  --asis-margen: 1.5rem;
-
   /* Ritmo */
   --r:           16px;
   --r-sm:        10px;
@@ -451,7 +443,7 @@ body.sin-animacion .atr-fondo > .visible {
 .contenido { position: relative; flex: 1; min-height: 0; }
 .pane {
   position: absolute; inset: 0;
-  padding: 2.4rem 3.4rem var(--asis-reserva);
+  padding: 2.4rem 3.4rem 2.8rem;
   opacity: 0; visibility: hidden; pointer-events: none;
   transform: translateY(1.1rem);
   transition: opacity 460ms ease, transform 460ms cubic-bezier(.16,.84,.3,1),
@@ -578,9 +570,6 @@ body.sin-animacion .atr-fondo > .visible {
 /* --- Pane: UBICACIÓN (satelital) ---------------------------------------- */
 /* La sección de ubicación es el mapa y nada más: los controles van encima,
    flotando, para que la imagen use todo el ancho de la pantalla. */
-/* El mapa sí llega hasta abajo: la tarjeta del asistente flota sobre su
-   esquina, como los controles de cualquier mapa. Los botones del mapa están
-   arriba de esa zona, así que no se tapan. */
 .pane-mapa { padding: 1.5rem 1.6rem 1.7rem; overflow: hidden; }
 .pane-mapa .sat-escenario { height: 100%; }
 
@@ -1143,86 +1132,6 @@ body.sin-animacion .pulso::after { display: none; }
 
 
 /* ============================================================================
-   ASISTENTE DE VOZ
-   Tarjeta clara fija a la derecha (al pie en el tótem vertical). Acompaña
-   todas las pantallas —incluida la de atracción— porque se presenta sola al
-   entrar, sin que nadie toque nada.
-   ============================================================================ */
-/* El asistente ya no ocupa una columna: se apoya abajo a la derecha y el
-   contenido usa todo el ancho. El respiro al pie va en cada panel, no en la
-   pantalla: los paneles se posicionan con inset:0 contra la caja de relleno
-   del padre, así que un padding en la pantalla no los empujaría. */
-#atraccion { padding-bottom: var(--asis-reserva); }
-/* El menú reserva menos: la tarjeta del asistente sólo se cruza con la
-   esquina de la última tarjeta de proyecto, y con la reserva completa las
-   tarjetas se achicaban tanto que el logo se salía. */
-#menu { padding-bottom: calc(var(--asis-reserva) * .55); }
-
-.asistente {
-  position: fixed; z-index: 70;
-  /* Sin la lista de opciones el panel no necesita toda la columna: se pega
-     abajo a la derecha y crece sólo lo que ocupa su contenido, dejándole al
-     proyecto el resto de la pantalla. */
-  right: var(--asis-margen); bottom: var(--asis-margen);
-  width: var(--asis-ancho);
-  background: var(--superficie);
-  border: 1px solid var(--linea);
-  border-radius: 22px;
-  box-shadow: var(--sombra-lg);
-  display: flex; flex-direction: column;
-  overflow: hidden;
-  opacity: 0; visibility: hidden; pointer-events: none;
-  transform: translateX(1.2rem);
-  transition: opacity 520ms cubic-bezier(.16,.84,.3,1),
-              transform 520ms cubic-bezier(.16,.84,.3,1),
-              visibility 0s linear 520ms;
-}
-.asistente.visible {
-  opacity: 1; visibility: visible; pointer-events: auto; transform: none;
-  transition: opacity 520ms cubic-bezier(.16,.84,.3,1),
-              transform 520ms cubic-bezier(.16,.84,.3,1),
-              visibility 0s linear 0s;
-}
-
-.asis-cabecera {
-  display: flex; align-items: center; gap: 1.1rem;
-  padding: 1.7rem 1.7rem 1.4rem;
-  border-bottom: 1px solid var(--linea);
-  flex: none;
-}
-.asis-cabecera h3 { font-size: 1.22rem; font-weight: 600; letter-spacing: -.015em; }
-.asis-estado { font-size: .82rem; color: var(--texto-3); }
-.asis-id { min-width: 0; }
-.asis-id h3 { white-space: nowrap; }
-.asis-avatar {
-  width: 3.3rem; height: 3.3rem; border-radius: 50%; flex: none;
-  background: var(--rojo-tenue); border: 1px solid rgba(227,51,62,.32);
-  display: grid; place-items: center;
-}
-.eq { display: flex; align-items: center; gap: 3px; height: 1.3rem; }
-.eq i { width: 3px; border-radius: 2px; background: var(--rojo); height: 25%; display: block; }
-.asis-avatar.hablando .eq i { animation: eq .85s ease-in-out infinite; }
-.eq i:nth-child(1) { animation-delay: 0s; }
-.eq i:nth-child(2) { animation-delay: .12s; }
-.eq i:nth-child(3) { animation-delay: .24s; }
-.eq i:nth-child(4) { animation-delay: .36s; }
-.eq i:nth-child(5) { animation-delay: .48s; }
-@keyframes eq { 0%,100% { height: 22%; } 50% { height: 100%; } }
-
-
-
-.asis-pie {
-  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-  padding: 1.1rem 1.7rem 1.3rem;
-  border-top: 1px solid var(--linea); flex: none;
-}
-.asis-silencio {
-  font-size: .88rem; color: var(--texto-2); font-weight: 500;
-  padding: .7rem 1.2rem; border-radius: 100px; border: 1px solid var(--linea);
-}
-.asis-nota { font-size: .74rem; color: var(--texto-4); }
-
-/* ============================================================================
    TÓTEM VERTICAL (9:16)
    Los tótems de feria son verticales. No alcanza con apilar las columnas: hay
    que darle el alto al contenido que lo aprovecha (el plano, el mapa) y
@@ -1230,32 +1139,13 @@ body.sin-animacion .pulso::after { display: none; }
    ============================================================================ */
 @media (max-aspect-ratio: 1/1) {
 
-  /* En el tótem el asistente pasa al pie */
-  /* En el tótem vertical la tarjeta del asistente cruza el ancho, abajo. */
-  #atraccion { padding-right: 0; padding-bottom: var(--asis-reserva); }
-  #menu      { padding-right: 0; padding-bottom: calc(var(--asis-reserva) * .55); }
-  .asistente {
-    left: var(--asis-margen); right: var(--asis-margen);
-    top: auto; bottom: var(--asis-margen);
-    width: auto; height: auto;
-    transform: translateY(1.2rem);
-  }
-  .asistente.visible { transform: none; }
-
+  #atraccion, #menu { padding-right: 0; }
 
   /* Menos margen lateral: sólo hay 1080 px de ancho */
   .barra, .menu-intro, .pie, .atr-top, .atr-centro, .atr-pie { padding-left: 2.4rem; padding-right: 2.4rem; }
   .tarjetas { padding-left: 2.4rem; padding-right: 2.4rem; }
-  .pane { padding: 2.2rem 2.4rem var(--asis-reserva); }
-  /* El mapa llega hasta abajo: la tarjeta del asistente flota sobre su
-     esquina. Sin esto, la regla de arriba le dejaba 250 px de hueco. */
+  .pane { padding: 2.2rem 2.4rem 2.4rem; }
   .pane-mapa { padding: 1.5rem 1.6rem 1.7rem; }
-  /* En vertical la tarjeta del asistente cruza todo el ancho abajo, justo
-     encima de «Ver todo» y «Acercar al proyecto»: se los sube para que sigan
-     recibiendo el toque. En horizontal la tarjeta va a un costado y no
-     estorba, por eso este ajuste vive sólo acá. */
-  .sat-controles { bottom: 15rem; }
-  .sat-coord     { bottom: 15rem; }
   .tabs { padding: 1.1rem 2.4rem; gap: .4rem; }
   .tab { padding: .9rem 1.2rem; font-size: .95rem; }
 
