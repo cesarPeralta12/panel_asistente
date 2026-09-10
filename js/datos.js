@@ -104,7 +104,6 @@ const PANEL = {
          Km 16 es el arranque del Ingreso 1 sobre la Doble Vía, sacado del
          propio trazado de rutas, así que es exacto. */
       referencias: [
-        { nombre: 'Av. Doble Vía La Guardia',      distancia: '0.2 km', icono: 'via',      angulo: 20 },
         { nombre: 'Km 16',                          distancia: '2.2 km', icono: 'via',         angulo: 1,
           coordenadas: { lat: -17.88522, lng: -63.29533 } },
         { nombre: 'Laboratorios Terbol S.A.',       distancia: '2.0 km', icono: 'industria',   angulo: 356,
@@ -301,8 +300,16 @@ const PANEL = {
          salen de la ficha; los dejamos porque son reales y ayudan a situar el
          proyecto, pero si INMOL quiere ceñirse a la ficha, se sacan. */
       referencias: [
-        { nombre: 'Ingreso: Av. Santos Dumont Final',           distancia: '0.1 km', icono: 'via', angulo: 45  },
-        { nombre: 'Ingreso: Doble Vía a La Guardia (8vo anillo)', distancia: '0.2 km', icono: 'via', angulo: 200 },
+        /* Los dos ingresos son recorridos, no lugares al lado del proyecto.
+           Sin coordenadas el pin se deducía del ángulo y la distancia, y los
+           dos terminaban encimados sobre el propio proyecto con un «0.1 km»
+           que no significaba nada. Ahora cada uno se planta sobre su avenida
+           —en el tramo donde ese recorrido va solo, sin el otro al lado— y la
+           cifra es el largo real de la ruta dibujada. */
+        { nombre: 'Ingreso 1 · Av. Santos Dumont Final', distancia: '14.4 km', icono: 'via',
+          coordenadas: { lat: -17.822809, lng: -63.184838 } },
+        { nombre: 'Ingreso 2 · Doble Vía La Guardia · 8vo anillo', distancia: '17.9 km', icono: 'via',
+          coordenadas: { lat: -17.812607, lng: -63.207690 } },
         { nombre: 'Centro Educ. Luz y Verdad', distancia: '2.4 km', icono: 'colegio',  angulo: 228,
           coordenadas: { lat: -17.8762346, lng: -63.1872295 } },
         { nombre: 'Centro de Salud Cortez',   distancia: '1.4 km', icono: 'salud',    angulo: 3,
