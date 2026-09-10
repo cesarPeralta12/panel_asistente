@@ -144,8 +144,7 @@ const PANEL = {
       fichaImagenes: [
         'assets/fichas/el-encanto/01.jpg',
         'assets/fichas/el-encanto/02.jpg',
-        'assets/fichas/el-encanto/03.jpg',
-        'assets/fichas/el-encanto/04.jpg'
+        'assets/fichas/el-encanto/03.jpg'
       ],
 
       /* Ficha técnica completa, transcrita de la ficha oficial de INMOL
@@ -214,11 +213,13 @@ const PANEL = {
         },
         {
           titulo: 'Obra social ejecutada',
-          filas: [
-            { campo: 'Total invertido', valor: 'Bs. 4.213.480,67, en cumplimiento del Decreto Municipal 35/2022' },
-            { campo: 'Luminarias',      valor: '273 unidades · Bs. 581.039,55' },
-            { campo: 'Maquinaria',      valor: '1 motoniveladora modelo 140K · Bs. 2.164.560' },
-            { campo: 'Pavimento',       valor: 'Bs. 1.467.881,12' }
+          /* Sin los montos en bolivianos que trae la ficha: el panel no
+             muestra cifras de dinero. Queda lo que se hizo. */
+          items: [
+            'Ejecutada en cumplimiento del Decreto Municipal 35/2022, de aprobación de urbanización abierta',
+            'Provisión de 273 luminarias',
+            '1 motoniveladora modelo 140K',
+            'Pavimento'
           ]
         },
         {
@@ -572,8 +573,7 @@ const PANEL = {
       fichaImagenes: [
         'assets/fichas/el-encanto-2/01.jpg',
         'assets/fichas/el-encanto-2/02.jpg',
-        'assets/fichas/el-encanto-2/03.jpg',
-        'assets/fichas/el-encanto-2/04.jpg'
+        'assets/fichas/el-encanto-2/03.jpg'
       ],
 
       /* Ficha técnica completa, transcrita de la ficha oficial de INMOL
@@ -639,14 +639,15 @@ const PANEL = {
         },
         {
           titulo: 'Obra social ejecutada',
+          /* Sin los montos en bolivianos que trae la ficha: el panel no
+             muestra cifras de dinero. Queda lo que se construyó. */
           filas: [
-            { campo: 'Total invertido', valor: 'Bs. 1.644.105,12 en 674,92 m², en cumplimiento del Decreto Municipal 09/2024' },
-            { campo: 'Deducción de pavimento', valor: '236,22 m² · Bs. 575.431,92 — según OM 54/2013' },
-            { campo: 'U.E. Ángel Foianini Banzer', valor: '1 aula · 74,28 m² · Bs. 180.954,49' },
-            { campo: 'U.E. Juana Azurduy',         valor: '1 aula · 74,28 m² · Bs. 180.954,49' },
-            { campo: 'U.E. Maestro Pitágoras II',  valor: '1 laboratorio de computación · 114,94 m² · Bs. 280.000' },
-            { campo: 'U.E. Cumbre de las Américas', valor: '1 proscenio · 100,67 m² · Bs. 245.240,41' },
-            { campo: 'Urbanización El Encanto',     valor: '1 cancha polifuncional con graderías · 74,52 m² · Bs. 181.523,81' }
+            { campo: 'Alcance', valor: '674,92 m² construidos, en cumplimiento del Decreto Municipal 09/2024' },
+            { campo: 'U.E. Ángel Foianini Banzer',  valor: '1 aula · 74,28 m²' },
+            { campo: 'U.E. Juana Azurduy',          valor: '1 aula · 74,28 m²' },
+            { campo: 'U.E. Maestro Pitágoras II',   valor: '1 laboratorio de computación · 114,94 m²' },
+            { campo: 'U.E. Cumbre de las Américas', valor: '1 proscenio · 100,67 m²' },
+            { campo: 'Urbanización El Encanto',     valor: '1 cancha polifuncional con graderías · 74,52 m²' }
           ]
         },
         {
