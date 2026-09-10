@@ -16,6 +16,10 @@ const Estado = {
   temporizadorAtraccion: null,
   temporizadorInactividad: null,
   indiceAtraccion: 0,
+  /* Páginas de la ficha oficial del proyecto abierto y cuál se está viendo
+     a pantalla completa */
+  hojas: [],
+  hoja: 0,
   /* Ya se saludó a este visitante. Se reinicia cuando el panel vuelve
      solo al modo atracción, que es cuando llega alguien nuevo. */
   yaSaludo: false
@@ -101,6 +105,7 @@ function irA(pantalla) {
        ese proyecto, y el siguiente visitante llegaba a un panel narrando algo
        que no venía a cuento. */
     if (anterior !== 'atraccion') { callarAsistente(); escribir(); }
+    if (!$('#hojaVisor').hidden) cerrarHoja();
   } else {
     detenerAtraccion();
     /* Alguien despertó la portada: ese toque es el que arranca la presentación.
@@ -377,6 +382,28 @@ function cerrarTour360() {
   reiniciarInactividad();
 }
 
+/* --- 3.1b Visor de la ficha oficial ------------------------------------
+   Las páginas del PDF se ven chicas en la rejilla; al tocar una se abre a
+   pantalla completa y se puede pasar de hoja sin volver atrás. */
+function abrirHoja(i) {
+  const hojas = Estado.hojas || [];
+  if (!hojas.length) return;
+  Estado.hoja = Math.max(0, Math.min(i, hojas.length - 1));
+  $('#hojaVisorImg').src = hojas[Estado.hoja];
+  $('#hojaCuenta').textContent = `${Estado.hoja + 1} / ${hojas.length}`;
+  $('#hojaPrev').disabled = Estado.hoja === 0;
+  $('#hojaSig').disabled = Estado.hoja === hojas.length - 1;
+  $('#hojaVisorImg').classList.remove('zoom');
+  $('#hojaVisor').hidden = false;
+  $('#hojaVisor').scrollTop = 0;
+  reiniciarInactividad();
+}
+function cerrarHoja() {
+  $('#hojaVisor').hidden = true;
+  $('#hojaVisorImg').src = '';
+  reiniciarInactividad();
+}
+
 /* --- 3.2 Ubicación: mapa satelital real, sin vista generada de respaldo --- */
 function prepararUbicacion(p) {
   MapaReal.crear($('#mapaReal'), p);
@@ -538,6 +565,22 @@ function llenarFicha(p) {
   $('#fichaDestacado').innerHTML = p.destacados
     .map(d => `<div class="fd"><b>${d.valor}</b><span>${d.etiqueta}</span></div>`).join('');
 
+  /* Arriba, las páginas de la ficha oficial tal como las diseñó INMOL.
+     Se tocan para abrirlas grandes: en el tótem la letra del PDF a media
+     pantalla no se alcanza a leer de pie. */
+  const hojas = p.fichaImagenes || [];
+  const oficial = $('#fichaOficial');
+  $('#fichaOficialCaja').hidden = hojas.length === 0;
+  oficial.innerHTML = hojas.map((src, i) => `
+    <button class="hoja" type="button" data-hoja="${i}">
+      <img src="${src}" alt="Ficha técnica ${p.nombre}, página ${i + 1}">
+      <span class="hoja-etq">
+        <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><circle cx="11" cy="11" r="6.4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.6 15.6L20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        ${i + 1} / ${hojas.length}
+      </span>
+    </button>`).join('');
+  Estado.hojas = hojas;
+
   const grupos = p.fichaGrupos || [];
   const detalle = $('#fichaDetalle');
 
@@ -661,6 +704,29 @@ function iniciar() {
   $('#btnAcercar').addEventListener('click', () => MapaReal.acercar());
   $('#btnCerrarTour').addEventListener('click', cerrarTour360);
 
+  /* Ficha oficial: abrir una hoja grande y pasar páginas */
+  $('#fichaOficial').addEventListener('click', e => {
+    const hoja = e.target.closest('.hoja');
+    if (hoja) abrirHoja(Number(hoja.dataset.hoja));
+  });
+  $('#hojaCerrar').addEventListener('click', cerrarHoja);
+  $('#hojaPrev').addEventListener('click', () => abrirHoja(Estado.hoja - 1));
+  $('#hojaSig').addEventListener('click', () => abrirHoja(Estado.hoja + 1));
+  /* Tocar la hoja la acerca y la aleja */
+  $('#hojaVisorImg').addEventListener('click', () => {
+    const img = $('#hojaVisorImg'), visor = $('#hojaVisor');
+    const acercar = !img.classList.contains('zoom');
+    img.classList.toggle('zoom', acercar);
+    /* Se empieza por el margen izquierdo, que es donde arranca el texto */
+    visor.scrollLeft = 0;
+    visor.scrollTop = 0;
+  });
+
+  /* Tocar el fondo negro también cierra: es el gesto que la gente intenta */
+  $('#hojaVisor').addEventListener('click', e => {
+    if (e.target === $('#hojaVisor')) cerrarHoja();
+  });
+
   /* Cualquier interacción reinicia el contador de inactividad */
   ['pointerdown', 'keydown', 'wheel'].forEach(ev =>
     document.addEventListener(ev, reiniciarInactividad, { passive: true }));
@@ -687,8 +753,13 @@ function iniciar() {
     if (k === 'a') irA('atraccion');
     if (k === 'm') irA('menu');
     if (k === 'escape') {
-      if (!$('#tourOverlay').hidden) cerrarTour360();
+      if (!$('#hojaVisor').hidden) cerrarHoja();
+      else if (!$('#tourOverlay').hidden) cerrarTour360();
       else irA('menu');
+    }
+    if (!$('#hojaVisor').hidden) {
+      if (k === 'arrowleft') abrirHoja(Estado.hoja - 1);
+      if (k === 'arrowright') abrirHoja(Estado.hoja + 1);
     }
   });
 

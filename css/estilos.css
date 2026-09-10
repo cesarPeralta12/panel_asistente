@@ -796,6 +796,101 @@ body.sin-animacion .atr-fondo > .visible {
 /* --- Pane: FICHA TÉCNICA -------------------------------------------------- */
 .ficha-wrap { display: grid; grid-template-columns: 1fr 22rem; gap: 2.4rem; align-items: start; }
 
+/* ── Ficha oficial: las páginas del PDF de INMOL, tal cual las diseñaron ──
+   Van arriba y ocupan las dos columnas, porque son apaisadas y a media
+   columna el cuerpo de texto queda ilegible. Debajo, el resumen transcrito. */
+.ficha-oficial-caja { grid-column: 1 / -1; }
+.ficha-oficial {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.4rem;
+}
+@media (max-aspect-ratio: 1/1) { .ficha-oficial { grid-template-columns: 1fr; } }
+
+.hoja {
+  position: relative; display: block; width: 100%; padding: 0;
+  border: 1px solid var(--linea); border-radius: var(--r-sm);
+  background: #FFFFFF; box-shadow: var(--sombra);
+  overflow: hidden; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.hoja:active { transform: scale(.985); }
+.hoja img { display: block; width: 100%; height: auto; }
+/* Número de página + lupa: avisan que la hoja se puede abrir grande */
+.hoja-etq {
+  position: absolute; right: .7rem; bottom: .7rem;
+  display: flex; align-items: center; gap: .45rem;
+  padding: .38rem .7rem; border-radius: 999px;
+  background: rgba(17,17,17,.72); backdrop-filter: blur(8px);
+  color: #FFFFFF; font-size: .68rem; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+}
+
+/* Recuadro con la versión transcrita (la que ya teníamos en el panel) */
+.ficha-resumen {
+  padding: 1.6rem 1.7rem 1.7rem;
+  border: 1px solid var(--linea); border-radius: var(--r-sm);
+  background: var(--fondo-2, transparent);
+}
+/* El rótulo de la ficha oficial lleva además la pista de que se puede tocar */
+.fr-titulo-oficial { display: flex; align-items: baseline; gap: .9rem; flex-wrap: wrap; }
+.fr-titulo-oficial span {
+  font-size: .72rem; font-weight: 500; letter-spacing: .1em;
+  text-transform: none; color: var(--texto-3); opacity: .8;
+}
+
+.fr-titulo {
+  margin: 0 0 1.3rem; padding-bottom: .85rem;
+  border-bottom: 1px solid var(--linea);
+  font-size: .78rem; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--texto-3);
+}
+
+/* ── Visor de página a pantalla completa ───────────────────────────────── */
+.hoja-visor {
+  position: fixed; inset: 0; z-index: 210;
+  /* `safe` para que al acercar la hoja no se recorte el borde izquierdo:
+     con el centrado normal el desbordamiento se va fuera del área que scrollea */
+  display: grid; place-items: safe center;
+  padding: 1.2rem;
+  background: rgba(10,10,10,.94);
+  overflow: auto;              /* con zoom la hoja se arrastra para leerla */
+  -webkit-overflow-scrolling: touch;
+}
+.hoja-visor-img {
+  max-width: 100%; max-height: 100%;
+  border-radius: var(--r-sm); background: #FFFFFF;
+  box-shadow: 0 2rem 5rem rgba(0,0,0,.55);
+  cursor: zoom-in;
+}
+/* Segundo toque: la hoja al doble y se recorre con el dedo. En el tótem
+   vertical la ficha es apaisada, así que ajustada a la pantalla el cuerpo
+   de texto queda chico para leerlo de pie. */
+.hoja-visor-img.zoom {
+  max-width: none; max-height: none;
+  width: 200%; height: auto;
+  border-radius: 0; cursor: zoom-out;
+}
+.hoja-nav, .hoja-cerrar {
+  position: fixed; z-index: 2; display: grid; place-items: center;
+  border: 1px solid rgba(255,255,255,.3); border-radius: 50%;
+  background: rgba(18,18,18,.7); backdrop-filter: blur(6px);
+  color: #FFFFFF; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.hoja-nav { top: 50%; transform: translateY(-50%); width: 3.6rem; height: 3.6rem; }
+.hoja-prev { left: 1.2rem; }
+.hoja-sig { right: 1.2rem; }
+.hoja-nav[disabled] { opacity: .2; pointer-events: none; }
+.hoja-cerrar { top: 1.2rem; right: 1.2rem; width: 3rem; height: 3rem; }
+.hoja-cuenta {
+  position: fixed; z-index: 2; left: 50%; bottom: 1.1rem; transform: translateX(-50%);
+  padding: .45rem 1rem; border-radius: 999px;
+  background: rgba(18,18,18,.7); backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,.22); color: #FFFFFF;
+  font-size: .72rem; font-weight: 600; letter-spacing: .14em;
+}
+
+
 .ficha-tabla { width: 100%; border-collapse: collapse; }
 .ficha-tabla tr { border-bottom: 1px solid var(--linea); }
 .ficha-tabla tr:last-child { border-bottom: none; }

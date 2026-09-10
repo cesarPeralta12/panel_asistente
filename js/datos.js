@@ -133,6 +133,16 @@ const PANEL = {
         { campo: 'Estado comercial',     valor: 'En comercialización' }
       ],
 
+      /* Páginas de la ficha técnica oficial de INMOL, tal cual salen del PDF.
+         Se muestran arriba en la pestaña Ficha técnica; debajo va la versión
+         transcrita (fichaGrupos) para lectura rápida en pantalla. */
+      fichaImagenes: [
+        'assets/fichas/el-encanto/01.jpg',
+        'assets/fichas/el-encanto/02.jpg',
+        'assets/fichas/el-encanto/03.jpg',
+        'assets/fichas/el-encanto/04.jpg'
+      ],
+
       /* Ficha técnica completa, transcrita de la ficha oficial de INMOL
          (PDF-Fichas-ElEncanto2026, secciones 1 a 9 de FICHA TÉCNICA más la
          ficha legal). La tabla corta de arriba sigue siendo el resumen que lee
@@ -310,6 +320,17 @@ const PANEL = {
         { campo: 'Contra incendios',    valor: 'Alarma, extintores, hidrantes y tanque propio' },
         { campo: 'Certificaciones',     valor: 'HABITESE · proyecto eléctrico aprobado por la CRE' },
         { campo: 'Estado comercial',    valor: 'En comercialización, proyecto terminado' }
+      ],
+
+      /* Páginas de la ficha técnica oficial de INMOL, tal cual salen del PDF.
+         Se muestran arriba en la pestaña Ficha técnica; debajo va la versión
+         transcrita (fichaGrupos) para lectura rápida en pantalla. */
+      fichaImagenes: [
+        'assets/fichas/libertad/01.jpg',
+        'assets/fichas/libertad/02.jpg',
+        'assets/fichas/libertad/03.jpg',
+        'assets/fichas/libertad/04.jpg',
+        'assets/fichas/libertad/05.jpg'
       ],
 
       /* Ficha técnica completa, transcrita de la ficha oficial de INMOL
@@ -515,6 +536,16 @@ const PANEL = {
         { campo: 'Ingreso',              valor: 'Pavimentado, directo desde la carretera a Camiri' },
         { campo: 'Servicios básicos',    valor: 'Luz, agua, gas e internet' },
         { campo: 'Estado comercial',     valor: 'En comercialización' }
+      ],
+
+      /* Páginas de la ficha técnica oficial de INMOL, tal cual salen del PDF.
+         Se muestran arriba en la pestaña Ficha técnica; debajo va la versión
+         transcrita (fichaGrupos) para lectura rápida en pantalla. */
+      fichaImagenes: [
+        'assets/fichas/el-encanto-2/01.jpg',
+        'assets/fichas/el-encanto-2/02.jpg',
+        'assets/fichas/el-encanto-2/03.jpg',
+        'assets/fichas/el-encanto-2/04.jpg'
       ],
 
       /* Ficha técnica completa, transcrita de la ficha oficial de INMOL
