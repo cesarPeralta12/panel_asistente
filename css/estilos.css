@@ -727,7 +727,7 @@ body.sin-animacion .atr-fondo > .visible {
 .lg i { width: .85rem; height: .85rem; border-radius: 3px; display: block; flex: none; }
 .lg-disponible i { background: var(--verde); }
 .lg-reservado  i { background: var(--ambar); }
-.lg-vendido    i { background: #B4BCC8; }
+.lg-vendido    i { background: #D9433F; }
 .lg b { color: var(--texto); font-weight: 600; font-variant-numeric: tabular-nums; }
 
 .filtros { display: flex; gap: .5rem; }
@@ -758,8 +758,8 @@ body.sin-animacion .atr-fondo > .visible {
   font-family: inherit; font-weight: 600;
 }
 .plano-svg .norte { fill: var(--texto-4); font-size: 13px; letter-spacing: .12em; font-family: inherit; }
-/* Los vendidos son gris claro: su número va oscuro para poder leerse */
-.plano-svg .lote[data-estado="vendido"] .lote-num { fill: rgba(0,0,0,.5); }
+/* Los bloqueados son gris claro: su número va oscuro para poder leerse */
+.plano-svg .lote[data-estado="bloqueado"] .lote-num { fill: rgba(0,0,0,.5); }
 .plano-svg .lote.apagado { opacity: .16; }
 .plano-svg .lote.sel rect { stroke: #fff; stroke-width: 2.6; fill-opacity: 1; }
 
@@ -790,7 +790,7 @@ body.sin-animacion .atr-fondo > .visible {
 }
 .ficha-estado.disponible { background: rgba(53,179,107,.16); color: #56D68C; border: 1px solid rgba(53,179,107,.4); }
 .ficha-estado.reservado  { background: rgba(224,163,58,.16); color: #F0BC5E; border: 1px solid rgba(224,163,58,.4); }
-.ficha-estado.vendido    { background: rgba(0,0,0,.05); color: var(--texto-3); border: 1px solid var(--linea-2); }
+.ficha-estado.vendido    { background: rgba(217,67,63,.14); color: #D9433F; border: 1px solid rgba(217,67,63,.4); }
 .ficha-estado.unidad     { background: rgba(62,124,184,.16); color: #4E8FD1; border: 1px solid rgba(62,124,184,.4); }
 .ficha-codigo {
   font-size: 2.5rem; font-weight: 600; letter-spacing: -.03em;

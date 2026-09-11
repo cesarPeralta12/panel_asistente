@@ -503,7 +503,10 @@ const COLOR_ESTADO = {
   /* Colores calibrados para leerse sobre el plano blanco */
   disponible: { relleno: '#1E9E5A', borde: '#177C46', texto: 'Disponible' },
   reservado:  { relleno: '#D79626', borde: '#B87D18', texto: 'Reservado'  },
-  vendido:    { relleno: '#CBD3DE', borde: '#AEB8C6', texto: 'Vendido'    },
+  /* Rojo, como en el sistema de INMOL y en lo que se lee de un vistazo:
+     verde se puede, rojo ya no. Antes iba gris y en el plano no se
+     distinguía de lo bloqueado. */
+  vendido:    { relleno: '#D9433F', borde: '#B0332F', texto: 'Vendido'    },
   // Del sistema real de INMOL: lotes que no están a la venta (uso interno,
   // equipamiento, etc.), distintos de "vendido".
   bloqueado:  { relleno: '#9AA5B1', borde: '#7A8492', texto: 'No disponible' },
@@ -593,7 +596,7 @@ function construirPlanoSVG(proyecto, lotes, proporcionObjetivo) {
         x: x + margenCelda / 2, y: y + margenCelda / 2,
         width: anchoLote - margenCelda, height: altoLote - margenCelda,
         rx: 3, fill: c.relleno, stroke: c.borde, 'stroke-width': 1,
-        'fill-opacity': it.lote.estado === 'vendido' ? 0.55 : 0.85
+        'fill-opacity': 0.85
       }));
       const t = crear('text', {
         x: x + anchoLote / 2, y: y + altoLote / 2 + 4,
