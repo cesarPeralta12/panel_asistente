@@ -492,9 +492,8 @@ const PANEL = {
       subtitulo: 'La Guardia · Santa Cruz',
       tipo: 'Urbanización residencial',
       estadoComercial: 'En comercialización',
-      // Todavía faltan fotos, video y la ubicación exacta confirmada por
-      // INMOL — se avisa en la tarjeta del menú para no generar expectativas.
-      pendiente: true,
+      // Ya tiene fotos y video propios (sacados del video de INMOL). Lo único
+      // que sigue sin confirmar es el pin exacto: ver la nota en coordenadas.
       /* INMOL pidió expresamente que no se lo presente como «la segunda etapa
          de El Encanto». El claim es ahora la ubicación tal como la describe su
          propia ficha técnica. */
@@ -517,10 +516,23 @@ const PANEL = {
 
       semilla: 63204,
 
-      // Todavía no hay fotos ni video propios de este proyecto; el panel
-      // cae automáticamente a la vista satelital generada.
-      fotos: [],
-      video: '',
+      /* Cuadros sacados del video con dron que pasó INMOL (WhatsApp,
+         09/09/2026). El primero es el fondo de la tarjeta del menú, así que
+         va el que mejor se recorta en vertical: la avenida ancha en obra,
+         vista de frente. Se dejaron afuera los planos con gente de cerca, la
+         grabación de pantalla de Google Maps y la placa final del logo. */
+      fotos: [
+        'assets/medios/el-encanto-2/el-encanto-2-01.jpg',   // avenida en obra, de frente
+        'assets/medios/el-encanto-2/el-encanto-2-02.jpg',   // avenida con camioneta
+        'assets/medios/el-encanto-2/el-encanto-2-03.jpg',   // calle pavimentada
+        'assets/medios/el-encanto-2/el-encanto-2-04.jpg',   // aérea del terreno
+        'assets/medios/el-encanto-2/el-encanto-2-05.jpg',   // aérea con palmeras
+        'assets/medios/el-encanto-2/el-encanto-2-06.jpg',   // aérea, zona de obra
+        'assets/medios/el-encanto-2/el-encanto-2-07.jpg',   // esquina de hormigón
+        'assets/medios/el-encanto-2/el-encanto-2-08.jpg'    // palmeras y campo
+      ],
+      // El mismo video, reencodado a 1080p como los otros dos (55 s).
+      video: 'assets/medios/video/el-encanto-2.mp4',
 
       destacados: [
         { valor: '249',                  etiqueta: 'terrenos' },
