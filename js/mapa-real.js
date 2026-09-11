@@ -17,6 +17,52 @@
    o si faltara alguna tesela puntual, Leaflet deja el cuadro en blanco.
    ============================================================================ */
 
+/* Polilínea corrida unos píxeles hacia un costado de su trazado.
+   Los dos ingresos del Comercial comparten los últimos 3 km —desde el 8vo
+   anillo bajan por la misma Santos Dumont— y dibujados uno encima del otro
+   sólo se veía el de arriba. Corriendo cada uno a un lado quedan las dos
+   líneas a la par, como hace Google Maps con recorridos que se pisan. El
+   corrimiento es en píxeles de pantalla, así que se mantiene a cualquier
+   zoom y no altera las coordenadas de la ruta. */
+const PolilineaCorrida = L.Polyline.extend({
+  _project() {
+    L.Polyline.prototype._project.call(this);
+    const d = this.options.corrimiento || 0;
+    if (!d || !this._rings) return;
+    this._rings = this._rings.map(anillo => PolilineaCorrida.correr(anillo, d));
+    const todos = [].concat(...this._rings);
+    if (!todos.length) return;
+    const w = this._clickTolerance(), m = L.point(w + Math.abs(d), w + Math.abs(d));
+    const b = L.bounds(todos);
+    this._pxBounds = L.bounds(b.min.subtract(m), b.max.add(m));
+  }
+});
+/* Corre cada vértice por la normal promedio de sus dos tramos. En las
+   esquinas cerradas el promedio se acorta; se compensa, con tope, para que
+   la línea no se despegue del trazado ni se dispare hacia afuera. */
+PolilineaCorrida.correr = function (pts, d) {
+  const n = pts.length;
+  if (n < 2) return pts;
+  const normal = (a, b) => {
+    const dx = b.x - a.x, dy = b.y - a.y, l = Math.hypot(dx, dy) || 1;
+    return L.point(-dy / l, dx / l);
+  };
+  return pts.map((p, i) => {
+    const n1 = i > 0 ? normal(pts[i - 1], p) : null;
+    const n2 = i < n - 1 ? normal(p, pts[i + 1]) : null;
+    let nx, ny;
+    if (n1 && n2) {
+      nx = n1.x + n2.x; ny = n1.y + n2.y;
+      const l = Math.hypot(nx, ny) || 1;
+      const escala = Math.min(2.5, 2 / l);      // 1/cos(θ/2), con tope
+      nx = nx / l * escala; ny = ny / l * escala;
+    } else {
+      const nn = n1 || n2; nx = nn.x; ny = nn.y;
+    }
+    return L.point(p.x + nx * d, p.y + ny * d);
+  });
+};
+
 const MapaReal = {
   mapa: null,
   capaCiudad: null,
@@ -272,14 +318,30 @@ const MapaReal = {
        repetido tres veces sólo tapa el mapa. */
     const avenidasPuestas = new Set();
     const arranques = [];
+
+    /* Si dos rutas comparten un tramo largo —mismos puntos, no sólo cerca—
+       se corren unos píxeles a cada lado para que se vean las dos. Cuando
+       van por calles distintas, como los tres ingresos de El Encanto, se
+       dibujan tal cual, sobre el eje de su calle. */
+    const clave = p => p[0] + ',' + p[1];
+    const sePisan = lista.length > 1 && lista.some((r, i) => lista.some((o, j) => {
+      if (j === i) return false;
+      const de = new Set(o.puntos.map(clave));
+      return r.puntos.filter(p => de.has(clave(p))).length > 20;
+    }));
+    const paso = 7;                                    // píxeles entre líneas
+
     lista.forEach((ruta, i) => {
+      const corrimiento = sePisan ? (i - (lista.length - 1) / 2) * paso : 0;
       // Trazo blanco debajo, más ancho, para que la línea de color se lea
       // bien sobre cualquier zona de la foto satelital (oscura o clara).
-      const casing = L.polyline(ruta.puntos, {
-        color: '#FFFFFF', weight: 7, opacity: .85, lineCap: 'round', lineJoin: 'round'
+      const casing = new PolilineaCorrida(ruta.puntos, {
+        color: '#FFFFFF', weight: 7, opacity: .85, lineCap: 'round', lineJoin: 'round',
+        corrimiento
       }).addTo(this.mapa);
-      const linea = L.polyline(ruta.puntos, {
-        color: ruta.color, weight: 4, opacity: .95, lineCap: 'round', lineJoin: 'round'
+      const linea = new PolilineaCorrida(ruta.puntos, {
+        color: ruta.color, weight: 4, opacity: .95, lineCap: 'round', lineJoin: 'round',
+        corrimiento
       }).addTo(this.mapa).bindPopup(`<b>${ruta.nombre}</b>`);
       this.rutas.push(casing, linea);
 

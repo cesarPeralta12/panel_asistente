@@ -517,19 +517,22 @@ const PANEL = {
       semilla: 63204,
 
       /* Cuadros sacados del video con dron que pasó INMOL (WhatsApp,
-         09/09/2026). El primero es el fondo de la tarjeta del menú, así que
-         va el que mejor se recorta en vertical: la avenida ancha en obra,
-         vista de frente. Se dejaron afuera los planos con gente de cerca, la
-         grabación de pantalla de Google Maps y la placa final del logo. */
+         09/09/2026). El orden importa: la primera es el fondo de la tarjeta
+         del menú y la TERCERA es la que usa la portada (la portada toma la
+         foto número «índice del proyecto», y éste es el tercero). Por eso
+         las dos son calles: la avenida en obra de frente y la esquina de
+         hormigón con la avenida de tierra. Se dejaron afuera los planos con
+         gente o autos de cerca, la grabación de pantalla de Google Maps y la
+         placa final del logo. */
       fotos: [
-        'assets/medios/el-encanto-2/el-encanto-2-01.jpg',   // avenida en obra, de frente
-        'assets/medios/el-encanto-2/el-encanto-2-02.jpg',   // avenida con camioneta
-        'assets/medios/el-encanto-2/el-encanto-2-03.jpg',   // calle pavimentada
-        'assets/medios/el-encanto-2/el-encanto-2-04.jpg',   // aérea del terreno
+        'assets/medios/el-encanto-2/el-encanto-2-01.jpg',   // avenida en obra, de frente (tarjeta)
+        'assets/medios/el-encanto-2/el-encanto-2-02.jpg',   // aérea del terreno
+        'assets/medios/el-encanto-2/el-encanto-2-03.jpg',   // esquina de hormigón y avenida (portada)
+        'assets/medios/el-encanto-2/el-encanto-2-04.jpg',   // avenida ancha con camioneta al fondo
         'assets/medios/el-encanto-2/el-encanto-2-05.jpg',   // aérea con palmeras
         'assets/medios/el-encanto-2/el-encanto-2-06.jpg',   // aérea, zona de obra
-        'assets/medios/el-encanto-2/el-encanto-2-07.jpg',   // esquina de hormigón
-        'assets/medios/el-encanto-2/el-encanto-2-08.jpg'    // palmeras y campo
+        'assets/medios/el-encanto-2/el-encanto-2-07.jpg',   // palmeras y campo
+        'assets/medios/el-encanto-2/el-encanto-2-08.jpg'    // aérea con el barrio al fondo
       ],
       // El mismo video, reencodado a 1080p como los otros dos (55 s).
       video: 'assets/medios/video/el-encanto-2.mp4',

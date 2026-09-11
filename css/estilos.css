@@ -196,17 +196,20 @@ body.sin-animacion .atr-fondo > .visible {
   font-size: .84rem; letter-spacing: .19em; text-transform: uppercase;
   color: var(--texto-3); font-weight: 500;
 }
-/* «Hacemos que sea posible», el eslogan de la marca. En el original la última
-   palabra va en una manuscrita roja; acá se resuelve con la itálica de la
-   tipografía del panel y el rojo de INMOL, que es lo que hay embebido para
-   que funcione sin conexión. */
+/* Logo con el eslogan debajo, como en la tarjeta impresa de INMOL:
+   «Hacemos que sea» en negrita y «posible» en manuscrita roja. */
+.marca-bloque {
+  display: flex; flex-direction: column; align-items: center; gap: .2rem;
+  flex: none;
+}
 .slogan {
-  font-size: 1rem; font-weight: 600; letter-spacing: -.01em;
-  color: var(--texto-2);
+  font-size: .78rem; font-weight: 700; letter-spacing: -.01em;
+  color: var(--texto-2); white-space: nowrap; line-height: 1;
 }
 .slogan i {
-  font-style: italic; font-weight: 500;
-  color: var(--rojo); letter-spacing: 0;
+  font-family: 'Sacramento', cursive; font-style: normal; font-weight: 400;
+  font-size: 1.5rem; line-height: .5; vertical-align: -.08em;
+  margin-left: .12rem; color: var(--rojo); letter-spacing: 0;
 }
 
 .atr-centro {
