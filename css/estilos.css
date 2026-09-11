@@ -202,10 +202,12 @@ body.sin-animacion .atr-fondo > .visible {
   display: flex; flex-direction: column; align-items: center; gap: .2rem;
   flex: none;
 }
+/* Como en la pieza de INMOL: «Hacemos» en negrita, «que sea» normal */
 .slogan {
-  font-size: .78rem; font-weight: 700; letter-spacing: -.01em;
+  font-size: .78rem; font-weight: 400; letter-spacing: -.01em;
   color: var(--texto-2); white-space: nowrap; line-height: 1;
 }
+.slogan b { font-weight: 700; }
 .slogan i {
   font-family: 'Pacifico', cursive; font-style: normal; font-weight: 400;
   font-size: 1.25rem; line-height: .5; vertical-align: -.1em;
