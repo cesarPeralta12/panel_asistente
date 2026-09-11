@@ -445,6 +445,18 @@ function llenarLotes(p) {
     ly.appendChild(span);
   });
 
+  /* Categorías de la ficha comercial, en su mismo orden (A, B, C…) y con
+     sus colores: son los colores con los que viene pintado el plano, así
+     que esta tira es la que explica qué significa cada color de abajo. */
+  const cats = p.plano.categorias || [];
+  const cg = $('#categorias');
+  cg.hidden = !cats.length;
+  cg.innerHTML = cats.map(c => {
+    const n = Estado.lotes.filter(l => l.categoria === c.letra).length;
+    return `<span class="cat"><i style="background:${c.color}"></i><b>${c.letra}</b> ${c.nombre}` +
+           (n ? ` <em>${n}</em>` : '') + `</span>`;
+  }).join('');
+
   const cf = $('#filtros');
   cf.innerHTML = '';
   const bTodos = document.createElement('button');
@@ -505,7 +517,12 @@ function seleccionarLote(idx) {
   $('#filaSuperficie').hidden = l.superficie == null;
   if (l.superficie != null) $('#fSuperficie').textContent = `${l.superficie} m²`;
   $('#filaCategoria').hidden = !l.categoria;
-  if (l.categoria) $('#fCategoria').textContent = l.categoria;
+  if (l.categoria) {
+    /* Con la letra sola no se entiende: se muestra «C · Calle principal
+       esquina», como en la tabla de la ficha. */
+    const cat = (Estado.proyecto.plano.categorias || []).find(c => c.letra === l.categoria);
+    $('#fCategoria').textContent = cat ? `${cat.letra} · ${cat.nombre}` : l.categoria;
+  }
 
   $('#fichaVacia').hidden = true;
   $('#fichaDatos').hidden = false;

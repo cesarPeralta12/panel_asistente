@@ -247,7 +247,21 @@ const PANEL = {
         // assets/planos/el-encanto.jpg (más liviana que el original).
         imagenReal: 'assets/planos/el-encanto.jpg',
         imagenAncho: 7070, imagenAlto: 10000, escalaImagen: 0.5,
-        unidad: 'terreno', unidadPlural: 'terrenos'
+        unidad: 'terreno', unidadPlural: 'terrenos',
+        /* Categorías de lote, en el orden y con los colores de la ficha
+           comercial (PDF-Fichas-ElEncanto2026, pág. 5). El plano está pintado
+           con estos colores; la letra de cada lote se lee de ahí (ver
+           herramientas/categorias-lotes.py). */
+        categorias: [
+          { letra: 'A', nombre: 'Avenida esquina',         color: '#76439B' },
+          { letra: 'B', nombre: 'Avenida',                 color: '#3B95D2' },
+          { letra: 'C', nombre: 'Calle principal esquina', color: '#F13562' },
+          { letra: 'D', nombre: 'Calle principal',         color: '#FB9B55' },
+          { letra: 'E', nombre: 'Equipamiento esquina',    color: '#32662C' },
+          { letra: 'F', nombre: 'Equipamiento',            color: '#219744' },
+          { letra: 'J', nombre: 'Calle con pavimento',     color: '#D2E048' },
+          { letra: 'K', nombre: 'Calle sin pavimento',     color: '#2AB748' }
+        ]
       }
     },
 
@@ -683,7 +697,15 @@ const PANEL = {
         disponibilidadReal: DISP_EL_ENCANTO_2,
         imagenReal: 'assets/planos/el-encanto-2.jpg',
         imagenAncho: 5000, imagenAlto: 7411, escalaImagen: 0.5,
-        unidad: 'terreno', unidadPlural: 'terrenos'
+        unidad: 'terreno', unidadPlural: 'terrenos',
+        /* Categorías de lote, en el orden y con los colores de la ficha
+           comercial (PDF FICHAS URBANIZACION EL ENCANTO 2, pág. 4). */
+        categorias: [
+          { letra: 'A', nombre: 'Franja industrial',               color: '#EF586C' },
+          { letra: 'B', nombre: 'Sobre avenida',                   color: '#F87D43' },
+          { letra: 'C', nombre: 'Sobre equipamiento / Área verde', color: '#22B367' },
+          { letra: 'D', nombre: 'Sobre calle',                     color: '#FFDE41' }
+        ]
       }
     }
   ]

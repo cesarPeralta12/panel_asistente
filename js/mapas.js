@@ -462,7 +462,10 @@ function generarLotes(proyecto) {
       estado: cfg.disposicion ? 'unidad' : l.estado,
       // Posición real en el plano oficial (assets/planos/<proyecto>.jpg),
       // para el punto superpuesto — ver construirPlanoImagen().
-      x: l.x, y: l.y
+      x: l.x, y: l.y,
+      // Letra de categoría de la ficha comercial (A, B, C…), leída del color
+      // del plano. No todos los proyectos la tienen.
+      categoria: l.categoria || null
     }));
   }
 
