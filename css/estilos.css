@@ -207,9 +207,9 @@ body.sin-animacion .atr-fondo > .visible {
   color: var(--texto-2); white-space: nowrap; line-height: 1;
 }
 .slogan i {
-  font-family: 'Sacramento', cursive; font-style: normal; font-weight: 400;
-  font-size: 1.5rem; line-height: .5; vertical-align: -.08em;
-  margin-left: .12rem; color: var(--rojo); letter-spacing: 0;
+  font-family: 'Pacifico', cursive; font-style: normal; font-weight: 400;
+  font-size: 1.25rem; line-height: .5; vertical-align: -.1em;
+  margin-left: .2rem; color: var(--rojo); letter-spacing: 0;
 }
 
 .atr-centro {
