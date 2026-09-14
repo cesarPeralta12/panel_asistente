@@ -438,6 +438,9 @@ body.sin-animacion .atr-fondo > .visible {
   color: var(--texto-3); margin-top: .3rem;
 }
 .marca-mini { height: 3.2rem; opacity: 1; flex: none; }
+/* En la cabecera del proyecto el logo es chico, y el eslogan va a escala */
+.marca-bloque-mini .slogan   { font-size: .62rem; }
+.marca-bloque-mini .slogan i { font-size: 1rem; }
 
 /* El logo de INMOL es el botón de «inicio»: un toque en el menú o dentro
    de un proyecto vuelve a la portada. Así el asesor decide cuándo cerrar
