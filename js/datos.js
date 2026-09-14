@@ -34,7 +34,10 @@ const PANEL = {
   /* --- Comportamiento del kiosco ------------------------------------------ */
   config: {
     // Segundos sin que nadie toque la pantalla antes de volver al modo atracción.
-    segundosInactividad: 25,    // 25 s sin que nadie toque → vuelve a la portada (pedido de INMOL, antes 5 min)
+    // Es un respaldo por si alguien se va sin cerrar: el cierre normal es
+    // tocar el logo de INMOL, que vuelve a la portada al instante. Con 25 s
+    // se cortaba la explicación del asesor a mitad de camino.
+    segundosInactividad: 120,   // 2 minutos sin que nadie toque → vuelve a la portada
     // Segundos que dura cada slide del modo atracción.
     segundosPorSlide: 11,
     // Mostrar precios en pantalla. Definido en NO por decisión comercial.

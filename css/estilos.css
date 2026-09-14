@@ -439,6 +439,18 @@ body.sin-animacion .atr-fondo > .visible {
 }
 .marca-mini { height: 3.2rem; opacity: 1; flex: none; }
 
+/* El logo de INMOL es el botón de «inicio»: un toque en el menú o dentro
+   de un proyecto vuelve a la portada. Así el asesor decide cuándo cerrar
+   la explicación, en vez de que se la corte el temporizador. Se hunde un
+   poco al tocarlo para que se note que respondió. */
+.marca-inicio {
+  padding: .4rem .6rem; margin: -.4rem -.6rem;
+  border: 0; border-radius: 12px; background: transparent; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 140ms ease, background 140ms ease;
+}
+.marca-inicio:active { transform: scale(.95); background: rgba(0,0,0,.05); }
+
 /* --- Pestañas ------------------------------------------------------------ */
 .tabs {
   display: flex; gap: .5rem;

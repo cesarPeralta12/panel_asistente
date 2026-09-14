@@ -632,6 +632,13 @@ function iniciar() {
   $('#atraccion').addEventListener('click', () => irA('menu'));
 
   $('#btnVolver').addEventListener('click', () => { Estado.proyecto = null; irA('menu'); });
+  /* Un toque en el logo de INMOL vuelve a la portada desde cualquier
+     pantalla: es lo que usa el asesor al terminar con un cliente. */
+  $$('.marca-inicio').forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    Estado.proyecto = null;
+    irA('atraccion');
+  }));
   $('#btnVerTodo').addEventListener('click', () => MapaReal.centrar());
   $('#btnAcercar').addEventListener('click', () => MapaReal.acercar());
   $('#btnCerrarTour').addEventListener('click', cerrarTour360);
