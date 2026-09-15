@@ -9,6 +9,7 @@
 
        node herramientas/descargar-teselas.js            (dice qué falta)
        node herramientas/descargar-teselas.js --bajar    (lo descarga)
+       node herramientas/descargar-teselas.js --bajar --solo el-encanto-2
 
    Imágenes de Esri World Imagery, la misma capa que ya usa el panel y que se
    cita en la atribución del mapa. */
@@ -19,7 +20,9 @@ const path = require('path');
 const RAIZ = path.join(__dirname, '..');
 const DESTINO = path.join(RAIZ, 'assets', 'tiles');
 const URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile';
-const ZOOMS = [13, 14, 15, 16, 17];
+const ZOOMS = [13, 14, 15, 16, 17];        // corredor de rutas y referencias
+const ZOOMS_PREDIO = [18, 19];             // sólo alrededor del terreno
+const MARGEN_PREDIO = 0.007;               // grados (~750 m) alrededor del predio en 18-19
 const MARGEN = 1;              // teselas de más a cada lado del corredor
 const PAUSA = 80;              // ms entre descargas, para no castigar al servidor
 
@@ -34,6 +37,7 @@ function objetoDe(txt, nombre) {
 }
 
 const RUTAS = objetoDe(leer('js/rutas.js'), 'RUTAS');
+const PREDIOS = objetoDe(leer('js/predios.js'), 'PREDIOS');
 
 /* De datos.js sólo interesan las coordenadas —las del proyecto y las de sus
    referencias—, así que se sacan por lectura directa en vez de evaluar el
@@ -53,6 +57,9 @@ const aTesela = (lat, lon, z) => {
 function puntosDe(proy) {
   const pts = [];
   RUTAS[proy].forEach(r => r.puntos.forEach(p => pts.push(p)));
+  /* El contorno del terreno también: el predio puede asomar fuera del
+     corredor de las rutas (El Encanto 2 termina en punta hacia el sur). */
+  (PREDIOS[proy] || []).forEach(pr => pr.puntos.forEach(p => pts.push(p)));
   const lat = pts.map(p => p[0]), lon = pts.map(p => p[1]);
   const S = Math.min(...lat) - 0.02, N = Math.max(...lat) + 0.02;
   const W = Math.min(...lon) - 0.02, E = Math.max(...lon) + 0.02;
@@ -62,21 +69,37 @@ function puntosDe(proy) {
   return pts;
 }
 
+function agregarCaja(lista, proy, zooms, N, S, W, E) {
+  for (const z of zooms) {
+    const [x0, y0] = aTesela(N, W, z), [x1, y1] = aTesela(S, E, z);
+    for (let x = x0 - MARGEN; x <= x1 + MARGEN; x++) {
+      for (let y = y0 - MARGEN; y <= y1 + MARGEN; y++) {
+        const rel = path.join(proy, String(z), String(x), y + '.jpg');
+        if (!fs.existsSync(path.join(DESTINO, rel))) lista.push({ proy, z, x, y, rel });
+      }
+    }
+  }
+}
+
 function faltantes() {
   const lista = [];
+  const solo = process.argv[process.argv.indexOf('--solo') + 1];
   for (const proy of Object.keys(RUTAS)) {
+    if (process.argv.includes('--solo') && proy !== solo) continue;
+    /* Zooms medios: todo el corredor (rutas, referencias y predio). */
     const pts = puntosDe(proy);
     const lat = pts.map(p => p[0]), lon = pts.map(p => p[1]);
-    const N = Math.max(...lat), S = Math.min(...lat);
-    const W = Math.min(...lon), E = Math.max(...lon);
-    for (const z of ZOOMS) {
-      const [x0, y0] = aTesela(N, W, z), [x1, y1] = aTesela(S, E, z);
-      for (let x = x0 - MARGEN; x <= x1 + MARGEN; x++) {
-        for (let y = y0 - MARGEN; y <= y1 + MARGEN; y++) {
-          const rel = path.join(proy, String(z), String(x), y + '.jpg');
-          if (!fs.existsSync(path.join(DESTINO, rel))) lista.push({ proy, z, x, y, rel });
-        }
-      }
+    agregarCaja(lista, proy, ZOOMS, Math.max(...lat), Math.min(...lat), Math.min(...lon), Math.max(...lon));
+
+    /* Zooms 18 y 19: sólo alrededor del terreno. A ese detalle el corredor
+       entero serían decenas de miles de teselas, y nadie acerca tanto lejos
+       del proyecto. */
+    const pp = (PREDIOS[proy] || []).flatMap(pr => pr.puntos);
+    if (pp.length) {
+      const la = pp.map(p => p[0]), lo = pp.map(p => p[1]);
+      agregarCaja(lista, proy, ZOOMS_PREDIO,
+        Math.max(...la) + MARGEN_PREDIO, Math.min(...la) - MARGEN_PREDIO,
+        Math.min(...lo) - MARGEN_PREDIO, Math.max(...lo) + MARGEN_PREDIO);
     }
   }
   return lista;

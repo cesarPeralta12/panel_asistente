@@ -509,8 +509,7 @@ const PANEL = {
       subtitulo: 'La Guardia · Santa Cruz',
       tipo: 'Urbanización residencial',
       estadoComercial: 'En comercialización',
-      // Ya tiene fotos y video propios (sacados del video de INMOL). Lo único
-      // que sigue sin confirmar es el pin exacto: ver la nota en coordenadas.
+      // Fotos y video propios (del video de INMOL); ubicación confirmada.
       /* INMOL pidió expresamente que no se lo presente como «la segunda etapa
          de El Encanto». El claim es ahora la ubicación tal como la describe su
          propia ficha técnica. */
@@ -520,13 +519,12 @@ const PANEL = {
                    'a Camiri, en zona consolidada con vías de acceso pavimentadas, ' +
                    'colegios, centros de salud y mercados en sus alrededores.',
 
-      // NOTA: INMOL todavía no entregó el pin exacto de Google Maps (el
-      // propio documento de datos lo marca "en proceso de habilitar").
-      // Esta coordenada es una estimación a partir de los puntos de
-      // referencia de su mapa oficial (Módulo Educativo José Villarroel
-      // Robles y Centro Médico Salud ADvenir, los más cercanos al predio) —
-      // hay que reemplazarla apenas INMOL confirme la ubicación registrada.
-      coordenadas: { lat: -17.9050, lng: -63.2601 },
+      /* Ubicación confirmada por INMOL (15/09/2026): el predio es el triángulo
+         pegado a la Rn 9 (carretera a Camiri), del lado este, a 600 m del
+         Centro Médico ADvenir. Antes estaba estimado 700 m más al noroeste,
+         junto al módulo educativo. El punto es el centro del terreno trazado
+         en js/predios.js (24,1 ha contra 24,97 declaradas). */
+      coordenadas: { lat: -17.909906, lng: -63.253407 },
       direccion: 'Km 13 Doble Vía La Guardia, sobre carretera a Camiri, Santa Cruz',
       enlaceMapa: '',
       recorrido360: '',
@@ -569,15 +567,15 @@ const PANEL = {
          coordenadas del Cruce Km 13 —las mismas dos veces—, que era un error;
          mejor no mostrarlo que mostrarlo en el lugar equivocado. */
       referencias: [
-        { nombre: 'Cruce Km 13 Doble Vía La Guardia', distancia: '4.3 km', icono: 'via', angulo: 197,
+        { nombre: 'Cruce Km 13 Doble Vía La Guardia', distancia: '5.1 km', icono: 'via', angulo: 197,
           coordenadas: { lat: -17.8680828, lng: -63.2721053 } },
-        { nombre: 'Mercado Moderno Km 13', distancia: '4.0 km', icono: 'comercio', angulo: 200,
+        { nombre: 'Mercado Moderno Km 13', distancia: '4.8 km', icono: 'comercio', angulo: 200,
           coordenadas: { lat: -17.87092, lng: -63.27365 } },
-        { nombre: 'Surtidor Bicentenario', distancia: '2.4 km', icono: 'combustible', angulo: 197,
+        { nombre: 'Surtidor Bicentenario', distancia: '3.3 km', icono: 'combustible', angulo: 197,
           coordenadas: { lat: -17.88297, lng: -63.26663 } },
-        { nombre: 'Módulo Educ. José Villarroel Robles', distancia: '0.3 km', icono: 'colegio', angulo: 249,
+        { nombre: 'Módulo Educ. José Villarroel Robles', distancia: '1.2 km', icono: 'colegio', angulo: 249,
           coordenadas: { lat: -17.9040467, lng: -63.2627157 } },
-        { nombre: 'Centro Médico Salud ADvenir', distancia: '1.0 km', icono: 'salud', angulo: 16,
+        { nombre: 'Centro Médico Salud ADvenir', distancia: '0.6 km', icono: 'salud', angulo: 16,
           coordenadas: { lat: -17.9139666, lng: -63.2574233 } }
       ],
 
