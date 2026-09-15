@@ -141,13 +141,22 @@ const PANEL = {
         { campo: 'Estado comercial',     valor: 'En comercialización' }
       ],
 
-      /* Páginas de la ficha técnica oficial de INMOL, tal cual salen del PDF.
-         Se muestran arriba en la pestaña Ficha técnica; debajo va la versión
-         transcrita (fichaGrupos) para lectura rápida en pantalla. */
+      /* La ficha oficial de INMOL COMPLETA, todas las páginas del PDF tal
+         cual (portada, ficha legal, ficha comercial y ficha técnica). INMOL
+         pidió que estén todas. OJO: incluye las páginas con precios y montos;
+         si INMOL vuelve a pedir que no se vean, sacar esas páginas de esta
+         lista. Debajo va la versión transcrita (fichaGrupos). */
       fichaImagenes: [
         'assets/fichas/el-encanto/01.jpg',
         'assets/fichas/el-encanto/02.jpg',
-        'assets/fichas/el-encanto/03.jpg'
+        'assets/fichas/el-encanto/03.jpg',
+        'assets/fichas/el-encanto/04.jpg',
+        'assets/fichas/el-encanto/05.jpg',
+        'assets/fichas/el-encanto/06.jpg',
+        'assets/fichas/el-encanto/07.jpg',
+        'assets/fichas/el-encanto/08.jpg',
+        'assets/fichas/el-encanto/09.jpg',
+        'assets/fichas/el-encanto/10.jpg'
       ],
 
       /* Ficha técnica completa, transcrita de la ficha oficial de INMOL
@@ -358,15 +367,25 @@ const PANEL = {
         { campo: 'Estado comercial',    valor: 'En comercialización, proyecto terminado' }
       ],
 
-      /* Páginas de la ficha técnica oficial de INMOL, tal cual salen del PDF.
-         Se muestran arriba en la pestaña Ficha técnica; debajo va la versión
-         transcrita (fichaGrupos) para lectura rápida en pantalla. */
+      /* La ficha oficial de INMOL COMPLETA, todas las páginas del PDF tal
+         cual (portada, ficha legal, ficha comercial y ficha técnica). INMOL
+         pidió que estén todas. OJO: incluye las páginas con precios y montos;
+         si INMOL vuelve a pedir que no se vean, sacar esas páginas de esta
+         lista. Debajo va la versión transcrita (fichaGrupos). */
       fichaImagenes: [
         'assets/fichas/libertad/01.jpg',
         'assets/fichas/libertad/02.jpg',
         'assets/fichas/libertad/03.jpg',
         'assets/fichas/libertad/04.jpg',
-        'assets/fichas/libertad/05.jpg'
+        'assets/fichas/libertad/05.jpg',
+        'assets/fichas/libertad/06.jpg',
+        'assets/fichas/libertad/07.jpg',
+        'assets/fichas/libertad/08.jpg',
+        'assets/fichas/libertad/09.jpg',
+        'assets/fichas/libertad/10.jpg',
+        'assets/fichas/libertad/11.jpg',
+        'assets/fichas/libertad/12.jpg',
+        'assets/fichas/libertad/13.jpg'
       ],
 
       /* Ficha técnica completa, transcrita de la ficha oficial de INMOL
@@ -597,13 +616,21 @@ const PANEL = {
         { campo: 'Estado comercial',     valor: 'En comercialización' }
       ],
 
-      /* Páginas de la ficha técnica oficial de INMOL, tal cual salen del PDF.
-         Se muestran arriba en la pestaña Ficha técnica; debajo va la versión
-         transcrita (fichaGrupos) para lectura rápida en pantalla. */
+      /* La ficha oficial de INMOL COMPLETA, todas las páginas del PDF tal
+         cual (portada, ficha legal, ficha comercial y ficha técnica). INMOL
+         pidió que estén todas. OJO: incluye las páginas con precios y montos;
+         si INMOL vuelve a pedir que no se vean, sacar esas páginas de esta
+         lista. Debajo va la versión transcrita (fichaGrupos). */
       fichaImagenes: [
         'assets/fichas/el-encanto-2/01.jpg',
         'assets/fichas/el-encanto-2/02.jpg',
-        'assets/fichas/el-encanto-2/03.jpg'
+        'assets/fichas/el-encanto-2/03.jpg',
+        'assets/fichas/el-encanto-2/04.jpg',
+        'assets/fichas/el-encanto-2/05.jpg',
+        'assets/fichas/el-encanto-2/06.jpg',
+        'assets/fichas/el-encanto-2/07.jpg',
+        'assets/fichas/el-encanto-2/08.jpg',
+        'assets/fichas/el-encanto-2/09.jpg'
       ],
 
       /* Ficha técnica completa, transcrita de la ficha oficial de INMOL
