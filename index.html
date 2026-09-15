@@ -7,7 +7,7 @@
   <link rel="icon" href="assets/inmol-logo.png">
   <link rel="stylesheet" href="assets/leaflet/leaflet.css">
   <link rel="stylesheet" href="css/fuentes.css">
-  <link rel="stylesheet" href="css/estilos.css?v=41">
+  <link rel="stylesheet" href="css/estilos.css?v=42">
 </head>
 <body>
 
@@ -111,10 +111,9 @@
         </div>
         <div class="resumen-galeria" id="resGaleria"></div>
       </div>
-      <button class="btn-tour360" id="btnTour360" hidden>
-        <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/><ellipse cx="12" cy="12" rx="4.2" ry="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M2.5 12h19" stroke="currentColor" stroke-width="1.6"/></svg>
-        Recorrido virtual 360°
-      </button>
+      <!-- El botón «Recorrido virtual 360°» se quitó: en la pantalla del tótem
+           (vieja, sin aceleración 3D) el visor quedaba en negro y nunca cargaba.
+           El visor sigue en assets/tour/ por si se vuelve a usar en otra pantalla. -->
       <div class="destacados" id="resDestacados"></div>
     </div>
 
@@ -251,15 +250,15 @@
      quede con una versión vieja en caché después de una actualización.
      Subir el número (ver LEEME.md) cada vez que se suba un cambio nuevo. -->
 <script src="assets/leaflet/leaflet.js"></script>
-<script src="js/disponibilidad-el-encanto.js?v=41"></script>
-<script src="js/disponibilidad-libertad.js?v=41"></script>
-<script src="js/disponibilidad-el-encanto-2.js?v=41"></script>
-<script src="js/calles.js?v=41"></script>
-<script src="js/predios.js?v=41"></script>
-<script src="js/rutas.js?v=41"></script>
-<script src="js/datos.js?v=41"></script>
-<script src="js/mapas.js?v=41"></script>
-<script src="js/mapa-real.js?v=41"></script>
-<script src="js/app.js?v=41"></script>
+<script src="js/disponibilidad-el-encanto.js?v=42"></script>
+<script src="js/disponibilidad-libertad.js?v=42"></script>
+<script src="js/disponibilidad-el-encanto-2.js?v=42"></script>
+<script src="js/calles.js?v=42"></script>
+<script src="js/predios.js?v=42"></script>
+<script src="js/rutas.js?v=42"></script>
+<script src="js/datos.js?v=42"></script>
+<script src="js/mapas.js?v=42"></script>
+<script src="js/mapa-real.js?v=42"></script>
+<script src="js/app.js?v=42"></script>
 </body>
 </html>

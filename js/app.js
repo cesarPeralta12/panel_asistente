@@ -281,9 +281,9 @@ function llenarResumen(p) {
   $('#resDestacados').innerHTML = dest
     .map(d => `<div class="dest"><b>${d.valor}</b><span>${d.etiqueta}</span></div>`).join('');
 
-  const btnTour = $('#btnTour360');
-  btnTour.hidden = !p.recorrido360;
-  btnTour.onclick = () => abrirTour360(p.recorrido360);
+  /* El botón del recorrido 360° se quitó del panel (ver index.html): en la
+     pantalla del tótem el visor 3D quedaba en negro. abrirTour360 sigue
+     disponible por si se reactiva. */
 
   /* Galería: el video del proyecto arriba y sus fotografías reales debajo */
   const gal = $('#resGaleria');

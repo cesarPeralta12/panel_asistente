@@ -340,8 +340,10 @@ const PANEL = {
           coordenadas: { lat: -17.812607, lng: -63.207690 } },
         { nombre: 'Centro Educ. Luz y Verdad', distancia: '2.4 km', icono: 'colegio',  angulo: 228,
           coordenadas: { lat: -17.8762346, lng: -63.1872295 } },
-        { nombre: 'Centro de Salud Cortez',   distancia: '1.4 km', icono: 'salud',    angulo: 3,
-          coordenadas: { lat: -17.8936097, lng: -63.1736176 } },
+        { /* Cortez: el pin viejo estaba 2,5 km al sur, en un lugar que no era; la
+           posición es la del C.S. Cortez en OpenStreetMap, al noreste del comercial. */
+        nombre: 'Centro de Salud Cortez',   distancia: '2.0 km', icono: 'salud',    angulo: 3,
+          coordenadas: { lat: -17.873249, lng: -63.163257 } },
         { nombre: 'Mercado Palmira',          distancia: '2.1 km', icono: 'comercio', angulo: 167,
           coordenadas: { lat: -17.8769237, lng: -63.1713592 } },
         { nombre: 'Parque Las Orquídeas',     distancia: '2.1 km', icono: 'plaza',    angulo: 79,
