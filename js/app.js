@@ -184,7 +184,6 @@ function construirMenu() {
     t.innerHTML = `
       ${p.pendiente ? '<span class="tj-pendiente">Contenido pendiente</span>' : ''}
       <div class="tj-cuerpo">
-        <span class="tj-tipo">${p.tipo}</span>
         ${p.logo
           ? `<img class="tj-logo" src="${p.logo}" alt="${p.nombre}">`
           : `<h3 class="tj-nombre">${p.nombre}</h3>`}
