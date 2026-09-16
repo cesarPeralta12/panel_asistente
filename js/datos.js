@@ -257,7 +257,7 @@ const PANEL = {
 
       plano: {
         etiqueta: 'Disponibilidad',
-        prefijo: 'EC',
+        prefijo: 'UB',    // Urbanización El Encanto (pedido de INMOL: antes EC)
         // Snapshot real descargado del sistema de INMOL — ver cabecera del
         // archivo. Reemplaza a la disponibilidad de ejemplo.
         disponibilidadReal: DISP_EL_ENCANTO,
@@ -535,7 +535,7 @@ const PANEL = {
         // o vendido — cada local tiene su propio precio, así que sólo
         // interesa la disposición física de las áreas.
         disposicion: true,
-        prefijo: 'LB',
+        prefijo: 'CL',    // Comercial Libertad (antes LB, que no se entendía)
         // Numeración real de locales (snapshot del sistema de INMOL), sin
         // mostrar el estado comercial — ver "disposicion" arriba.
         disponibilidadReal: DISP_LIBERTAD,
@@ -765,7 +765,7 @@ const PANEL = {
 
       plano: {
         etiqueta: 'Disponibilidad',
-        prefijo: 'EC2',
+        prefijo: 'UB2',   // Urbanización El Encanto 2
         disponibilidadReal: DISP_EL_ENCANTO_2,
         imagenReal: 'assets/planos/el-encanto-2.jpg',
         imagenAncho: 5000, imagenAlto: 7411, escalaImagen: 0.5,
