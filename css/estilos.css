@@ -137,8 +137,6 @@ ul { list-style: none; }
 #atraccion .atr-titulo,
 #atraccion .atr-dato b      { color: #FFFFFF; }
 #atraccion .marca-txt       { border-left-color: rgba(255,255,255,.22); }
-#atraccion .slogan          { color: rgba(255,255,255,.88); }
-#atraccion .slogan i        { color: #FF8A93; }   /* el rojo de marca no llega sobre la foto */
 #atraccion .atr-datos       { border-top-color: rgba(255,255,255,.22); }
 #atraccion .atr-punto       { background: rgba(255,255,255,.28); }
 
@@ -196,23 +194,15 @@ body.sin-animacion .atr-fondo > .visible {
   font-size: .84rem; letter-spacing: .19em; text-transform: uppercase;
   color: var(--texto-3); font-weight: 500;
 }
-/* Logo con el eslogan debajo, como en la tarjeta impresa de INMOL:
-   «Hacemos que sea» en negrita y «posible» en manuscrita roja. */
+/* Logo con el eslogan debajo, como en la tarjeta impresa de INMOL. */
 .marca-bloque {
   display: flex; flex-direction: column; align-items: center; gap: .2rem;
   flex: none;
 }
-/* Como en la pieza de INMOL: «Hacemos» en negrita, «que sea» normal */
-.slogan {
-  font-size: .78rem; font-weight: 400; letter-spacing: -.01em;
-  color: var(--texto-2); white-space: nowrap; line-height: 1;
-}
-.slogan b { font-weight: 700; }
-.slogan i {
-  font-family: 'Pacifico', cursive; font-style: normal; font-weight: 400;
-  font-size: 1.25rem; line-height: .5; vertical-align: -.1em;
-  margin-left: .2rem; color: var(--rojo); letter-spacing: 0;
-}
+/* El eslogan es el arte oficial de INMOL (assets/marca/eslogan.png), no
+   texto: así sale con su tipografía de verdad. Para la portada oscura hay
+   una variante con el gris pasado a blanco (eslogan-claro.png). */
+.eslogan { display: block; width: 7.6rem; height: auto; margin-top: .15rem; }
 
 .atr-centro {
   position: relative;
@@ -439,8 +429,7 @@ body.sin-animacion .atr-fondo > .visible {
 }
 .marca-mini { height: 3.2rem; opacity: 1; flex: none; }
 /* En la cabecera del proyecto el logo es chico, y el eslogan va a escala */
-.marca-bloque-mini .slogan   { font-size: .62rem; }
-.marca-bloque-mini .slogan i { font-size: 1rem; }
+.marca-bloque-mini .eslogan { width: 5.6rem; }
 
 /* El logo de INMOL es el botón de «inicio»: un toque en el menú o dentro
    de un proyecto vuelve a la portada. Así el asesor decide cuándo cerrar
