@@ -340,23 +340,27 @@ body.sin-animacion .atr-fondo > .visible {
 }
 .tarjeta > img, .tarjeta > canvas {
   position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover; opacity: .82;
+  object-fit: cover; opacity: 1;
   transition: transform 900ms cubic-bezier(.16,.84,.3,1), opacity 500ms;
 }
+/* INMOL quería las fotos menos oscuras: la sombra arranca recién a media
+   tarjeta y sólo cubre la franja de abajo, donde va el texto. */
 .tarjeta::after {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(8,8,10,.12) 0%, rgba(8,8,10,.62) 46%, rgba(8,8,10,.96) 100%);
+  background: linear-gradient(180deg, rgba(8,8,10,0) 0%, rgba(8,8,10,0) 42%, rgba(8,8,10,.55) 68%, rgba(8,8,10,.86) 100%);
 }
 .tarjeta:active { transform: scale(.985); }
 .tarjeta.pulsada { border-color: var(--rojo); box-shadow: 0 0 0 1px var(--rojo), 0 24px 70px rgba(227,51,62,.20); }
-.tarjeta.pulsada > img, .tarjeta.pulsada > canvas { transform: scale(1.08); opacity: .75; }
+.tarjeta.pulsada > img, .tarjeta.pulsada > canvas { transform: scale(1.08); opacity: .9; }
 
 .tj-cuerpo { position: relative; z-index: 2; padding: 2.6rem 2.2rem 2.2rem; }
 .tj-tipo {
   display: inline-block; font-size: .68rem; letter-spacing: .22em; text-transform: uppercase;
-  color: var(--rojo); font-weight: 600; margin-bottom: 1rem;
-  padding: .42rem .8rem; border: 1px solid rgba(227,51,62,.35);
-  border-radius: 100px; background: var(--rojo-tenue);
+  color: #FFFFFF; font-weight: 600; margin-bottom: 1rem;
+  padding: .42rem .8rem; border: 1px solid rgba(255,255,255,.18);
+  /* Con la foto ya sin velo, la etiqueta necesita su propio fondo para
+     leerse sobre cielo o pasto claro. */
+  border-radius: 100px; background: rgba(227,51,62,.85); backdrop-filter: blur(6px);
 }
 .tj-nombre {
   font-size: 2.05rem; font-weight: 600; letter-spacing: -.028em; line-height: 1.05;
