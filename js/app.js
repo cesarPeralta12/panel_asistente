@@ -269,6 +269,9 @@ function llenarResumen(p) {
      así): un array, o un string separado por líneas en blanco. */
   const parrafos = Array.isArray(p.descripcion) ? p.descripcion : String(p.descripcion).split(/\n\s*\n/);
   $('#resDesc').replaceChildren(...parrafos.map(t => { const e = document.createElement('p'); e.textContent = t.trim(); return e; }));
+  /* INMOL le pone un título distinto a la lista según el proyecto
+     («Características principales», «Características destacadas»…). */
+  $('#resServiciosTitulo').textContent = p.tituloServicios || 'Características principales';
   $('#resServicios').innerHTML = p.servicios.map(s => `<li>${s}</li>`).join('');
 
   /* Recuento real de unidades a partir del plano generado. En proyectos "de

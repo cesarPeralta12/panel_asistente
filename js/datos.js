@@ -294,14 +294,18 @@ const PANEL = {
       subtitulo: 'Zona Sur · Santa Cruz',
       tipo: 'Centro comercial',
       estadoComercial: 'En comercialización',
-      claim: 'Su negocio, en la zona de mayor crecimiento de Santa Cruz.',
-      descripcion: 'Ubicado en la zona Sud Este de Santa Cruz de la Sierra, a ' +
-                   'sólo 20 minutos del centro, continuando por la Av. Santos ' +
-                   'Dumont, prolongación 8vo anillo, zona Plan 4000. Alta ' +
-                   'accesibilidad gracias a su conexión directa con avenidas ' +
-                   'principales y transporte público (micros #21 y #109). ' +
-                   'Rodeado de colegios y áreas urbanizadas, en una de las ' +
-                   'zonas de mayor crecimiento comercial y residencial.',
+      /* Textos del Resumen tal como los mandó INMOL (16/09/2026). */
+      claim: 'Tu local propio, listo para hacer crecer tu negocio.',
+      descripcion: [
+        'El Centro Comercial Libertad es un proyecto 100% terminado, con 326 ' +
+        'locales comerciales organizados por sectores y listos para entrega inmediata.',
+        'Está ubicado en la zona sudeste de Santa Cruz de la Sierra, sobre la ' +
+        'prolongación de la avenida Santos Dumont, 8.º anillo, zona Plan 4000. ' +
+        'Cuenta con amplios accesos, transporte público cercano y una ' +
+        'infraestructura moderna pensada para emprendedores y comerciantes.',
+        'Cada local posee documentación individual, brindándote la seguridad de ' +
+        'invertir en un espacio comercial propio y con respaldo legal.'
+      ],
 
       // Ubicación exacta. Código Plus 57JR4R6G+VC, del enlace de Maps de INMOL.
       coordenadas: { lat: -17.88781, lng: -63.17394 },
@@ -358,11 +362,18 @@ const PANEL = {
           coordenadas: { lat: -17.8893895, lng: -63.1651538 } }
       ],
 
+      /* «Características destacadas», en el orden que las mandó INMOL. */
+      tituloServicios: 'Características destacadas',
       servicios: [
-        'Proyecto terminado, listo para entrega', 'Transporte público: micros #21 y #109',
-        'Prevención de incendios aprobada por Alcaldía y Bomberos', 'Sistema de alarma e hidrantes',
-        'Proyecto eléctrico aprobado por la CRE', 'Certificado HABITESE',
-        'Documentación individualizada y en regla', 'Rodeado de colegios y áreas urbanizadas'
+        'Documentación individual para cada local',
+        'Servicios básicos habilitados',
+        'Amplios pasillos internos y exteriores',
+        'Múltiples accesos peatonales y vehiculares',
+        'Parqueos alrededor del centro comercial',
+        'Sistema integral de protección contra incendios',
+        'Instalaciones eléctricas ejecutadas bajo normativa vigente',
+        'Transporte público cercano: líneas 21 y 109',
+        'Ubicación próxima a colegios, mercados y zonas urbanizadas'
       ],
 
       fichaTecnica: [
