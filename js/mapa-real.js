@@ -160,7 +160,7 @@ const MapaReal = {
         // Viscosidad 1 = tope firme, no "elástico".
         maxBoundsViscosity: 1.0
       });
-      L.control.zoom({ position: 'bottomright' }).addTo(this.mapa);
+      L.control.zoom({ position: 'topright' }).addTo(this.mapa);   // abajo van la ficha y las coordenadas
 
       // Capa de ciudad: siempre presente, cubre todo Santa Cruz en baja
       // resolución (zoom 10-13). La capa de cada proyecto (14-19) se agrega

@@ -617,7 +617,7 @@ body.sin-animacion .atr-fondo > .visible {
 /* La ficha flota sobre el mapa, así que cuanto menos tape, mejor: con seis
    puntos de referencia se comía un cuarto de la pantalla. */
 .sat-hud {
-  position: absolute; z-index: 5; right: 1.3rem; bottom: 1.3rem;
+  position: absolute; z-index: 5; left: 1.3rem; bottom: 1.3rem;
   padding: .8rem 1.1rem;
   background: rgba(255,255,255,.88); backdrop-filter: blur(14px);
   border: 1px solid var(--linea); border-radius: var(--r-sm);
@@ -630,7 +630,8 @@ body.sin-animacion .atr-fondo > .visible {
 .sat-nivel-det { font-size: .72rem; color: var(--texto-3); margin-top: .15rem; }
 
 .sat-coord {
-  position: absolute; z-index: 5; left: 1.8rem; bottom: 1.7rem;
+  /* Abajo a la derecha: la ficha de ubicación ocupa la esquina izquierda */
+  position: absolute; z-index: 5; right: 1.8rem; bottom: 1.7rem;
   font-size: .82rem; letter-spacing: .08em; color: var(--texto-2);
   padding: .6rem 1.1rem;
   background: rgba(255,255,255,.88); backdrop-filter: blur(14px);
