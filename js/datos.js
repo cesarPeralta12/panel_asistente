@@ -356,6 +356,11 @@ const PANEL = {
            posición es la del C.S. Cortez en OpenStreetMap, al noreste del comercial. */
         nombre: 'Centro de Salud Cortez',   distancia: '2.0 km', icono: 'salud',    angulo: 3,
           coordenadas: { lat: -17.873249, lng: -63.163257 } },
+        /* El módulo educativo que queda a la vuelta del comercial, sobre la
+           calle por la que se entra. Nombre según Cesar («Túpac Katari, creo»);
+           la posición es la del edificio en el satelital. */
+        { nombre: 'Módulo Educativo Túpac Katari', distancia: '0.3 km', icono: 'colegio', angulo: 300,
+          coordenadas: { lat: -17.88549, lng: -63.17501 } },
         { nombre: 'Mercado Palmira',          distancia: '2.1 km', icono: 'comercio', angulo: 167,
           coordenadas: { lat: -17.8769237, lng: -63.1713592 } },
         { nombre: 'Parque Las Orquídeas',     distancia: '2.1 km', icono: 'plaza',    angulo: 79,
@@ -583,8 +588,13 @@ const PANEL = {
          hormigón con la avenida de tierra. Se dejaron afuera los planos con
          gente o autos de cerca, la grabación de pantalla de Google Maps y la
          placa final del logo. */
+      /* Foto que INMOL eligió para la tarjeta del menú y la portada (16/09/2026):
+         el terreno con sus árboles, vertical. Va aparte de la galería. En la
+         portada, apaisada, se encuadra a la altura de los árboles. */
+      fotoPrincipal: 'assets/medios/el-encanto-2/el-encanto-2-principal.jpg',
+      fotoPrincipalFoco: 'center 58%',
       fotos: [
-        'assets/medios/el-encanto-2/el-encanto-2-01.jpg',   // avenida en obra, de frente (tarjeta)
+        'assets/medios/el-encanto-2/el-encanto-2-01.jpg',   // avenida en obra, de frente
         'assets/medios/el-encanto-2/el-encanto-2-02.jpg',   // aérea del terreno
         'assets/medios/el-encanto-2/el-encanto-2-03.jpg',   // esquina de hormigón y avenida (portada)
         'assets/medios/el-encanto-2/el-encanto-2-04.jpg',   // avenida ancha con camioneta al fondo

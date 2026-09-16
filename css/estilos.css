@@ -167,9 +167,12 @@ body.sin-animacion .atr-fondo > .visible {
 
 .atr-velo {
   position: absolute; inset: 0;
+  /* INMOL lo quería menos oscuro: la sombra es una banda vertical a la
+     izquierda, detrás del texto, y la foto queda a la vista en el resto. Un
+     pelo de sombra arriba y abajo para que la cabecera y el pie se lean. */
   background:
-    linear-gradient(180deg, rgba(8,8,10,.72) 0%, rgba(8,8,10,.16) 36%, rgba(8,8,10,.42) 70%, rgba(8,8,10,.90) 100%),
-    linear-gradient(96deg, rgba(8,8,10,.93) 0%, rgba(8,8,10,.74) 38%, rgba(8,8,10,.16) 72%, rgba(8,8,10,.05) 100%);
+    linear-gradient(180deg, rgba(8,8,10,.38) 0%, rgba(8,8,10,0) 22%, rgba(8,8,10,0) 78%, rgba(8,8,10,.45) 100%),
+    linear-gradient(90deg, rgba(8,8,10,.78) 0%, rgba(8,8,10,.62) 30%, rgba(8,8,10,.22) 52%, rgba(8,8,10,0) 68%);
 }
 .atr-grano {
   position: absolute; inset: 0;
@@ -610,7 +613,7 @@ body.sin-animacion .atr-fondo > .visible {
 /* La ficha flota sobre el mapa, así que cuanto menos tape, mejor: con seis
    puntos de referencia se comía un cuarto de la pantalla. */
 .sat-hud {
-  position: absolute; z-index: 5; left: 1.3rem; top: 1.3rem;
+  position: absolute; z-index: 5; right: 1.3rem; bottom: 1.3rem;
   padding: .8rem 1.1rem;
   background: rgba(255,255,255,.88); backdrop-filter: blur(14px);
   border: 1px solid var(--linea); border-radius: var(--r-sm);
@@ -1047,7 +1050,8 @@ body.sin-animacion .atr-fondo > .visible {
 .mapa-real { position: absolute; inset: 0; z-index: 3; }
 .leaflet-container { background: var(--superficie-3); font-family: inherit; }
 .leaflet-control-attribution { font-size: 10px; background: rgba(255,255,255,.75); }
-.leaflet-control-zoom { margin: 0 1.4rem 5.6rem 0 !important; border: none !important; }
+/* La ficha de ubicación va abajo a la derecha, así que el zoom sube */
+.leaflet-control-zoom { margin: 1.4rem 1.4rem 0 0 !important; border: none !important; }
 .leaflet-control-zoom a {
   width: 3rem; height: 3rem; line-height: 3rem; font-size: 1.5rem;
   color: var(--texto-2); border-radius: 10px; border: 1px solid var(--linea) !important;

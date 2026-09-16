@@ -41,9 +41,12 @@ function canvasSatelital(proyecto, nivel, ancho, alto) {
    `variante` permite que cada pasada del modo atracción muestre otra foto. */
 function medioDeFondo(proyecto, variante, ancho, alto) {
   const fotos = proyecto.fotos || [];
-  if (!fotos.length) return canvasSatelital(proyecto, 2, ancho, alto);
+  if (!fotos.length && !proyecto.fotoPrincipal) return canvasSatelital(proyecto, 2, ancho, alto);
   const img = document.createElement('img');
-  img.src = fotos[Math.abs(variante || 0) % fotos.length];
+  /* Si el proyecto tiene una foto principal elegida, va siempre ésa —en la
+     tarjeta y en la portada—; si no, se rota por la galería. */
+  img.src = proyecto.fotoPrincipal || fotos[Math.abs(variante || 0) % fotos.length];
+  if (proyecto.fotoPrincipal && proyecto.fotoPrincipalFoco) img.style.objectPosition = proyecto.fotoPrincipalFoco;
   img.alt = '';
   // Si la foto no carga, no se deja un hueco: se dibuja el satelital.
   img.addEventListener('error', () => {
