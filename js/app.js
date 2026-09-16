@@ -265,7 +265,10 @@ function mostrarSeccion(id) {
 /* --- 3.1 Resumen --------------------------------------------------------- */
 function llenarResumen(p) {
   $('#resClaim').textContent = p.claim;
-  $('#resDesc').textContent = p.descripcion;
+  /* La descripción puede traer varios párrafos (los textos de INMOL vienen
+     así): un array, o un string separado por líneas en blanco. */
+  const parrafos = Array.isArray(p.descripcion) ? p.descripcion : String(p.descripcion).split(/\n\s*\n/);
+  $('#resDesc').replaceChildren(...parrafos.map(t => { const e = document.createElement('p'); e.textContent = t.trim(); return e; }));
   $('#resServicios').innerHTML = p.servicios.map(s => `<li>${s}</li>`).join('');
 
   /* Recuento real de unidades a partir del plano generado. En proyectos "de

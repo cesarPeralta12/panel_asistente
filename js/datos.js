@@ -60,13 +60,17 @@ const PANEL = {
       subtitulo: 'La Guardia · Santa Cruz',
       tipo: 'Urbanización residencial',
       estadoComercial: 'En comercialización',
-      claim: 'Vivir la naturaleza con todas las comodidades.',
-      descripcion: 'Estratégicamente ubicada a la altura del Km 16 de la Doble ' +
-                   'Vía La Guardia, a tan solo 3 minutos de la carretera, en una ' +
-                   'zona consolidada con vías de acceso pavimentadas, colegios, ' +
-                   'centros de salud y mercados. El Municipio de La Guardia ' +
-                   'combina el crecimiento urbano, el acceso a servicios básicos, ' +
-                   'un clima agradable y un entorno natural atractivo.',
+      /* Textos del Resumen tal como los mandó INMOL (16/09/2026). */
+      claim: 'Un lugar pensado para construir tu futuro.',
+      descripcion: [
+        'Urbanización El Encanto se encuentra estratégicamente ubicada en el Km 16 ' +
+        'de la Doble Vía La Guardia, a solo 2 minutos de la carretera principal.',
+        'Cuenta con terrenos desde 300 m², accesos pavimentados, áreas verdes, ' +
+        'servicios básicos de fácil acceso y un sistema de drenaje pluvial ' +
+        'diseñado para proteger la urbanización.',
+        'Un proyecto con documentación completa, ideal para construir tu hogar o ' +
+        'realizar una inversión con respaldo y tranquilidad.'
+      ],
 
       // Ubicación exacta. Código Plus 57JR3PV3+WP2, del enlace de Maps de INMOL.
       coordenadas: { lat: -17.90523, lng: -63.29574 },
@@ -120,18 +124,22 @@ const PANEL = {
           coordenadas: { lat: -17.8914751, lng: -63.3186963 } }
       ],
 
+      /* «Características principales», en el orden que las mandó INMOL. */
       servicios: [
-        '1.500 m de pavimento dentro de la urbanización', 'Educación cercana: colegios a fácil acceso',
-        'Salud a pocos minutos', 'Mercados y transporte público',
-        'Luz y agua potable, con pozo propio', 'Gas e internet de fácil acceso',
-        'Áreas verdes y de recreación', 'Área de equipamiento amplio',
-        'Drenaje pluvial y protección contra inundaciones'
+        'Más de 1.500 metros de pavimento dentro de la urbanización',
+        'Sistema de drenaje pluvial y protección contra inundaciones',
+        'Agua potable mediante pozo propio',
+        'Acceso a energía eléctrica, gas domiciliario e internet',
+        'Áreas verdes y espacios de recreación',
+        'Colegios y centros de salud cercanos',
+        'Mercados y transporte público de fácil acceso',
+        'Amplia área de equipamiento'
       ],
 
       // Ficha técnica: los datos que el vendedor necesita a mano.
       fichaTecnica: [
         { campo: 'Tipología',            valor: 'Urbanización abierta' },
-        { campo: 'Ubicación',            valor: 'La Guardia, Km 16 · a 3 min de la carretera' },
+        { campo: 'Ubicación',            valor: 'La Guardia, Km 16 · a 2 min de la carretera' },
         { campo: 'Superficie total',     valor: '64,58 hectáreas' },
         { campo: 'Cantidad de terrenos', valor: '1.101' },
         { campo: 'Superficie de terrenos', valor: '300 m² a 600 m²' },

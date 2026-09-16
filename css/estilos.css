@@ -508,6 +508,8 @@ body.sin-animacion .atr-fondo > .visible {
   font-size: 1.16rem; font-weight: 300; line-height: 1.62; color: var(--texto-2);
   max-width: 46ch; margin-bottom: 2.6rem;
 }
+.descripcion p { margin: 0 0 1em; }
+.descripcion p:last-child { margin-bottom: 0; }
 .servicios { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem 1.6rem; }
 .servicios li {
   display: flex; align-items: center; gap: .8rem;
