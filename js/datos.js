@@ -550,14 +550,18 @@ const PANEL = {
       tipo: 'Urbanización residencial',
       estadoComercial: 'En comercialización',
       // Fotos y video propios (del video de INMOL); ubicación confirmada.
-      /* INMOL pidió expresamente que no se lo presente como «la segunda etapa
-         de El Encanto». El claim es ahora la ubicación tal como la describe su
-         propia ficha técnica. */
-      claim: 'A 5 km de la Doble Vía La Guardia, sobre la carretera a Camiri.',
-      descripcion: 'Estratégicamente ubicada a la altura del Km 13 de la Doble ' +
-                   'Vía La Guardia, ingresando tan solo 5 km sobre la carretera ' +
-                   'a Camiri, en zona consolidada con vías de acceso pavimentadas, ' +
-                   'colegios, centros de salud y mercados en sus alrededores.',
+      /* Textos del Resumen tal como los mandó INMOL (16/09/2026). INMOL pidió
+         expresamente que no se lo presente como «la segunda etapa de El Encanto». */
+      claim: 'Un espacio para construir tu futuro y vivir con tranquilidad.',
+      descripcion: [
+        'Urbanización El Encanto 2 La Guardia se encuentra sobre la carretera a ' +
+        'Camiri, Ruta 9, a solo 5 km del cruce del km 13 de la Doble Vía La Guardia.',
+        'Cuenta con terrenos desde 300 m², ingreso principal pavimentado, áreas ' +
+        'verdes, espacios de equipamiento y un sistema de drenaje pluvial diseñado ' +
+        'para proteger la urbanización.',
+        'Un proyecto con documentación completa, ubicado en un entorno natural y ' +
+        'conectado con colegios, centros de salud, mercados y transporte público.'
+      ],
 
       /* Ubicación confirmada por INMOL (15/09/2026): el predio es el triángulo
          pegado a la Rn 9 (carretera a Camiri), del lado este, a 600 m del
@@ -619,11 +623,20 @@ const PANEL = {
           coordenadas: { lat: -17.9139666, lng: -63.2574233 } }
       ],
 
+      /* «Características destacadas», en el orden que las mandó INMOL. */
+      tituloServicios: 'Características destacadas',
       servicios: [
-        'Ingreso principal pavimentado, directo desde la carretera a Camiri',
-        'Educación cercana: acceso fácil a colegios', 'Salud a pocos minutos',
-        'Mercados y transporte público', 'Luz, agua, gas e internet de fácil acceso',
-        'Áreas verdes bien ubicadas', 'Área de equipamiento amplio'
+        '249 terrenos desde 300 m²',
+        'Documentación individual y respaldo legal',
+        'Acceso directo desde la carretera a Camiri',
+        'Sistema de drenaje pluvial y protección contra inundaciones',
+        'Red de agua potable diseñada para la conexión de los propietarios',
+        'Acceso a energía eléctrica mediante la CRE',
+        'Internet de fácil acceso',
+        'Áreas verdes y espacios de recreación',
+        'Amplia área de equipamiento',
+        'Colegios, centros de salud y mercados cercanos',
+        'Acceso a diferentes líneas de transporte público'
       ],
 
       fichaTecnica: [
