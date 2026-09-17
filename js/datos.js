@@ -82,6 +82,11 @@ const PANEL = {
       semilla: 20481,
 
       // Fotografías reales del proyecto (dron y cámara).
+      /* Foto de tarjeta y portada, en Full HD: la vista aérea de la
+         urbanización sacada del video con dron de INMOL (1920×1080). Las de
+         la galería vienen de la web y son de 1024 px; en el tótem se notaba. */
+      fotoPrincipal: 'assets/medios/el-encanto/el-encanto-principal.jpg',
+      fotoPrincipalFoco: 'center 55%',
       fotos: [
         'assets/medios/el-encanto/el-encanto-01.jpg',
         'assets/medios/el-encanto/el-encanto-02.jpg',
@@ -315,6 +320,11 @@ const PANEL = {
 
       semilla: 77310,
 
+      /* Foto de tarjeta y portada: la imagen del centro comercial que usa
+         INMOL en su ficha (1636×1263, extraída del PDF), mucho más nítida que
+         las de 1024 px de la galería. */
+      fotoPrincipal: 'assets/medios/libertad/libertad-principal.jpg',
+      fotoPrincipalFoco: 'center 45%',
       fotos: [
         'assets/medios/libertad/libertad-01.jpg',
         'assets/medios/libertad/libertad-02.jpg',
