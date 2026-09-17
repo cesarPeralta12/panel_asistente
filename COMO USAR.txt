@@ -51,6 +51,16 @@
   5. Si nadie toca nada durante 2 minutos, vuelve solo a la portada.
 
 
+  ACTUALIZAR LA DISPONIBILIDAD (desde una PC con internet)
+  --------------------------------------------------------
+  Los lotes, su estado, superficie y precio salen del sistema de INMOL.
+  Para traerlos al dia, en la carpeta del panel:
+      node herramientas/descargar-disponibilidad.js
+      python herramientas/categorias-lotes.py
+  y despues copiar la carpeta js/ a la pantalla (o volver a instalar).
+  Tarda unos minutos. Necesita Node y Python instalados.
+
+
   REQUISITOS DE LA MAQUINA
   ------------------------
   - Google Chrome o Microsoft Edge instalado. El .bat los busca solo.

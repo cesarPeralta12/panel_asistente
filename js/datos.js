@@ -38,13 +38,13 @@ const PANEL = {
     // tocar el logo de INMOL, que vuelve a la portada al instante. Con 25 s
     // se cortaba la explicación del asesor a mitad de camino.
     segundosInactividad: 120,   // 2 minutos sin que nadie toque → vuelve a la portada
-    // Mostrar el precio de lista de cada unidad al tocarla (viene del sistema
-    // de INMOL). Decisión comercial de INMOL: si piden que no se vea, false.
-    mostrarPrecios: true,
     // Segundos que dura cada slide del modo atracción.
     segundosPorSlide: 11,
-    // Mostrar precios en pantalla. Definido en NO por decisión comercial.
-    mostrarPrecios: false,
+    // Mostrar el precio por m² y el precio de lista de cada unidad al tocarla
+    // (vienen del sistema de INMOL). Al arrancar el proyecto INMOL pidió NO
+    // mostrar precios; el 17/09/2026 pidió que se vea lo mismo que en su
+    // sistema, precio incluido. Si se arrepienten: false.
+    mostrarPrecios: true,
     // Aviso discreto de contenido de demostración. Apagar al cargar lo definitivo.
     datosDeEjemplo: false,
     // Mapa satelital real con teselas precargadas (100% offline).

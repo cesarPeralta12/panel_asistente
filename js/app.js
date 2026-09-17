@@ -510,7 +510,7 @@ function seleccionarLote(idx) {
   if (Estado.proyecto.plano.disposicion) {
     // Sin estado comercial: la etiqueta destacada es la categoría del área
     // si existe (datos de ejemplo) o el nombre genérico de la unidad.
-    est.textContent = l.categoria || (Estado.proyecto.plano.unidad || 'Unidad');
+    est.textContent = l.sector || l.categoria || (Estado.proyecto.plano.unidad || 'Unidad');
     est.className = 'ficha-estado unidad';
   } else {
     est.textContent = COLOR_ESTADO[l.estado].texto;
@@ -523,7 +523,7 @@ function seleccionarLote(idx) {
   // La disponibilidad real (snapshot de INMOL) no trae superficie ni
   // categoría por unidad — esas filas sólo se muestran cuando el dato existe.
   $('#filaSuperficie').hidden = l.superficie == null;
-  if (l.superficie != null) $('#fSuperficie').textContent = `${l.superficie} m²`;
+  if (l.superficie != null) $('#fSuperficie').textContent = `${l.superficie.toLocaleString('en-US', { maximumFractionDigits: 2 })} m²`;
   $('#filaCategoria').hidden = !l.categoria;
   if (l.categoria) {
     /* Con la letra sola no se entiende: se muestra «C · Calle principal
@@ -537,10 +537,14 @@ function seleccionarLote(idx) {
   /* El precio se muestra sólo si INMOL lo autoriza (config.mostrarPrecios) y
      el dato existe. La nota de «precio personalizado» se oculta cuando hay
      precio a la vista, para no decir las dos cosas. */
+  /* Mismo formato que el sistema de INMOL: «32,405.23 $us» */
+  const usd = n => typeof n === 'number'
+    ? n.toLocaleString('en-US', Number.isInteger(n) ? {} : { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $us' : n;
   const conPrecio = !!PANEL.config.mostrarPrecios && l.precio != null;
+  $('#filaPrecioM2').hidden = !(conPrecio && l.precioM2 != null);
+  if (conPrecio && l.precioM2 != null) $('#fPrecioM2').textContent = usd(l.precioM2);
   $('#filaPrecio').hidden = !conPrecio;
-  if (conPrecio) $('#fPrecio').textContent = typeof l.precio === 'number'
-    ? `$us ${l.precio.toLocaleString('es-BO')}` : l.precio;
+  if (conPrecio) $('#fPrecio').textContent = usd(l.precio);
   $('#loteFicha .ficha-nota').hidden = conPrecio;
 
   $('#fichaVacia').hidden = true;

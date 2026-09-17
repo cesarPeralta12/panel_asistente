@@ -470,6 +470,7 @@ function generarLotes(proyecto) {
       // sector y precio de lista. Sólo están cuando el snapshot los trae.
       superficie: l.superficie ?? null,
       sector: l.sector || null,
+      precioM2: l.precioM2 ?? null,
       precio: l.precio ?? null
     }));
   }
