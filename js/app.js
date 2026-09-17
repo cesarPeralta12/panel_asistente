@@ -388,7 +388,7 @@ function llenarReferencias(p) {
   lista.innerHTML = '';
   (p.referencias || []).forEach((r, i) => {
     const li = document.createElement('li');
-    li.innerHTML = `<b>${r.nombre}</b><span>${r.distancia}</span>`;
+    li.innerHTML = `<b>${r.nombre}</b>${r.distancia ? `<span>${r.distancia}</span>` : ''}`;
     li.addEventListener('click', () => {
       $$('#satRefs li').forEach(o => o.classList.remove('activa'));
       li.classList.add('activa');

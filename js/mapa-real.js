@@ -123,7 +123,7 @@ const MapaReal = {
             `<svg viewBox="0 0 28 28" width="22" height="22"><path d="${d}" fill="none" ` +
             'stroke="#E3333E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
             '</span>' +
-            `<span class="pin-ref-txt">${ref.nombre}<b>${ref.distancia}</b></span>`,
+            `<span class="pin-ref-txt">${ref.nombre}${ref.distancia ? `<b>${ref.distancia}</b>` : ''}</span>`,
       iconSize: [34, 34], iconAnchor: [17, 17]
     });
   },
@@ -508,7 +508,7 @@ const MapaReal = {
       const nota = ref.nota ? `<br><span class="popup-nota">${ref.nota}</span>` : '';
       const m = L.marker(pos, { icon: this.iconoReferencia(ref) })
         .addTo(this.mapa)
-        .bindPopup(`${foto}<b>${ref.nombre}</b><br>a ${ref.distancia} del proyecto${nota}`,
+        .bindPopup(`${foto}<b>${ref.nombre}</b>${ref.distancia ? `<br>a ${ref.distancia} del proyecto` : ''}${nota}`,
                    { maxWidth: 320 });
       this.marcadores.push(m);
       this.refs.push(m);

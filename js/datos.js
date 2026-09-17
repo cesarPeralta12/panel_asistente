@@ -85,11 +85,11 @@ const PANEL = {
       semilla: 20481,
 
       // Fotografías reales del proyecto (dron y cámara).
-      /* Foto de tarjeta y portada: la calle pavimentada con los árboles,
-         foto de INMOL en alta resolución (JO6_1275, 6048×4024, guardada a
-         2400 px). Las de la galería vienen de la web y son de 1024 px. */
+      /* Foto de tarjeta y portada: el campo con los árboles bajo la copa,
+         foto de INMOL en alta resolución (el_encanto.jpg, 2560×1703). Las de
+         la galería vienen de la web y son de 1024 px. */
       fotoPrincipal: 'assets/medios/el-encanto/el-encanto-principal.jpg',
-      fotoPrincipalFoco: 'center 60%',
+      fotoPrincipalFoco: 'center 55%',
       fotos: [
         'assets/medios/el-encanto/el-encanto-01.jpg',
         'assets/medios/el-encanto/el-encanto-02.jpg',
@@ -382,7 +382,7 @@ const PANEL = {
            assets/medios/libertad/puente.jpg y aparece sola. La posición la
            marcó Cesar: la esquina donde la calle del frente dobla hacia el
            comercial. */
-        { nombre: 'Puente de acceso', distancia: '0.1 km', icono: 'puente', angulo: 315,
+        { nombre: 'Puente de acceso', distancia: '', icono: 'puente', angulo: 315,
           coordenadas: { lat: -17.887083, lng: -63.173576 },
           foto: 'assets/medios/libertad/puente.jpg',
           nota: 'Acceso directo al centro comercial por la calle del frente' },
