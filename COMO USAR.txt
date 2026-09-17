@@ -1,0 +1,93 @@
+===========================================================================
+  INMOL - PANEL INTERACTIVO DE FERIA
+  VERSION OFICIAL - SOLO PANTALLA, SIN VOZ
+===========================================================================
+
+  El panel tactil completo: mapas satelitales, contornos de terreno,
+  rutas de acceso, planos de lotes, fichas tecnicas oficiales en PDF.
+  No habla: todo se navega tocando la pantalla. No necesita parlantes
+  ni internet.
+
+
+  INSTALARLO EN LA PANTALLA DE LA FERIA (una sola vez)
+  ----------------------------------------------------
+  1. Enchufar el disco con la carpeta inmol_panel.
+  2. Entrar a la carpeta y doble clic en:   INSTALAR EN ESTA PANTALLA.bat
+     Copia todo a C:\inmol_panel, pone el acceso directo "INMOL Panel" en
+     el escritorio, deja el panel arrancando solo con Windows y apaga la
+     suspension de pantalla. Tarda unos minutos (son 900 MB).
+  3. Listo: se puede desconectar el disco.
+
+  Desde ahi, cada vez que se prenda la pantalla el panel arranca solo.
+  Si alguien lo cierra (Alt + F4), se vuelve a abrir con el acceso
+  directo "INMOL Panel" del escritorio.
+
+  OJO: el .bat NO funciona si se lo saca de la carpeta. Tiene que estar
+  junto a index.html, css, js y assets. Para tenerlo a mano en el
+  escritorio se usa el ACCESO DIRECTO que crea el instalador, no una
+  copia del .bat.
+
+  Para quitarlo al terminar la feria: DESINSTALAR DE ESTA PANTALLA.bat
+
+
+  PARA ARRANCARLO A MANO (sin instalar)
+  -------------------------------------
+  Doble clic en:   INICIAR PANEL.bat   (dentro de la carpeta)
+
+  Abre Chrome a pantalla completa, sin barras del navegador.
+
+  Para salir:            Alt + F4
+  Panel tecnico:         tecla D   (dentro del panel)
+
+
+  COMO SE COMPORTA
+  ----------------
+  1. Arranca en la PORTADA, que va rotando entre los tres proyectos.
+  2. Al TOCAR la portada entra al menu de proyectos.
+  3. Tocar una tarjeta abre ese proyecto: Resumen, Ubicacion,
+     Disponibilidad y Ficha tecnica.
+  4. Tocar el LOGO DE INMOL (arriba) vuelve a la portada. Es lo que usa
+     el asesor cuando termina con un cliente.
+  5. Si nadie toca nada durante 2 minutos, vuelve solo a la portada.
+
+
+  REQUISITOS DE LA MAQUINA
+  ------------------------
+  - Google Chrome o Microsoft Edge instalado. El .bat los busca solo.
+  - NO necesita internet. Nada.
+  - No necesita parlantes.
+
+
+  FUNCIONA SIN CONEXION
+  ---------------------
+  Todo lo que se ve esta dentro de esta carpeta:
+
+    assets/tiles    El mapa satelital, descargado de antemano y cortado en
+                    cuadraditos, zoom 12 a 19, para las tres zonas.
+    assets/fichas   Las paginas de las fichas oficiales (PDF) como imagen.
+    assets/medios   Fotos y videos de los proyectos.
+    assets/planos   Los planos de lotes.
+    assets/marca    Logo y eslogan.
+    assets/fonts    La tipografia.
+
+  Si en la feria no hay internet, el panel se comporta igual.
+
+
+  COPIAR ESTA CARPETA
+  -------------------
+  Copiarla ENTERA. Cada subcarpeta de assets hace falta; si falta una,
+  se ven huecos grises en el mapa o fotos rotas. El .bat avisa si falta
+  algo y no arranca.
+
+
+  SI ALGO FALLA
+  -------------
+  "No se encontro index.html"   El .bat esta fuera de su carpeta. Usar el
+                                acceso directo, o volver a ponerlo junto
+                                a index.html.
+  Pantalla en blanco            Falta alguna subcarpeta de assets. Copiar
+                                de nuevo la carpeta completa.
+  Huecos grises en el mapa      Falta assets/tiles o esta incompleta.
+  No abre en pantalla completa  No hay Chrome ni Edge instalado.
+
+===========================================================================
