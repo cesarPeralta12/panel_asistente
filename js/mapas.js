@@ -465,7 +465,12 @@ function generarLotes(proyecto) {
       x: l.x, y: l.y,
       // Letra de categoría de la ficha comercial (A, B, C…), leída del color
       // del plano. No todos los proyectos la tienen.
-      categoria: l.categoria || null
+      categoria: l.categoria || null,
+      // Lo que muestra el sistema de INMOL al tocar una unidad: superficie,
+      // sector y precio de lista. Sólo están cuando el snapshot los trae.
+      superficie: l.superficie ?? null,
+      sector: l.sector || null,
+      precio: l.precio ?? null
     }));
   }
 

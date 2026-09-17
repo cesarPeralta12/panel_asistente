@@ -532,6 +532,17 @@ function seleccionarLote(idx) {
     $('#fCategoria').textContent = cat ? `${cat.letra} · ${cat.nombre}` : l.categoria;
   }
 
+  $('#filaSector').hidden = !l.sector;
+  if (l.sector) $('#fSector').textContent = l.sector;
+  /* El precio se muestra sólo si INMOL lo autoriza (config.mostrarPrecios) y
+     el dato existe. La nota de «precio personalizado» se oculta cuando hay
+     precio a la vista, para no decir las dos cosas. */
+  const conPrecio = !!PANEL.config.mostrarPrecios && l.precio != null;
+  $('#filaPrecio').hidden = !conPrecio;
+  if (conPrecio) $('#fPrecio').textContent = typeof l.precio === 'number'
+    ? `$us ${l.precio.toLocaleString('es-BO')}` : l.precio;
+  $('#loteFicha .ficha-nota').hidden = conPrecio;
+
   $('#fichaVacia').hidden = true;
   $('#fichaDatos').hidden = false;
   reiniciarInactividad();
