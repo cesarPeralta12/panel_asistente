@@ -40,11 +40,11 @@ const PANEL = {
     segundosInactividad: 120,   // 2 minutos sin que nadie toque → vuelve a la portada
     // Segundos que dura cada slide del modo atracción.
     segundosPorSlide: 11,
-    // Mostrar el precio por m² y el precio de lista de cada unidad al tocarla
-    // (vienen del sistema de INMOL). Al arrancar el proyecto INMOL pidió NO
-    // mostrar precios; el 17/09/2026 pidió que se vea lo mismo que en su
-    // sistema, precio incluido. Si se arrepienten: false.
-    mostrarPrecios: true,
+    // Mostrar el precio por m² y el precio de lista de cada unidad al tocarla.
+    // Los datos están (vienen del sistema de INMOL, ver descargar-disponibilidad.js),
+    // pero INMOL pidió que NO se muestren: al tocar una unidad salen superficie,
+    // sector y categoría, y la nota de «precio personalizado». true para verlos.
+    mostrarPrecios: false,
     // Aviso discreto de contenido de demostración. Apagar al cargar lo definitivo.
     datosDeEjemplo: false,
     // Mapa satelital real con teselas precargadas (100% offline).
