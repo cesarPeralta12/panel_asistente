@@ -375,11 +375,11 @@ const PANEL = {
            derecho al comercial (antes había que dar la vuelta). INMOL quiere
            que se vea como acceso: al tocarlo sale la foto. La foto todavía
            NO la pasaron: cuando llegue, guardarla como
-           assets/medios/libertad/puente.jpg y aparece sola. La posición es
-           estimada sobre el satelital (la foto es anterior al puente):
-           ajustar cuando INMOL confirme el punto. */
-        { nombre: 'Puente de acceso', distancia: '0.2 km', icono: 'puente', angulo: 315,
-          coordenadas: { lat: -17.88610, lng: -63.17488 },
+           assets/medios/libertad/puente.jpg y aparece sola. La posición la
+           marcó Cesar: la esquina donde la calle del frente dobla hacia el
+           comercial. */
+        { nombre: 'Puente de acceso', distancia: '0.1 km', icono: 'puente', angulo: 315,
+          coordenadas: { lat: -17.887083, lng: -63.173576 },
           foto: 'assets/medios/libertad/puente.jpg',
           nota: 'Acceso directo al centro comercial por la calle del frente' },
         { nombre: 'Mercado Palmira',          distancia: '2.1 km', icono: 'comercio', angulo: 167,
