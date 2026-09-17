@@ -1078,6 +1078,13 @@ body.sin-animacion .atr-fondo > .visible {
 
 /* Pines de las referencias: círculo blanco con el ícono y su etiqueta */
 .pin-ref { display: grid; place-items: center; }
+/* Globo de una referencia con foto (ver dibujar() en mapa-real.js) */
+.popup-foto {
+  display: block; width: 16rem; max-width: 100%; height: auto;
+  border-radius: 10px; margin: .2rem 0 .7rem;
+}
+.popup-nota { color: var(--texto-3); font-size: .85em; }
+
 .pin-ref-circulo {
   width: 2.6rem; height: 2.6rem; border-radius: 50%;
   background: #FFFFFF; border: 2px solid var(--rojo);

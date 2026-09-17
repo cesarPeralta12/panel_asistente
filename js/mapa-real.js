@@ -500,9 +500,16 @@ const MapaReal = {
     this.refs = [];
     (proyecto.referencias || []).forEach(ref => {
       const pos = this.posicionReferencia(proyecto, ref);
+      /* Algunas referencias llevan foto (el puente de acceso del Comercial):
+         va arriba del nombre, y si el archivo todavía no está, el globo sale
+         igual, sólo con el texto. */
+      const foto = ref.foto
+        ? `<img class="popup-foto" src="${ref.foto}" alt="" onerror="this.remove()">` : '';
+      const nota = ref.nota ? `<br><span class="popup-nota">${ref.nota}</span>` : '';
       const m = L.marker(pos, { icon: this.iconoReferencia(ref) })
         .addTo(this.mapa)
-        .bindPopup(`<b>${ref.nombre}</b><br>a ${ref.distancia} del proyecto`);
+        .bindPopup(`${foto}<b>${ref.nombre}</b><br>a ${ref.distancia} del proyecto${nota}`,
+                   { maxWidth: 320 });
       this.marcadores.push(m);
       this.refs.push(m);
       // Línea punteada del proyecto a cada referencia

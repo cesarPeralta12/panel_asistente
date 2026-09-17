@@ -371,6 +371,17 @@ const PANEL = {
            la posición es la del edificio en el satelital. */
         { nombre: 'Módulo Educativo Túpac Katari', distancia: '0.3 km', icono: 'colegio', angulo: 300,
           coordenadas: { lat: -17.88549, lng: -63.17501 } },
+        /* El puente por el que la calle del frente cruza el canal y entra
+           derecho al comercial (antes había que dar la vuelta). INMOL quiere
+           que se vea como acceso: al tocarlo sale la foto. La foto todavía
+           NO la pasaron: cuando llegue, guardarla como
+           assets/medios/libertad/puente.jpg y aparece sola. La posición es
+           estimada sobre el satelital (la foto es anterior al puente):
+           ajustar cuando INMOL confirme el punto. */
+        { nombre: 'Puente de acceso', distancia: '0.2 km', icono: 'puente', angulo: 315,
+          coordenadas: { lat: -17.88610, lng: -63.17488 },
+          foto: 'assets/medios/libertad/puente.jpg',
+          nota: 'Acceso directo al centro comercial por la calle del frente' },
         { nombre: 'Mercado Palmira',          distancia: '2.1 km', icono: 'comercio', angulo: 167,
           coordenadas: { lat: -17.8769237, lng: -63.1713592 } },
         { nombre: 'Parque Las Orquídeas',     distancia: '2.1 km', icono: 'plaza',    angulo: 79,
